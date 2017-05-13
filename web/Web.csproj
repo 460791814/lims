@@ -489,8 +489,12 @@
     <Content Include="Content\XINDECSS\LeftStyle.css" />
     <Content Include="Content\XINDECSS\MainStyle.css" />
     <Content Include="Content\XINDECSS\TopStyle.css" />
+    <Content Include="Dll\Aspose.Slides.dll" />
+    <Content Include="Dll\Aspose.Words.dll" />
     <Content Include="Dll\Ionic.Zip.dll" />
+    <Content Include="Dll\itextsharp.dll" />
     <Content Include="Dll\LitJSON.dll" />
+    <Content Include="Dll\Newtonsoft.Json.dll" />
     <Content Include="Dll\NPOI.dll" />
     <Content Include="Dll\NPOI.XML" />
     <Content Include="Dll\PageOffice.dll" />
