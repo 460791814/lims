@@ -1,0 +1,295 @@
+﻿@model Model.ExpePlan.E_tb_ExpePlan
+@{
+    ViewBag.Title = "ExpePlanList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>实验计划列表</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+    @*<script src="../../Scripts/jquery-1.8.2.js" type="text/javascript"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var LaboratoryID = $("#HidLaboratoryID").val();
+            $('#dgtable').datagrid({
+                url: "/ExpePlan/GetList?LaboratoryID=" + LaboratoryID + "&pageNumber=1&pageSize=20&PlanID="+@Model.PlanID,
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+//                    { field: 'PlanID', title: '编号', align: 'center' },
+                    { field: 'SampleName', title: '样品名称', align: 'left' },
+                    {
+                        field: 'PlanTypeID', title: '计划类别', align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.PlanTypeID == 1 ? "计划内" : "计划外";
+                        }
+                    },
+                    { field: 'InspectTime', title: '检验日期', align: 'center' },
+                    { field: 'InspectPlace', title: '检验地点', align: 'center' },
+                    { field: 'ProjectName', title: '检验项目', align: 'center' },
+                    { field: 'InspectMethod', title: '检验标准', align: 'center' },
+                    { field: 'HeadPersonnelName', title: '检验负责人', align: 'center' },
+                    { field: 'TaskNo', title: '任务单号', align: 'center' },
+                    {
+                        field: 'Status', title: '状态', align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.Status == 1 ? "完成" : "未完成";
+                        }
+                    },
+                    { field: 'Remark', title: '备注', align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', align: 'center',width:70,
+                        formatter: function (value, row, index) {
+                            return row.Status ==1 ?"":"<a href='javascript:void(0)' onclick='Edit(" + row.PlanID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>";
+                            //return "<a href='javascript:void(0)' onclick='Edit(" + row.PlanID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',width:70,
+                        formatter: function (value, row, index) {
+                            var linkstr = "<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.PlanID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>";
+                            return row.Status ==1 ?"":linkstr;
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 20, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+
+            //添加文本框点击事件
+            $("#ddl_search").change(function () {
+                for (var i = 1; i <= 4; i++) {
+                    if ($(this).val() != i) {
+                        $('#Input_Search_' + i).hide();
+                    }
+                }
+                $('#Input_Search_' + $(this).val()).show();
+            });
+        });
+
+
+        //删除实验室
+        function Delete(InfoID) {
+            if (confirm("确定要删除数据吗？")) {
+                $.getJSON("/ExpePlan/Delete/" + InfoID,
+                function (data) {
+                    alert(data);
+                    if (data == "删除成功！") {
+                        $('#dgtable').datagrid('reload');
+                    }
+                });
+            }
+        }
+
+        //查询
+        function click_Search() {
+            var AreaID = $("#drop_AreaID").val();
+            var PlanTypeID = $("#drop_PlanTypeID").val();
+            var InspectTimeStart = $("#txt_StartTime").val();
+            var InspectTimeEnd = $("#txt_EndTime").val();
+            var TaskNo = $("#Input_Search_1").val();
+            var ProjectID = $("#Input_Search_2").val();
+            
+            var strurl = "/ExpePlan/GetList?pageNumber=1&pageSize=20";
+            if (AreaID != "-1") {
+                strurl += "&AreaID=" + AreaID
+            }
+            if (PlanTypeID != "-1") {
+                strurl += "&PlanTypeID=" + PlanTypeID
+            }
+            if (InspectTimeStart != "") {
+                strurl += "&InspectTimeStart=" + InspectTimeStart
+            }
+            if (InspectTimeEnd != "") {
+                strurl += "&InspectTimeEnd=" + InspectTimeEnd
+            }
+            var WhereTypeID = $("#ddl_search").val();
+            if (WhereTypeID == 1) {
+                strurl += "&TaskNo=" + TaskNo
+            }
+            else if (WhereTypeID == 2) {
+                if (ProjectID != "-1") {
+                    strurl += "&ProjectID=" + ProjectID
+                } 
+            }else if (WhereTypeID == 3) {
+                TaskNo = $("#Input_Search_3").val();
+                strurl += "&SampleName=" + TaskNo
+            }else if (WhereTypeID == 4) {
+                TaskNo = $("#Input_Search_4").val();
+                strurl+="&Status="+TaskNo;
+            }
+            $('#dgtable').datagrid('options').url = strurl;
+            $("#dgtable").datagrid("reload");
+        }
+    </script>
+
+    <!--实验室编辑-->
+    <script type="text/javascript">
+        //添加实验室
+        function Add() {
+            $('#EditForms').window({ href: '/ExpePlan/ExpePlanEdit?EditType=Add' });
+            $('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //弹出编辑页
+        function Edit(InfoID) {
+            $('#EditForms').window({ href: '/ExpePlan/ExpePlanEdit?EditType=Edit&InfoID=' + InfoID });
+            $('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //关闭弹出层
+        function Close() {
+            $('#EditForms').window('close');
+        }
+
+        //保存提示
+        function handle(e) {
+            if (e == "2") {
+                alert("该任务单号已存在！");
+            }
+            else if (e == "1") {
+                alert("保存成功！");
+                $('#EditForms').window('close');
+                $('#dgtable').datagrid('reload');
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+</head>
+<body>
+
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />实验计划 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td align="right" style="width: 70px;">单位名称：</td>
+                            <td align="left" style="width: 100px;">@Html.DropDownListFor(m => Model.AreaID, ViewData["AreaList"] as SelectList, new { @id = "drop_AreaID" })</td>
+                            <td align="right" width="70px">计划类别：</td>
+                            <td align="left" style="width: 100px;">@Html.DropDownListFor(m => Model.PlanTypeID, ViewData["PlanTypeList"] as SelectList, new { @id = "drop_PlanTypeID" })</td>
+                            <td align="right" width="70px">检验时间：</td>
+                            <td align="left" style="width: 200px;">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <input style="border: 1px solid #3496d6; width: 80px;" type="text" id="txt_StartTime" onclick="WdatePicker()" />
+                                        </td>
+                                        <td>至</td>
+                                        <td>
+                                            <input style="border: 1px solid #3496d6; width: 80px;" type="text" id="txt_EndTime" onclick="WdatePicker()" /></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td align="right" width="120px">按：<select id="ddl_search">
+                                <option value="1">任务单号</option>
+                                <option value="2">检验项目</option>
+                                <option value="3">样品名称</option>
+                                <option value="4">状态</option>
+                            </select>
+                            </td>
+                            <td align="left" style="width: 110px;">
+                                <input style="border: 1px solid #3496d6; width: 150px;" type="text" id="Input_Search_1" />
+                                <input style="display:none;border: 1px solid #3496d6; width: 150px;" type="text" id="Input_Search_3" />
+                                <input style="display:none;border: 1px solid #3496d6; width: 150px;" type="text" id="" />
+                                <select id="Input_Search_4" style="display:none">
+                                <option value="1">完成</option>
+                                <option value="0">未完成</option>
+                            </select>
+                            </td>
+                            <td align="left" style="width: 110px;">
+                                @Html.DropDownListFor(m => Model.ProjectID, ViewData["ProjectList"] as SelectList, new { @id = "Input_Search_2", @style = "display:none" })
+                            </td>
+                            <td width="70px">
+                                <a href="javascript:void(0)" onclick="click_Search()">
+                                    <img height="20px" src="/Content/Images/chaxun.png" /></a>
+                            </td>
+                            <td width="70px">
+                                @if (ViewData["ApprovalPersonnelName"] == "")
+                                {
+                                <a href="javascript:void(0)" onclick="Add()">
+                                    <img src="/Content/Images/xinzeng.png" height="20px" /></a>
+                                }
+                            </td>
+                            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+        </table>
+    </div>
+
+    <!--编辑页-->
+    <div id="EditForms" class="easyui-window" title="实验计划" style="width: 600px; height: 330px;" data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">
+    </div>
+
+
+    <script type="text/javascript">
+        var IsDisabled=@ViewBag.IsDisabled;
+        if(IsDisabled.toString()=="true")
+        {
+            $("#drop_AreaID").attr("disabled","disabled");
+        }
+    </script>
+</body>

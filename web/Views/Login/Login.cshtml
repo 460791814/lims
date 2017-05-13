@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "login";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>登陆</title>
+    <link href='@Url.Content("~/Content/XINDECSS/MainStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/ColorStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/LayoutStyle.css")' rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript">
+        //判断显示用户登录的时候显示整个页面
+        if (window.parent.window != window) {
+            window.top.location.href = "/Home/Index";
+        }
+
+        //当用户刷新页面触发的方法
+        $(function () {
+            //实现用户登录的方法
+            LoginUserInfo();
+        });
+
+        //实现用户登录
+        function LoginUserInfo() {
+            //获取单击用户登录按钮的事件
+            $("#btnLogin").click(function () {
+                //首先获取到要传递到控制器的参数，并且狗造成Json。UserName，UserPassword，Code
+                var postData = {
+                    UserName: $("#UserName").val(),
+                    PassWord: $("#UserPassword").val()
+                };
+                //发送异步请求实现登录 ajax
+                $.ajax({
+                    url: '/Login/CheckUserInfo',
+                    data: postData,
+                    cache: false,
+                    async: true,
+                    type: 'post',
+                    success: function (data) {
+                        if (data == "OK") {
+                            window.location.href = "/Home/Index";
+                        } else {
+                            alert(data);
+                            window.location.href = "/Login/Login";
+                        }
+                    }
+                });
+            });
+
+            window.onkeypress = function () {
+                if (event.keyCode == 13) {
+                    document.getElementById('btnLogin').click();
+                }
+            }
+        }
+
+        //单击重新改变验证码
+        function ClickRemoveChangeCode() {
+            //首先我们获取到验证码的路径
+            var code = $("#imgCode").attr("src");
+            //然后重新给验证码的路径赋值
+            $("#imgCode").attr("src", code + "1");
+        }
+        </script>
+</head>
+<body style=" background-color:#09446b;">
+    <div class="layout">
+        <div class="LoginMain">
+            <ul>
+                <li><span>账户：</span><input type="text" id="UserName" class="txt_login" value=""/></li>
+                <li><span>密码：</span><input type="password" id="UserPassword" class="txt_login"  value=""/></li>
+                <li style="padding-top:5px;"><input type="button" id="btnLogin" value="" class="btn_login" /></li>
+                <li style="padding-top:25px;">版权所有：海油发展配餐服务公司</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

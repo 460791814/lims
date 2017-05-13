@@ -1,0 +1,236 @@
+﻿@model Model.tb_DrugIN
+@{
+    ViewBag.Title = "doDrugInUpdate";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>药品管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            /*页面控件验证*/
+            $("#drugCodeE").attr("datatype", "*");
+            $("#drugNameE").attr("datatype", "*");
+            $("#drugTypeE").attr("datatype", "d");
+            $("#GPS").attr("datatype", "d");
+            $("#unitE").attr("datatype", "d");
+            $("#riskLevelE").attr("datatype", "d");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+            $('#EnterDateE').click(function () { WdatePicker() });
+            $('#productDate').click(function () { WdatePicker() });
+            $('#validDate').click(function () { WdatePicker() });
+
+            $('#drugCodeE').attr("readonly", "readonly");
+            
+            /*****************药品柜*****************/
+            $("#ddl_lock").change(function () {
+                var parentValue = $(this).val();
+                if (parentValue != "-1") {
+                    $("#GPS").empty();
+                    $.ajax({
+                        url: '@Url.Action("GetRegionByLockID", "Drug")',
+                        type: "GET",
+                        data: { id: parentValue },
+                        success: function (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                $("#GPS").append($("<option value='" + data[i].Value + "'>" + data[i].Text + "</option>"));
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#GPS").change(function () {
+                var parentValue = $(this).val();
+                if (parentValue != "-1") {
+                    $("#GPS").val(parentValue);
+                }
+            });
+            /*****************结束药品柜*****************/
+        });
+
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：药品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />药品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增/编辑 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        @using (Ajax.BeginForm("UpdateDrugIN", "Drug", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.id, new { @id = "idE" })
+            @Html.HiddenFor(m => m.CreateDate, new { @id = "createDateE" })
+            @Html.HiddenFor(m => m.CreateUser, new { @id = "createUserE" })
+            @Html.HiddenFor(m => m.temp1, new { @id = "temp1E" })
+            @Html.HiddenFor(m => m.temp2, new { @id = "temp2E" })
+            @Html.HiddenFor(m => m.amount, new { @id = "totalE" })
+            @Html.HiddenFor(m => m.UpdateDate, new { @id = "updateDateE" })
+            @Html.HiddenFor(m => m.UpdateUser, new { @id = "updateUserE" })
+            <table style="font-family: '宋体'; font-size: 12px">
+                <tr>
+                    <td width="110" align="right">编号：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.drugCode, new { @id = "drugCodeE" })</td>
+                    <td width="90px" align="right">入库时间：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.EnterDate, new { @id = "EnterDateE" })
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="middle">药品名称：</td>
+                    <td align="left">
+                        @ViewBag._drugName
+                        @Html.HiddenFor(m => m.drugId, new { @id = "drugIdE" })
+                    </td>
+                    <td width="90px" align="right" id="dwslE">数量：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.amount, new { @style = "width:80px", @id = "totalE" })
+                        <a id="unitE"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">库房名称：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.putArea)                    </td>
+                    <td width="90px" align="right">药品柜：</td>
+                    <td width="80" align="left">
+                        @Html.DropDownList("ddl_lock", ViewData["druglocklist"] as List<SelectListItem>)
+                        @Html.DropDownListFor(m=>m.GPS, ViewData["drugregionlist"] as List<SelectListItem>)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">生产日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.productDate)
+                    </td>
+                    <td width="110" align="right">有效期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.validDate)                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">生产厂家：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.manufacturers)
+                    </td>
+                    <td width="100" align="right"></td>
+                    <td width="80" align="left"></td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="top">备注：</td>
+                    <td colspan="3" align="left" valign="top">
+                        @Html.TextAreaFor(m => m.remark, new { @style = "height:100px;width:485px", @id = "remarkE" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#frmUpdate').submit()">
+                            <img src="~/Content/Images/baocun.png" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" />
+                        </a></td>
+                </tr>
+            </table>
+        }
+    </div>
+</body>

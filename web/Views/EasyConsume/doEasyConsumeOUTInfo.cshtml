@@ -1,0 +1,405 @@
+﻿@model Model.tb_EasyConsumeOUT
+@{
+    ViewBag.Title = "doEasyConsumeOUTInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>易耗品-出库</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#price").change(total_money);
+            $("#amount").change(total_money);
+            /*页面控件验证*/
+            $("#OutDate").attr("datatype", "*");
+            $("#price").attr("datatype", "*");
+            $("#amount").attr("datatype", "*");
+            $("#inMoney").attr("datatype", "*");
+            $("#user1").attr("datatype", "d");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+
+            $('#productDate').click(function () { WdatePicker() });
+            $('#validDate').click(function () { WdatePicker() });
+            $("#inMoney").attr("readonly", "readonly");
+            $("#price").attr("readonly", "readonly");
+            /*结束 页面控件验证*/
+            $('#ddl_easyconsume').combogrid({
+                delay: 500,
+                panelWidth: 350,
+                mode: 'remote',
+                idField: 'id',
+                textField: 'name',
+                url: '/EasyConsume/GetEasyConsumeListForDropDownList',
+                onSelect: function (rowIndex, rowData) {
+                    $("#guigexinghao").html(rowData.type);
+                    $("#kucun").html(rowData.amount);
+                    $("#price").val(rowData.price);
+                    //$("#td_product").html(rowData.product);
+                    $("#eId").val(rowData.id);
+                    Bind_EasyConsumeIN(rowData.id);
+                },
+                columns: [[
+                    { field: 'name', title: '名称', width: 250 },
+                    { field: 'type', title: '规格型号', width: 100 },
+                    { field: 'amount', title: '库存', width: 100 }
+                ]]
+            });
+
+            $('#ddl_name').combogrid({
+                delay: 500,
+                panelWidth: 350,
+                mode: 'remote',
+                idField: 'PersonnelID',
+                textField: 'PersonnelName',
+                url: '@Url.Action("GetInPersonnelListForDropDownList", "Book")',
+                onSelect: function (rowIndex, rowData) {
+                    $('#user1').val(rowData.PersonnelID);
+                },
+                columns: [[
+                    { field: 'PersonnelName', title: '名称', width: 120 },
+                    { field: 'Department', title: '部门', width: 80 },
+                    { field: 'Tel', title: '电话', width: 80 },
+                    { field: 'CID', title: '身份证', width: 80 }
+                ]]
+            });
+            $('#OutDate').click(function () { WdatePicker() });
+        });
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+        function total_money() {
+            var price = parseFloat($("#price").val());
+            var amount = parseFloat($("#amount").val());
+            if (price > 0 && amount > 0) {
+                $("#inMoney").val(price * amount);
+            }
+        }
+
+        function Bind_EasyConsumeIN(_easyconsumeId) {
+            $("#ddl_EasyConsumeIN").empty();
+            $("#ddl_EasyConsumeIN").append($("<option value='-1'>请选择</option>"));
+            $("#ddl_EasyConsumeIN").change(function () {
+                var parentValue = $(this).val();
+                if (parentValue != "-1") {
+                    $.ajax({
+                        url: '@Url.Action("GetEasyConsumeINModel", "EasyConsume")',
+                        type: "GET",
+                        async: false,
+                        data: { _id: parentValue },
+                        success: function (data) {
+                            var _productDate = eval('new ' + eval(data.productDate).source);
+                            _productDate = Todate(data.productDate);
+                            var _validDate = eval('new ' + eval(data.validDate).source);
+                            _validDate = Todate(data.validDate);
+                            $("#productDate").val(_productDate);
+                            $("#manufacturers").val(data.manufacturers);
+                            $("#validDate").val(_validDate);
+                            $("#EasyConsumeIN_dwsl").html(data.temp2);
+                            $("#temp2E").val(data.id);
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("GetEasyConsumeInForOut", "EasyConsume")',
+                type: "GET",
+                async: false,
+                data: { _eid: _easyconsumeId},
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        $("#ddl_EasyConsumeIN").append($("<option value='" + data[i].Value + "'>" + data[i].Text + "</option>"));
+                    }
+                }
+            });
+        }
+
+        function Todate(cellval) {
+            var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            return date.getFullYear() + "-" + month + "-" + currentDate;
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：易耗品<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />易耗品出库<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增/编辑 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        @using (Ajax.BeginForm("EasyConsumeOUTCU", "EasyConsume", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+        {
+            @Html.HiddenFor(m => m.id)
+            @Html.HiddenFor(m => m.createDate, new { @id = "createDateE" })
+            @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+            @Html.HiddenFor(m => m.temp1, new { @id = "temp1E" })
+            @Html.HiddenFor(m => m.temp2, new { @id = "temp2E" })
+            @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+            @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+            <table align="left" height="300px" style="font-family: '宋体'; font-size: 12px;">
+                @if (Model != null && Model.id > 0)
+                {
+                    Model.tb_EasyConsume tb_easyconsume = new BLL.tb_EasyConsumeBLL().GetModel(Model.eId.Value);
+                    Model.tb_EasyConsumeIN tb_easyconsumein = new BLL.tb_EasyConsumeINBLL().GetModel(Convert.ToInt32(Model.temp2));
+                    <tr>
+                    <td width="90px" align="right">易耗品：</td>
+                    <td align="left">
+                        @tb_easyconsume.name
+                        @Html.HiddenFor(m => m.eId)
+                    </td>
+                    <td width="90px" align="right">规格型号：</td>
+                    <td align="left" id="guigexinghao">@tb_easyconsume.type</td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="middle">选择批次：</td>
+                    <td align="left">
+                        有效期：@tb_easyconsumein.validDate.Value.ToShortDateString() 生产日期：@tb_easyconsumein.productDate.Value.ToShortDateString()
+                    </td>
+                    <td width="90px" align="right">库存数量：</td>
+                    <td align="left" id="EasyConsumeIN_dwsl">@tb_easyconsumein.temp2</td>
+                </tr>
+                    <tr>
+                    <td width="90px" align="right">出库日期：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.OutDate)
+                    </td>
+                    <td width="90px" align="right">单价：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.price)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">数量：</td>
+                    <td align="left">
+                        @Model.amount
+                        @Html.HiddenFor(m => m.amount)
+                    </td>
+                    <td width="90px" align="right">出库金额：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.inMoney)
+                    </td>
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                    <td width="90px" align="right">易耗品：</td>
+                    <td align="left" colspan="3">
+                        <select id="ddl_easyconsume" style="width: 300px"></select>
+                        @Html.HiddenFor(m => m.eId)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">规格型号：</td>
+                    <td align="left" id="guigexinghao"></td>
+                    <td width="90px" align="right">库存：</td>
+                    <td align="left" id="kucun"></td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="middle">选择批次：</td>
+                    <td align="left">
+                        <select id="ddl_EasyConsumeIN" style="width: 152px"></select>
+                    </td>
+                    <td width="90px" align="right">库存数量：</td>
+                    <td align="left" id="EasyConsumeIN_dwsl"></td>
+                </tr>
+                    <tr>
+                    <td width="90px" align="right">出库日期：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.OutDate)
+                    </td>
+                    <td width="90px" align="right">单价：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.price)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">数量：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.amount)
+                    </td>
+                    <td width="90px" align="right">出库金额：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.inMoney)
+                    </td>
+                </tr>
+                }
+                
+                @if (Model != null && Model.id > 0)
+                {
+                    string personname = new BLL.PersonnelManage.T_tb_InPersonnel().GetModel(Model.user1.Value).PersonnelName;
+                    <tr>
+                    <td width="90px" align="right">经手人：</td>
+                    <td align="left">
+                        @personname
+                        @Html.HiddenFor(m => m.user1)
+                    </td>
+                    <td width="90px" align="right"></td>
+                    <td align="left" id="td_product"></td>
+                    </tr>
+                    if (Convert.ToBoolean(ViewData["5dbc0274"]))
+                    { 
+                    <tr>
+                        <td width="110" align="right">审批状态：</td>
+                        <td width="80" align="left">
+                            @{
+                        List<SelectListItem> list1 = new List<SelectListItem>();
+                        list1.Add(new SelectListItem() { Text = "通过", Value = "通过" });
+                        list1.Add(new SelectListItem() { Text = "未通过", Value = "未通过" });
+                            }
+                            @Html.DropDownListFor(m => m.temp1, list1)</td>
+                        <td width="90px" align="right"></td>
+                        <td width="80" align="left"></td>
+                    </tr>
+                    }
+                    else
+                    {
+                    <tr>
+                        <td colspan="4" align="left">无审批权限</td>
+                    </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                    <td width="90px" align="right">经手人：</td>
+                    <td align="left">
+                        <select id="ddl_name" style="width: 152px"></select>
+                        @Html.HiddenFor(m => m.user1)
+                    </td>
+                    <td width="90px" align="right"></td>
+                    <td align="left" id="td_product"></td>
+                    </tr>
+                }
+                <tr>
+                    <td width="100" align="right">有效期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.validDate)
+                    </td>
+                    <td width="90px" align="right">生产日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.productDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">生产厂家：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.manufacturers)
+                    </td>
+                    <td width="90px" align="right">领用人：</td>
+                    <td width="80" align="left">@Html.TextBoxFor(m => m.recipients)</td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">备注：</td>
+                    <td align="left" colspan="3">
+                        @Html.TextAreaFor(m => m.remark)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                            <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" height="20px" />
+                        </a></td>
+                </tr>
+            </table>
+        }
+    </div>
+</body>

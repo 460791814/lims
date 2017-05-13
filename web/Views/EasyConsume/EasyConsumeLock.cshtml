@@ -1,0 +1,180 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>易耗品柜管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        var cbolist = [];
+        function onchange_cbo(cbo) {
+            if (cbo.checked) {
+                cbolist.push(cbo.value);
+            } else {
+                if (cbolist.length > 0) {
+                    for (var i = 0; i < cbolist.length; i++) {
+                        if (cbo.value == cbolist[i]) {
+                            cbolist.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function onclick_deleteLock() {
+            if (confirm("请确认是否删除当前选择的易耗品柜，此操作不可逆！")) {
+                if (cbolist.length > 0) {
+                    var actionurl = '@Url.Action("Delete_EasyConsumeLock", "EasyConsume")' + "?ids=" + cbolist;
+                    $.getJSON(actionurl,
+                        function (data) {
+                            if (data == "删除成功！") {
+                                window.parent.mainFrame.location.href = '@Url.Action("EasyConsumeLock", "EasyConsume")';
+                            }
+                        });
+                    } else {
+                        alert("请先选择要删除的易耗品柜");
+                    }
+                }
+            }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td style="font-family: '宋体'; font-size: 12px; color: #10607c; vertical-align: middle">当前位置：易耗品管理<img src='@Url.Content("~/Content/Images/位置.png")' />易耗品柜管理 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;">单位名称：
+                                @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                                {
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany" })
+                                }
+                                else
+                                { 
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany", @disabled = "disabled" })
+                                }
+                            </td>
+                            <td align="right">
+                                <a href='@Url.Action("doEasyConsumeLockInfo", "EasyConsume", new { @id = 0 })' target='mainFrame' >
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' />
+                                </a>
+                                <a href="javascript:void(0)" onclick="onclick_deleteLock()">
+                                    <img src='@Url.Content("~/Content/Images/delete.png")' />
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @{List<Model.RoleManage.E_tb_Area> list = ViewData["Arealist"] as List<Model.RoleManage.E_tb_Area>;}
+                    <table align="left" width="100%">
+                        @for (int i = 0; i < list.Count; i++)
+                        {
+                            <tr>
+                                <td colspan="6" style="font-family: '宋体'; font-size: 12px; color: #10607c; vertical-align: middle; height: 27px; background: #faf1e8">@list[i].AreaName</td>
+                            </tr>
+                            List<Model.tb_EasyConsumeLock> druglocklist = new BLL.tb_EasyConsumeLockBLL().GetModelList(list[i].AreaID);
+                            int num = druglocklist.Count > 6 ? druglocklist.Count / 6 + 1 : 1;
+                            for (int ii = 1; ii <= num; ii++)
+                            {
+                            <tr>
+                                @for (int iii = 0; iii < 6; iii++)
+                                {
+                                    int colnum = ii * 6 - 6 + iii;
+                                    Model.tb_EasyConsumeLock druglock = druglocklist.Count > colnum ? druglocklist[colnum] : null;
+                                    if (druglock != null)
+                                    {
+                                    <td align="center">
+                                        <table>
+                                            <tr>
+                                                <td align="center">
+                                                    <a href='@Url.Action("doEasyConsumeLockInfo", "EasyConsume", new { @id = druglock.id })' target="mainFrame">
+                                                        <img src='@Url.Content("~/Content/Images/Lock/" + druglock.lockType + druglock.mark + ".png")' height="136" width="100" alt="@druglock.mark" />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center">
+                                                    <input type="checkbox" onchange="onchange_cbo(this)" value="@druglock.id" />
+                                                    @druglock.lockName
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    }
+                                    else
+                                    {
+                                    <td align="center">&nbsp;
+                                    </td>
+                                    }
+                                }
+                            </tr>
+                            }
+                        }
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>

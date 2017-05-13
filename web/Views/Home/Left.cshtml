@@ -1,0 +1,199 @@
+﻿@{
+    ViewBag.Title = "Left";
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href='@Url.Content("~/Content/XINDECSS/MainStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/ColorStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/LayoutStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/LeftStyle.css")' rel="stylesheet" type="text/css" />
+    <script src='@Url.Content("~/Scripts/jquery-1.8.2.js")' type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".layout h2 a").click(function () {
+                $(".layout h2").removeClass("h2_over");
+                $(".layout ul").css("display", "none");
+                $(this).parent().addClass("h2_over");
+                $(this).parent().next("ul").css("display", "block");
+            });
+            var selectobj;
+            $(".layout ul a").mouseover(function () {
+                $(this).addClass("a_over");
+            });
+            $(".layout ul a").mouseout(function () {
+                $(".layout ul a").removeClass("a_over");
+                $(selectobj).addClass("a_over");
+            });
+            $(".layout ul a").click(function () {
+                selectobj = $(this);
+                $(".layout ul a").removeClass("a_over");
+                $(this).addClass("a_over");
+            });
+            var num = 0
+            $("#wenjianguanli").click(function () {
+                if (num == 0) {
+                    wenjianguanli.innerHTML = "<img alt=\"文件管理\" src='@Url.Content("~/Content/Images/zhankai.png")'/>文件管理";
+                    $("#zhuanyezhiliao").show();
+                    $("#gongzuoshouche").show();
+                    num = 1;
+                } else if (num == 1) {
+                    wenjianguanli.innerHTML = "<img alt=\"文件管理\" src='@Url.Content("~/Content/Images/shousuo.png")'/>文件管理";
+                    $("#zhuanyezhiliao").hide();
+                    $("#gongzuoshouche").hide();
+                    num = 0;
+                }
+            });
+        });
+        
+        
+    </script>
+</head>
+<body>
+    <div class="layout">
+        @if (Convert.ToBoolean(ViewData["fb1b136d"]))
+        { <h2><a href="javascript:void(0);" class="a_bg1">实验室管理</a></h2>}
+        <ul style="display: none;">
+@*            <li><a href='javascript:void(0)' target="mainFrame">文件管理</a></li>*@
+            @if (Convert.ToBoolean(ViewData["9e469368"]))
+            {<li><a href='@Url.Action("Index", "Documents", new { @doc_Type = "体系文件" })' target="mainFrame">体系文件</a></li>}
+            <li><a href='javascript:void(0)'  id="wenjianguanli"><img alt="文件管理" id="img_wenjianguanli" src="~/Content/Images/shousuo.png"/> 文件管理</a></li>
+            @if (Convert.ToBoolean(ViewData["c2ad1e14"]))
+            {<li id="gongzuoshouche" style="display:none;"><a href='@Url.Action("Index", "Documents", new { @doc_Type = "工作手册" })' target="mainFrame">&nbsp;&nbsp;工作手册</a></li>}
+            @if (Convert.ToBoolean(ViewData["3d2318d4"]))
+            {<li id="zhuanyezhiliao" style="display:none;"><a href='@Url.Action("Index", "DocManagerWithDir")' target="mainFrame">&nbsp;&nbsp;专业资料</a></li>}
+        </ul>
+        @if (Convert.ToBoolean(ViewData["31afbeaf"]))
+        {<h2><a href="javascript:void(0);" class="a_bg2">药品管理</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["b4b3da88"]))
+            {<li><a href='@Url.Action("Index", "Drug")' target="mainFrame">药品维护</a></li>}
+            @if (Convert.ToBoolean(ViewData["571d3f8a"]))
+            {<li><a href='@Url.Action("DrugIn", "Drug")' target="mainFrame">药品入库</a></li>}
+            @if (Convert.ToBoolean(ViewData["e8089bd6"]))
+            {<li><a href='@Url.Action("DrugOut", "Drug")' target="mainFrame">药品出库</a></li>}
+            @if (Convert.ToBoolean(ViewData["8ec2589a"]))
+            {<li><a href='@Url.Action("DrugCheck", "Drug")' target="mainFrame">药品盘点</a></li>}
+            @if (Convert.ToBoolean(ViewData["20bf97b3"]))
+            {<li><a href='@Url.Action("DrugReport", "Drug")' target="mainFrame">药品统计</a></li>}
+            <li><a href='@Url.Action("DrugLock", "Drug")' target="mainFrame">药品柜管理</a></li>
+        </ul>
+        @if (Convert.ToBoolean(ViewData["f2719eab"]))
+        {<h2><a href="javascript:void(0);" class="a_bg3">仪器设备</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["59bb818d"]))
+            {<li><a href='@Url.Action("Index", "Device")' target="mainFrame">仪器设备维护</a></li>}
+            @if (Convert.ToBoolean(ViewData["0adeb18d"]))
+            {<li><a href='@Url.Action("DeviceIN", "Device")' target="mainFrame">仪器设备入库</a></li>}
+@*<li><a href="#">仪器标定</a></li>*@
+            @if (Convert.ToBoolean(ViewData["005ae33b"]))
+            {<li><a href='@Url.Action("DeviceOUT", "Device")' target="mainFrame">仪器设备出库</a></li>}
+            @if (Convert.ToBoolean(ViewData["8e0fd1ad"]))
+            {<li><a href='@Url.Action("DeviceLog", "Device")' target="mainFrame">仪器设备盘点</a></li>}
+            <li><a href='@Url.Action("MeasureCheck", "Measure")' target="mainFrame">计量管理</a></li>                                                            
+@*<li><a href="#">仪器设备统计</a></li>*@
+        </ul>
+        @if (Convert.ToBoolean(ViewData["e3251ffe"]))
+        {<h2><a href='javascript:void(0);' class="a_bg4">易耗品</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["49b6d95e"]))
+            {<li><a href='@Url.Action("Index", "EasyConsume")' target="mainFrame">易耗品维护</a></li>}
+            @if (Convert.ToBoolean(ViewData["79244bfc"]))
+            {<li><a href='@Url.Action("EasyConsumeIN", "EasyConsume")' target="mainFrame">易耗品入库</a></li>}
+            @if (Convert.ToBoolean(ViewData["8d545134"]))
+            {<li><a href='@Url.Action("EasyConsumeOUT", "EasyConsume")' target="mainFrame">易耗品出库</a></li>}
+            @if (Convert.ToBoolean(ViewData["fc4e86e0"]))
+            {<li><a href='@Url.Action("EasyConsumeLog", "EasyConsume")' target="mainFrame">易耗品盘点</a></li>}
+            <li><a href='@Url.Action("EasyConsumeLock", "EasyConsume")' target="mainFrame">易耗品柜管理</a></li>
+        </ul>
+        @if (Convert.ToBoolean(ViewData["7846b857"]))
+        {<h2><a href="javascript:void(0);" class="a_bg5">图书资料</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["ab4fe7cf"]))
+            {<li><a href='@Url.Action("Index", "Book")' target="mainFrame">图书资料管理</a></li>}
+            @if (Convert.ToBoolean(ViewData["b8ff729c"]))
+            {<li><a href='@Url.Action("BorrowManage", "Book")' target="mainFrame">图书资料借阅</a></li>}
+            @if (Convert.ToBoolean(ViewData["e0a1333c"]))
+            {<li><a href='@Url.Action("BookLog", "Book")' target="mainFrame">图书统计</a></li>}
+        </ul>
+        @if (Convert.ToBoolean(ViewData["1042ea50"]))
+        {<h2><a href="javascript:void(0);" class="a_bg6">质量管理</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["6bb31d18"]))
+            {<li><a href='@Url.Action("Index", "Supplier")' target="mainFrame">供应商管理</a></li>}
+        </ul>
+        @if (Convert.ToBoolean(ViewData["ecd24fb7"]))
+        {<h2><a href="javascript:void(0);" class="a_bg7">实验管理</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["458cf6bf"]))
+            {<li><a href='@Url.Action("LaboratoryList", "Laboratory")' target="mainFrame">实验室信息</a></li>}
+            <li><a href='@Url.Action("ProjectList", "Project")' target="mainFrame">项目一览</a></li>
+            <li><a href='@Url.Action("ExpePlanList", "ExpePlan")' target="mainFrame">实验计划</a></li>
+            @if (Convert.ToBoolean(ViewData["68b56a25"]))
+            {<li><a href='@Url.Action("OriginalRecordList", "OriginalRecord")' target="mainFrame">原始记录</a></li>}
+            @if (Convert.ToBoolean(ViewData["722a5e1c"]))
+            {<li><a href='@Url.Action("TestReportList", "TestReport")' target="mainFrame">检验报告</a></li>}
+            @if (Convert.ToBoolean(ViewData["4208340c"]))
+            {<li><a href='@Url.Action("ExpeStatisticsList", "ExpeStatistics")' target="mainFrame">实验统计</a></li>}                                                                            
+        </ul>
+        @if (Convert.ToBoolean(ViewData["7076b0bd"]))
+        {<h2><a href='javascript:void(0);' class="a_bg8">样品管理</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["0faa9106"]))
+            {<li><a href='@Url.Action("Index", "Sample")' target="mainFrame">样品管理</a></li>}
+        </ul>
+        @if (Convert.ToBoolean(ViewData["aca675cb"]))
+        {<h2><a href="javascript:void(0);" class="a_bg9">委托管理</a></h2>}
+        <ul style="display: none;">
+           @* @if (Convert.ToBoolean(ViewData["4cd689a5"]))
+            {<li><a href='@Url.Action("TestingPlanList", "TestingPlan")' target="mainFrame">检验计划</a></li>}*@
+                                                                                                         
+            @if (Convert.ToBoolean(ViewData["5149dc67"]))
+            {<li><a href='@Url.Action("EntrustTestingList", "EntrustTesting")' target="mainFrame">委托检验</a></li>}
+            <li><a href='@Url.Action("EntrustMeterageList", "EntrustMeterage")' target="mainFrame">委托计量</a></li>
+            <li><a href='@Url.Action("OutsourcingTestingList", "OutsourcingTesting")' target="mainFrame">外委检验</a></li>
+        </ul>
+        @if (Convert.ToBoolean(ViewData["600bfd3e"]))
+        {<h2><a href="javascript:void(0);" class="a_bg10">人员管理</a></h2>}
+        <ul style="display: none;">
+            <li><a href='@Url.Action("PersonAptitudeList", "PersonAptitude")' target="mainFrame">人员资质</a></li>
+            @if (Convert.ToBoolean(ViewData["7e8269da"]))
+            {<li><a href='@Url.Action("OutPersonnelList", "OutPersonnel")' target="mainFrame">外来人员</a></li>}
+        </ul>
+        @if (Convert.ToBoolean(ViewData["0623a8ea"]))
+        {<h2><a href="javascript:void(0);" class="a_bg11">客户管理</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["11163932"]))
+            {<li><a href='@Url.Action("ClientManageList", "ClientManage")' target="mainFrame">客户管理</a></li>}
+        </ul>
+        @if (Convert.ToBoolean(ViewData["3f4c9a44"]))
+        {<h2><a href="javascript:void(0);" class="a_bg12">系统管理</a></h2>}
+        <ul style="display: none;">
+            @if (Convert.ToBoolean(ViewData["9a83db13"]))
+            {<li><a href='@Url.Action("ShowImageList", "ShowImage")' target="mainFrame">首页图片管理</a></li>}
+            <li><a href='@Url.Action("MagazineList", "Magazine")' target="mainFrame">电子杂志管理</a></li>                                                                                       
+            @if (Convert.ToBoolean(ViewData["ed1878f1"]))
+            {<li><a href='@Url.Action("NewsList", "News")' target="mainFrame">公告通知</a></li>}
+            @if (Convert.ToBoolean(ViewData["f0d28332"]))
+            {<li><a href='@Url.Action("InPersonnelList", "InPersonnel")' target="mainFrame">用户管理</a></li>}
+            @if (Convert.ToBoolean(ViewData["7819fcc8"]))
+            {<li><a href='@Url.Action("RoleList", "Role")' target="mainFrame">角色管理</a></li>}
+            @if (Convert.ToBoolean(ViewData["d60c7672"]))
+            {<li><a href='@Url.Action("ActionList", "Action")' target="mainFrame">系统模块管理</a></li>}
+            @if (Convert.ToBoolean(ViewData["4e4b434d"]))
+            {<li><a href='@Url.Action("AreaList", "Area")' target="mainFrame">区域管理</a></li>}
+            <li><a href='@Url.Action("TypeDictList", "TypeDict", new { SubjectID = 1 })' target="mainFrame">公告类别管理</a></li>
+            <li><a href='@Url.Action("TypeDictList", "TypeDict", new { SubjectID = 2 })' target="mainFrame">项目类别管理</a></li>
+            <li><a href='@Url.Action("TypeDictList", "TypeDict", new { SubjectID = 3 })' target="mainFrame">职务类别管理</a></li>
+            <li><a href='@Url.Action("TypeDictList", "TypeDict", new { SubjectID = 4 })' target="mainFrame">实验室类别</a></li>
+            <li><a href='@Url.Action("TypeDictList", "TypeDict", new { SubjectID = 5 })' target="mainFrame">检验类别管理</a></li>
+            <li><a href='@Url.Action("ContractImgList", "ContractImg")' target="mainFrame">合同图标管理</a></li>
+        </ul>
+    </div>
+</body>
+</html>
+
+

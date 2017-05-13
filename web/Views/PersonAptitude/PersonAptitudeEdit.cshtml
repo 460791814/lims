@@ -1,0 +1,65 @@
+﻿@model Model.E_tb_PersonAptitude
+@{
+    ViewBag.Title = "PersonAptitudeEdit";                                  
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    @using (Ajax.BeginForm("Save", "PersonAptitude", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+        @Html.HiddenFor(m => m.id, new { @id = "Hidid" })
+        @Html.HiddenFor(m => m.EditType, new { @id = "HidEditType" })
+        <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+            <tr>
+                <td width="70px" align="right">姓名：</td>
+                <td align="left" style="width: 120px;">@Html.TextBoxFor(m => m.Name, new { @style = "width:99%;", @id = "txt_Name" })</td>
+                <td width="70px" align="right">性别：</td>
+                <td align="left" style="width: 120px;">@Html.DropDownListFor(m => m.Sex, ViewData["SexList"] as SelectList, new { @style = "width:99%;" })</td>
+            </tr>
+            <tr>
+                <td align="right">出生日期：</td>
+                <td align="left">@Html.TextBoxFor(m => m.BirthDate, new { @style = "width:99%;", @onclick = "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})", @id = "txt_BirthDate" })</td>
+                <td align="right">职务：</td>
+                <td align="left">@Html.DropDownListFor(m => m.Post, ViewData["PostList"] as SelectList, new { @style = "width:99%;" })</td>
+            </tr>
+            <tr>
+                <td align="right">家庭电话：</td>
+                <td align="left">@Html.TextBoxFor(m => m.Tel, new { @style = "width:99%;", @id = "txt_Tel" })</td>
+                <td align="right">移动电话：</td>
+                <td align="left">@Html.TextBoxFor(m => m.Phone, new { @style = "width:99%;", @id = "txt_Phone" })</td>
+            </tr>
+            @*
+            <tr>
+                <td align="right">资质证书：</td>
+                <td align="left">@Html.TextBoxFor(m => m.Certificate, new { @style = "width:99%;", @id = "txt_Certificate" })</td>
+                <td colspan="2" align="left">&nbsp;&nbsp;<input type="text" id="uploadify" /></td>
+            </tr>
+            <tr>
+                <td align="right" valign="top"><strong>资质证书</strong></td>
+                <td align="left" colspan="3">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td valign="top">
+                                <iframe id="iframeOtherFile" frameborder="0" width="100%" height="90" src="/UploadFile/Index?FileType=1&hidid=HidOtherFile&filepath="></iframe>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            *@
+            <tr>
+                <td colspan="6" align="center">
+                    <a href="javascript:void(0)" onclick="$('#frmUpdate').submit()">
+                        <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                    <a href="javascript:void(0)" onclick="Close()">
+                        <img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                </td>
+            </tr>
+        </table>
+        }
+</body>

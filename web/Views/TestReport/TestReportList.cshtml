@@ -1,0 +1,298 @@
+﻿@model Model.TestReport.E_tb_TestReport
+@{
+    ViewBag.Title = "TestReportList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>实验报告列表</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")'></script>
+    <style type="text/css">
+    </style>
+    @*<script src="../../Scripts/jquery-1.8.2.js" type="text/javascript"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var SearchUrl="/TestReport/GetList?pageNumber=1&pageSize=20&ReportID="+@Model.ReportID;
+            $('#dgtable').datagrid({
+                url: SearchUrl,
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+//                    { field: 'ReportID', title: '序号', align: 'center' },
+//                    { field: 'ReportNo', title: '报告编号', align: 'center' },
+//                    { field: 'productNum', title: '批次', align: 'center' },
+                    { field: 'SampleNum', title: '样品编号', align: 'center' },
+                    { field: 'SampleName', title: '样品名称', align: 'left' },
+                    { field: 'ProductionTime', title: '生产日期', align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        } },
+                    { field: 'Department', title: '送/抽检单位', align: 'center' },
+                    { field: 'SamplingTime', title: '抽样日期', align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        } },
+//                    { field: 'TestingCompany', title: '检测单位', align: 'center' },
+                    { field: 'TestTypeName', title: '检验类别', align: 'center' },
+                    { field: 'RecordIDS', title: '原始记录单号', align: 'center' },
+                    { field: 'TaskNoS', title: '任务单号', align: 'center' },
+                    { field: 'IssuedTime', title: '签发日期', align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        } },
+                    { field: 'Conclusion', title: '结论', align: 'center' },
+                    { field: 'MainTestPersonnelName', title: '主检人', align: 'center' },
+                    { field: 'examinePersonnelName', title: '审批人', align: 'center' },
+                    { field: 'ApprovalPersonnelName', title: '批准人', align: 'center' },
+                    //{ field: 'UpdateTime', title: '编辑日期', align: 'center' },
+                    {
+                        field: 'Edit', title: '检验报告', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["f6fd17f1"]))
+                                    {<a href='javascript:void(0)' onclick='Edit(" + row.ReportID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>}";
+                        }
+                    },
+                    //{ field: 'View', title: '预览', align: 'center' },
+                    { 
+                        field: 'Down', title: '下载', align: 'center',width:70,
+                        formatter: function (value, row, index) {
+                            return "<a href=\"javascript:void(0)\" onclick=\"ExpPDF(" + row.ReportID + ")\" >下载</a>";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',width:70,
+                        formatter: function (value, row, index) {
+                            var linkstr="";
+                            if(row.ApprovalPersonnelName == "")
+                            {
+                                linkstr = "@if (Convert.ToBoolean(ViewData["b988fb96"]))
+                                           {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.ReportID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                            }
+                            else
+                            {
+                                linkstr = "@if (Convert.ToBoolean(ViewData["b988fb96"])&&ViewBag._userName.Equals("guhaining"))
+                                           {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.ReportID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                            }
+                            return linkstr;
+                        }
+                    }
+                    
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 50, //每页显示的记录条数，默认为10  
+                pageList: [10, 20, 50, 100], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+
+            $('#dlg_office').dialog('close');
+        });
+
+                //删除
+                function Delete(InfoID) {
+                    if (confirm("确定要删除数据吗？")) {
+                        $.getJSON("/TestReport/Delete/" + InfoID,
+                        function (data) {
+                            alert(data);
+                            if (data == "删除成功！") {
+                                $('#dgtable').datagrid('reload');
+                            }
+                        });
+                    }
+                }
+
+                //导出PDF
+                function ExpPDF(InfoID)
+                {
+                    $.getJSON("/TestReport/ExpPDF/" + InfoID,
+                        function (data) {
+                            window.open(data);
+                        });
+                }
+
+                //查询
+                function click_Search() {
+                    var AreaID=$("#AreaID").val();
+                    var StartTime=$("#txt_StartTime").val();
+                    var EndTime=$("#txt_EndTime").val();
+                    var SampleNum=$("#txt_SampleNum").val();
+                    var SampleName=$("#txt_SampleName").val();
+                    var Department=$("#txt_Department").val();
+                    var MainTestPersonne=$("#txt_MainTestPersonne").val();
+                    var txt_SamplingTimes=$("#txt_SamplingTimes").val();
+                    var txt_SamplingTimee=$("#txt_SamplingTimee").val();
+                    $('#dgtable').datagrid('options').url = "/TestReport/GetList?pageNumber=1&pageSize=20&AreaID=" + AreaID+"&StartTime="+StartTime+"&EndTime="+EndTime+"&SampleNum="+SampleNum+"&SampleName="+SampleName+"&Department="+Department+"&MainTestPersonne="+MainTestPersonne+"&SamplingTimes="+txt_SamplingTimes+"&SamplingTimee="+txt_SamplingTimee;
+                    $("#dgtable").datagrid("reload");
+                }
+
+                //文档预览
+                function click_ViewOffice(_itemId) {
+                    var url = '@Url.Action("GetFileURLForView", "TestReport")' + "?wid=" + _itemId;
+                    $.getJSON(url, getjsonsucceed);
+                }
+                function getjsonsucceed(data) {
+                    $('#dlg_office').dialog('open');
+                    window.frames["officefrm"].location = '@Url.Action("vpoffice", "Documents")' + "?filename=" + data;
+        }
+
+
+    </script>
+
+    <!--编辑-->
+    <script type="text/javascript">
+        //添加
+        function Add() {
+            $('#EditForms').window({ href: '/TestReport/TestReportEdit?EditType=Add' });
+            $('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //弹出编辑页
+        function Edit(InfoID) {
+            $('#EditForms').window({ href: '/TestReport/TestReportEdit?EditType=Edit&InfoID=' + InfoID });
+            $('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //关闭弹出层
+        function Close() {
+            $('#EditForms').window('close');
+        }
+
+        //保存提示
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+                $('#EditForms').window('close');
+                $('#dgtable').datagrid('reload');
+            } else {
+                alert(e);
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+
+
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />实验报告列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td align="right" style="width: 70px;">单位名称：</td>
+                            <td width="100px" align="left">@Html.DropDownListFor(m => m.AreaID, ViewData["AreaList"] as SelectList)</td>
+                            <td align="right" style="width: 70px;">签发日期：</td>
+                            <td align="left" style="width: 80px;">
+                                <input type="text" id="txt_StartTime" value="" onclick="WdatePicker()" style="width: 80px;" /></td>
+                            <td align="center" style="width: 30px;">至</td>
+                            <td align="left" style="width: 80px;">
+                                <input type="text" id="txt_EndTime" value="" onclick="WdatePicker()" style="width: 80px;" /></td>
+                            <td align="center" style="width: 70px;">抽样日期</td>
+                            <td align="left" style="width: 80px;">
+                                <input type="text" id="txt_SamplingTimes" value="" onclick="WdatePicker()" style="width: 80px;" /></td>
+                            <td align="center" style="width: 30px;">至</td>
+                            <td align="left" style="width: 80px;">
+                                <input type="text" id="txt_SamplingTimee" value="" onclick="WdatePicker()" style="width: 80px;" /></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td align="right" style="width: 70px;">样品编号：</td>
+                            <td align="left" style="width: 85px;">
+                                <input style="border: 1px solid #3496d6; width: 80px;" type="text" id="txt_SampleNum" /></td>
+                            <td align="right" style="width: 70px;">样品名称：</td>
+                            <td align="left" style="width: 85px;">
+                                <input style="border: 1px solid #3496d6; width: 80px;" type="text" id="txt_SampleName" /></td>
+                            <td align="right" style="width: 80px;">抽送检单位：</td>
+                            <td align="left" style="width: 85px;">
+                                <input style="border: 1px solid #3496d6; width: 80px;" type="text" id="txt_Department" /></td>
+                             <td align="right" style="width: 80px;">主检人：</td>
+                            <td align="left" style="width: 85px;">
+                                <input style="border: 1px solid #3496d6; width: 80px;" type="text" id="txt_MainTestPersonne" /></td>
+                            <td width="60px"><a href="javascript:void(0)" onclick="click_Search()">
+                                <img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                            <td width="67px">
+                                <a href="@Url.Action("ExpAllPDF","TestReport")" target="_blank">批量下载</a>
+                            </td>
+                            <td align="right">&nbsp;&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+        </table>
+    </div>
+
+    <!--编辑页-->
+    <div id="EditForms" class="easyui-window" title="报告信息" style="width: 840px; height: 500px;top:20px" data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">
+    </div>
+
+    <!--阅览OFFICE-->
+    <div id="dlg_office" class="easyui-dialog" title="文档预览" data-options="iconCls:'icon-save'" style="width: 780px; top:20px;height: 420px; padding: 0px; position: absolute; z-index: 999; left: 5px;">
+        <iframe style="overflow: hidden; border: 0; height: 768px; width: 100%;" name="officefrm" src='@Url.Action("vpoffice", "Documents")'></iframe>
+    </div>
+    <!--End 阅览OFFICE-->
+</body>

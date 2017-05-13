@@ -1,0 +1,175 @@
+﻿
+@model Model.FileList.E_tb_FileList
+@{
+    ViewBag.Title = "tb_FileList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>人员资质</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")'></script>
+
+
+@*    <link href="@Url.Content("~/Scripts/uploadify-v3.1/uploadify.css")" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/uploadify-v3.1/jquery.uploadify-3.1.min.js?ver=")@DateTime.Now.Ticks"></script>*@
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/FileList/GetList?pageNumber=1&pageSize=8&FileType=@Model.FileType&ParentID=@Model.ParentID",
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+                    { field: 'FileName', title: '文件', align: 'center' },
+                    {
+                        field: 'Edit', title: '下载', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "<a href='/UpFile/" + row.FilePath + "'>下载文件</a>";
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 8, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    $('#dgtable').datagrid('options').url = "/FileList/GetList?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&FileType=@Model.FileType&ParentID=@Model.ParentID";
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+//        $(function () {
+//            $('#file_upload').uploadify({
+//                'buttonText': '',
+//                'width': '57px;',
+//                'height': '23px;',
+//                'swf': '@Url.Content("~/Scripts/uploadify-v3.1/uploadify.swf")',
+//                'uploader': '/UploadFile/Upload',
+//                "onUploadSuccess": function (file, data, response) {
+//                    $("#FilePath").val($.parseJSON(data).SaveName);
+//                    $('#frmUpdate').submit();
+//                },
+//                "onUploadError": function (file, errorCode, errorMsg, errorString) {
+//                }
+//            });
+
+//        });
+
+//        //保存提示
+//        function handle(e) {
+//            if (e == "1") {
+//                alert("保存成功！");
+//                $("#dgtable").datagrid("reload");
+//            } else {
+//                alert("保存失败！");
+//            }
+//        }
+//        function failed(e) {
+//            alert("保存失败！");
+//        }
+    </script>
+
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：人员资质<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />资质列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%">@*class="WhereTable"*@
+            <tr>
+                <td align="left" >
+                    @*<input type="file" id="file_upload" name="file_upload"/>*@
+                    <input type="text" id="uploadify" />
+                </td>
+                <td align="right"></td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+
+        </table>
+    </div>
+
+    <div style="display:none;">
+        @using (Ajax.BeginForm("Save", "FileList", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        { 
+            <input id="FileType" name="FileType" value="@Model.FileType" />
+            <input id="ParentID" name="ParentID" value="@Model.ParentID" />
+            <input id="FileName" name="FileName" value="" />
+            <input id="FilePath" name="FilePath" value="" />
+        }
+    </div>
+
+    <script type="text/javascript">
+        /*上传文件控件*/
+        $("#uploadify").uploadify({
+            'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+            'script': '@Url.Action("ImportV2", "ShowImage")',
+            'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+            'folder': 'UpFile',
+            'queueID': 'fileQueue',
+            'auto': false,
+            'multi': false,
+            'height': 20,
+            'width': 75,
+            'fileSizeLimit': '10240KB',
+            'fileTypeDesc': '文档类型',
+            'fileTypeExts': '*.doc;*.pdf;*.jpg;*.png;*.gif;*.bmp;*.*;',
+            'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+            'onComplete': fun,
+            'onSelect': function (e, queueId, fileObj) {
+                $('#uploadify').uploadifyUpload();
+            },
+            'onCancel': function (file) {
+            }
+        });
+        /*结束 上传文件控件*/
+        function fun(event, queueID, fileObj, response, data) {
+            if (response == "false") {
+                alert("文件上传出错！");
+            }
+            else {
+                alert("成功上传！");
+                $('#FileName').val(response.split('|')[0]);
+                $('#FilePath').val(response.split('|')[1]);
+                $('#frmUpdate').submit();
+                $("#dgtable").datagrid("reload");
+            }
+        }
+    </script>
+</body>

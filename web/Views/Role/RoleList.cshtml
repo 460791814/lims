@@ -1,0 +1,202 @@
+﻿@model Model.RoleManage.E_tb_Role
+@{
+    ViewBag.Title = "Role";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+     <script type="text/javascript" src='@Url.Content("~/Scripts/PageJS.js")'></script>
+    <script type="text/javascript">
+        function EditRolePurview(InfoID) {
+            $('#HidRoleID').val(InfoID);
+            $('#ActionTree').tree({
+                checkbox: true,
+                url: "/Role/InitTree?InfoID="+InfoID
+            });
+            $('#EditRolePurview').dialog('open');
+
+//            $('#EditRolePurview').window({ href: "/Role/RolePurview?InfoID=" + InfoID });
+//            $('#EditRolePurview').window('refresh');
+//            $('#EditRolePurview').window('open');
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //设置页面操作类
+            PageInfo = "Role";
+
+            $('#dgtable').datagrid({
+                url: "/" + PageInfo + "/GetList?pageNumber=1&pageSize=8",
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+                    { field: 'RoleID', title: '编号', align: 'center' },
+                    { field: 'RoleName', title: '角色名称', align: 'center' },
+                    {
+                        field: 'DataRange', title: '数据范围', align: 'center',
+                        formatter: function (value, row, index) {
+                            var strItem = "个人";
+                            if (row.DataRange == 1) {
+                                strItem = "全部";
+                            }
+                            else if (row.DataRange == 2) {
+                                strItem = "区域";
+                            }
+                            return strItem;
+                        }
+                    },
+                    {
+                        field: 'EditRolePurview', title: '权限管理', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "<a href='javascript:void(0)' onclick='EditRolePurview(" + row.RoleID + ")' >权限管理</a>";
+                        }
+                    },
+                    {
+                        field: 'Edit', title: '编辑', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["f9190078"]))
+                            {<a href='javascript:void(0)' onclick='Edit(" + row.RoleID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>}";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["bd0262df"]))
+                            {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.RoleID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 8, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    $('#dgtable').datagrid('options').url = "/" + PageInfo + "/GetList?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+
+            $('#EditRolePurview').dialog('close');
+        });
+        </script>
+
+    <script type="text/javascript">
+        //拼接选择的权限，并保存
+        function SaveRolePurview() {
+            var SelectNodes = $('#ActionTree').tree('getChecked');
+            var SelectNodes2 = $('#ActionTree').tree('getChecked', 'indeterminate'); //获取模糊不清的
+            var ActionIDS = "";
+            for (var i = 0; i < SelectNodes.length; i++) {
+                ActionIDS += SelectNodes[i].id + ",";
+            }
+            for (var i = 0; i < SelectNodes2.length; i++) {
+                ActionIDS += SelectNodes2[i].id + ",";
+            }
+            $("#HidActionIDS").val(ActionIDS);
+
+            var posData = $("#frmRolePurview").serializeArray();
+            //发送异步请求到后台保存用户数据
+            $.post("/Role/SaveRolePurview", posData, function (data) {
+                if (data = "OK") {
+                    alert("保存成功");
+                    $('#EditRolePurview').window('close');
+                }
+                else {
+                    alert("保存失败");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：系统管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />角色列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td align="right"style="width:70px;">角色名称：</td>
+                <td align="left" style="width:160px;" ><input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_Search" /></td>
+                <td width="60px"><a href="javascript:void(0)" onclick="click_Search()"><img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                <td align="left" width="67px">
+                @if (Convert.ToBoolean(ViewData["6bc99ab5"]))
+                {<a href="javascript:void(0)" onclick="Add()"><img src="/Content/Images/xinzeng.png" height="20px" /></a>}
+                </td>
+                <td align="right"></td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+
+        </table>
+
+       
+
+
+    </div>
+
+   <!--编辑页-->
+   <div id="EditForms" class="easyui-window" title="角色信息" style="width:400px;height:120px;"  data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">  
+        
+   </div>
+
+   <!--编辑页-->
+   <div id="EditRolePurview1" class="easyui-window" title="角色信息" style="width:300px;height:500px;"  data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">  
+        
+   </div>
+
+   <div id="EditRolePurview" class="easyui-dialog" title="角色信息" data-options="iconCls:'icon-save'" style="width:300px;height:500px;">
+        @using (Ajax.BeginForm("SaveRolePurview", "Role", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmRolePurview" }))
+        {
+            @Html.HiddenFor(m => m.RoleID, new { @id = "HidRoleID" })
+            @Html.HiddenFor(m => m.ActionIDS, new { @id = "HidActionIDS" })
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    <td align="left">
+                         <ul id="ActionTree" class="easyui-tree"></ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <a href="javascript:void(0)" onclick="SaveRolePurview()"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="$('#EditRolePurview').window('close');"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+        }
+   </div>
+
+</body>

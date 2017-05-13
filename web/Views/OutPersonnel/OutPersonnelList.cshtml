@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "OutPersonnelList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/OutPersonnel/GetList?pageNumber=1&pageSize=8",
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+//                    { field: 'PersonnelID', title: '编号', align: 'center' },
+                    { field: 'PersonnelName', title: '姓名', align: 'center' },
+                    { field: 'Department', title: '单位', align: 'center' },
+                    { field: 'Sex', title: '性别', align: 'center' },
+                    { field: 'Reason', title: '事由', align: 'center' },
+                    { field: 'StartTime', title: '进入时间', align: 'center' },
+                    { field: 'EndTime', title: '离开时间', align: 'center' },
+                    { field: 'Tel', title: '联系电话', align: 'center' },
+                    { field: 'work_type', title: '类型', align: 'center' },
+                    { field: 'Remark', title: '备注', align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["dd900c0e"]))
+                            {<a href='javascript:void(0)' onclick='Edit(" + row.PersonnelID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>}";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',
+                        formatter: function (value, row, index) {
+                            var linkstr = "@if (Convert.ToBoolean(ViewData["332ee64a"]))
+                            {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.PersonnelID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                            return linkstr;
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 8, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    $('#dgtable').datagrid('options').url = "/OutPersonnel/GetList?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+
+        //删除
+        function Delete(InfoID) {
+            if (confirm("确定要删除数据吗？")) {
+                $.getJSON("/OutPersonnel/Delete/" + InfoID,
+                function (data) {
+                    alert(data);
+                    if (data == "删除成功！") {
+                        $('#dgtable').datagrid('reload');
+                    }
+                });
+            }
+        }
+
+        //查询
+        function click_Search() {
+
+            var txts = $("#txt_Search").val();
+            $('#dgtable').datagrid('options').url = "/OutPersonnel/GetList?pageNumber=1&pageSize=8&StrSearch=" + txts;
+            $("#dgtable").datagrid("reload");
+        }
+    </script>
+
+    <!--编辑-->
+    <script type="text/javascript">
+        //添加
+        function Add() {
+            $('#EditForms').window({ href: '/OutPersonnel/OutPersonnelEdit?EditType=Add' });
+            $('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //弹出编辑页
+        function Edit(InfoID) {
+            $('#EditForms').window({ href: '/OutPersonnel/OutPersonnelEdit?EditType=Edit&InfoID=' + InfoID });
+            $('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //关闭弹出层
+        function Close() {
+            $('#EditForms').window('close');
+        }
+
+        //保存提示
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+                $('#EditForms').window('close');
+                $('#dgtable').datagrid('reload');
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+
+    
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：外来人员管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />人员列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td align="right"style="width:70px;">姓名：</td>
+                <td align="left" style="width:160px;" ><input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_Search" /></td>
+                <td width="67px"><a href="javascript:void(0)" onclick="click_Search()"><img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                <td align="left" width="67px">
+                @if (Convert.ToBoolean(ViewData["b24f949e"]))
+                {<a href="javascript:void(0)" onclick="Add()"><img src="/Content/Images/xinzeng.png" height="20px" /></a>}</td>
+                <td align="right"></td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+
+        </table>
+    </div>
+
+   <!--编辑页-->
+   <div id="EditForms" class="easyui-window" title="人员信息" style="width:600px;height:420px;"  data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">  
+        
+   </div>
+</body>

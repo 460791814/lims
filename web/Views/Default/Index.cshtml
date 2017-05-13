@@ -1,0 +1,201 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>首页</title>
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Scripts/JqueryMenu/diy.js"></script>
+    <link href="~/Content/CSS/Indexcss.css" rel="stylesheet" />
+    <script type="text/javascript">
+        function divover(id) {
+            $("#main" + id).removeClass("sidebar1div");
+            $("#main" + id).addClass("sidebar1divover");
+        }
+        function divout(id) {
+            $("#main" + id).removeClass("sidebar1divover");
+            $("#main" + id).addClass("sidebar1div");
+        }
+        function divclick(id, total) {
+            for (var i = 1; i <= total; i++) {
+                $("#main" + i).removeClass("sidebar1divclick");
+                $("#child" + i).hide();
+            }
+            $("#main" + id).addClass("sidebar1divclick");
+            $("#child" + id).show();
+        }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <div id="pic" class="container">
+        <div class="header">
+            <div style="position: absolute; z-index: 99999; min-width: 928px;">
+                <img style="float: left;" src="~/Content/Images/tubiao.png" alt="" />
+                <img style="float: left;" src="~/Content/Images/biaoti.png" alt="" />
+            </div>
+            <div style="position: relative; z-index: 99999; float: right; text-align: right;"></div>
+        </div>
+        <div class="header2">
+            <img width="185px" src="~/Content/Images/gongnengdaohang.png" alt="在此处插入徽标" name="Insert_logo" class="pic" id="Insert_logo" />
+        </div>
+        <div class="gongju">
+            <table style="">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="300px">&nbsp;</td>
+                    <td><a href="#" style="font-family: '宋体'; color: #FFF; font-size: 12px; text-decoration: none">欢迎您！</a></td>
+                    <td align="left" width="80px"><a href="#">
+                        <img src="~/Content/Images/zhuomian.png" alt="桌面" /></a></td>
+                    <td align="left" width="80px"><a href="#">
+                        <img src="~/Content/Images/zhuxiao.png" alt="注销" /></a></td>
+                    <td align="left" width="80px"><a href="#">
+                        <img src="~/Content/Images/tuichu.png" alt="退出" /></a></td>
+                </tr>
+                <tr>
+                    <td width="300px">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td width="80px">&nbsp;</td>
+                    <td width="80px">&nbsp;</td>
+                    <td width="80px">&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--end .Header -->
+
+    <!-- sidebar1 -->
+    <div id="divsidebar1" class="sidebar1">
+        <div class="sidebar1div" style="height: 20px;"></div>
+        <div id="main1" class="sidebar1div" onmouseover="divover(1)" onmouseout="divout(1)" onclick="divclick(1,9)">
+            <a href="#">
+                <img class="sidebar1img" src="Content/Images/tree_icon0.gif" alt="实验室管理" /></a>
+            <a href="#">实验室管理</a>
+        </div>
+        <div id="child1" style="display: none">
+            <ul class="nav">
+                <li><a href="Documents/Index?doc_Type=体系文件" target="mainframe">体系文件</a></li>
+                <li><a href="Documents/Index?doc_Type=工作手册" target="mainframe">工作手册</a></li>
+                <li><a href="DocManagerWithDir/Index" target="mainframe">文档管理</a></li>
+                <li><a href="Documents/Index?doc_Type=安全管理" target="mainframe">安全管理</a></li>
+                <li><a href="Documents/Index?doc_Type=成本管理" target="mainframe">成本管理</a></li>
+            </ul>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main2" class="sidebar1div" onmouseover="divover(2)" onmouseout="divout(2)" onclick="divclick(2,9)">
+            <a href="Drug/Index" target="mainframe">
+                <img class="sidebar1img" src="Content/Images/tree_icon1.gif" alt="药品管理" /></a><a href="Drug/Index" target="mainframe">药品管理</a>
+        </div>
+        <div id="child2" style="display: none">
+            <ul class="nav">
+                <li><a href="Drug/DrugIn" target="mainframe">药品入库</a></li>
+                <li><a href="Drug/DrugOut" target="mainframe">药品出库</a></li>
+                <li><a href="Drug/DrugCheck" target="mainframe">药品盘点</a></li>
+                <li><a href="Drug/DrugReport" target="mainframe">药品统计</a></li>
+            </ul>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main3" class="sidebar1div" onmouseover="divover(3)" onmouseout="divout(3)" onclick="divclick(3,9)">
+            <a href="#">
+                <img class="sidebar1img" src="Content/Images/yiqishebei2.png" alt="仪器设备" /></a><a href="#">仪器设备</a>
+        </div>
+        <div id="child3" style="display: none">
+            <ul class="nav">
+                <li><a href='@Url.Action("Index","Device")' target="mainframe">仪器设备列表</a></li>
+                <li><a href='@Url.Action("DeviceIN","Device")' target="mainframe">仪器设备入库</a></li>
+                <li><a href="#">仪器标定</a></li>
+                <li><a href='@Url.Action("DeviceOUT","Device")' target="mainframe">领用情况</a></li>
+                <li><a href='@Url.Action("DeviceLog","Device")' target="mainframe">仪器设备台账</a></li>
+                <li><a href="#">仪器设备统计</a></li>
+            </ul>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main4" class="sidebar1div" onmouseover="divover(4)" onmouseout="divout(4)" onclick="divclick(4,9)">
+            <a href='@Url.Action("Index","EasyConsume")' target="mainframe">
+                <img class="sidebar1img" src="Content/Images/tree_icon10.gif" alt="易耗品" /></a><a href='@Url.Action("Index","EasyConsume")' target="mainframe">易耗品</a>
+        </div>
+        <div id="child4" style="display: none">
+            <ul class="nav">
+                <li><a href='@Url.Action("EasyConsumeIN","EasyConsume")' target="mainframe">易耗品入库</a></li>
+                <li><a href='@Url.Action("EasyConsumeOUT","EasyConsume")' target="mainframe">易耗品出库</a></li>
+                <li><a href="#">易耗品台账</a></li>
+            </ul>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main5" class="sidebar1div" onmouseover="divover(5)" onmouseout="divout(5)" onclick="divclick(5,9)">
+            <a href="#">
+                <img class="sidebar1img" src="Content/Images/tree_icon8.gif" alt="质量管理" /></a><a href="#">质量管理</a>
+        </div>
+        <div id="child5" style="display: none">
+            <ul class="nav">
+                <li><a href='@Url.Action("Index","Supplier")' target="mainframe">供应商管理</a></li>
+            </ul>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main6" class="sidebar1div" onmouseover="divover(6)" onmouseout="divout(6)" onclick="divclick(6,9)">
+            <a href="#"><img class="sidebar1img" src="Content/Images/tree_icon2.gif" alt="样品管理" /></a><a href="#">图书管理</a>
+        </div>
+        <div id="child6" style="display: none">
+            <ul class="nav">
+                <li><a href="Book/Index" target="mainframe">图书资料管理</a></li>
+                <li><a href="Book/BorrowManage" target="mainframe">图书资料借阅</a></li>
+            </ul>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main7" class="sidebar1div" onmouseover="divover(7)" onmouseout="divout(7)">
+            <a href='@Url.Action("Index","Sample")' target="mainframe"><img class="sidebar1img" src="Content/Images/tree_icon5.gif" alt="样品管理" /></a>
+            <a href='@Url.Action("Index","Sample")' target="mainframe">样品管理</a>
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main8" class="sidebar1div" onmouseover="divover(8)" onmouseout="divout(8)">
+            <img class="sidebar1img" src="Content/Images/tree_icon6.gif" alt="人员管理" />人员管理
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+        <div id="main9" class="sidebar1div" onmouseover="divover(9)" onmouseout="divout(9)">
+            <img class="sidebar1img" src="Content/Images/tree_icon3.gif" alt="系统管理" />系统管理
+        </div>
+        <div style="background: url(Content/Images/treebg01.png) no-repeat; height: 10px;"></div>
+
+    </div>
+    <!-- end .sidebar1 -->
+    <!-- Content-->
+    <div style="width: 17px; height: 640px; background: url(../../../Content/Images/zuobian.png); position: absolute; left: 200px; top: 125px; z-index: 60">
+    </div>
+    <div style="width: 100%; height: 8px; position: absolute; top: 136px; z-index: 1">
+        <table width="100%" height="8px">
+            <tr height="8px">
+                <td height="8px" width="210px"></td>
+                <td height="8px" style="background: #466aa4;"></td>
+            </tr>
+        </table>
+    </div>
+    <div style="width: 100%; height: 28px; position: absolute; top: 732px; z-index: 2">
+        <table width="100%" height="28px">
+            <tr height="28px">
+                <td height="28px" width="210px"></td>
+                <td height="28px" style="background: url(../../../Content/Images/dibu.png);"></td>
+            </tr>
+        </table>
+    </div>
+    <div style="position: absolute; z-index: 3; width: 100%; height: 579px; top: 145px;">
+        <table width="100%" height="582px">
+            <tr>
+                <td width="210px"></td>
+                <td>
+                    <iframe style="overflow-x: scroll; overflow-y: hidden; border: 0;" name="mainframe" src='@Url.Action("ViewPageMain", "Default")' height="579px" width="100%"></iframe>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--end .Content-->
+</body>
+</html>

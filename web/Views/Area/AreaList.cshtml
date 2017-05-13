@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "AreaList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/PageJS.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //设置页面操作类
+            PageInfo = "Area";
+
+            $('#dgtable').datagrid({
+                url: "/" + PageInfo + "/GetList?pageNumber=1&pageSize=8",
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+                    //{ field: 'AreaID', title: '编号', align: 'center' },
+                    { field: 'AreaName', title: '角色名称', align: 'center' },
+                    { field: 'TestReportName', title: '检查报告名称', align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["7674cedc"]))
+                            {<a href='javascript:void(0)' onclick='Edit(" + row.AreaID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>}";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["30cb82f0"]))
+                            {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.AreaID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 8, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    $('#dgtable').datagrid('options').url = "/" + PageInfo + "/GetList?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+        </script>
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：系统管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />区域列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td align="right"style="width:70px;">区域名称：</td>
+                <td align="left" style="width:160px;" ><input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_Search" /></td>
+                <td width="60px"><a href="javascript:void(0)" onclick="click_Search()"><img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                <td align="left" width="67px">
+                @if (Convert.ToBoolean(ViewData["f43409e5"]))
+                {<a href="javascript:void(0)" onclick="Add()"><img src="/Content/Images/xinzeng.png" height="20px" /></a>}
+                </td>
+                <td align="right"></td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+
+        </table>
+    </div>
+
+   <!--编辑页-->
+   <div id="EditForms" class="easyui-window" title="角色信息" style="width:300px;height:180px;"  data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">  
+        
+   </div>
+</body>

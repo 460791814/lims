@@ -1,0 +1,773 @@
+﻿@model Model.Default.E_Default
+@using System.Data;
+@{
+    ViewBag.Title = "Default";
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href='@Url.Content("~/Content/XINDECSS/MainStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/ColorStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/LayoutStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/DefaultStyle.css")' rel="stylesheet" type="text/css" />
+
+    <script src='@Url.Content("~/Scripts/jquery-1.8.2.js")' type="text/javascript"></script>
+    <script src='@Url.Content("~/Scripts/Js/JSDemo.js")' type="text/javascript"></script>
+    <script src='@Url.Content("~/Scripts/Js/jquery_nav.js")' type="text/javascript"></script>
+
+    @*<script src="../../Scripts/jquery-1.8.2.js" type="text/javascript"></script>*@
+    <script type="text/javascript">
+        $(function () {
+            $(".fl-pic").slidelf({
+                "prev": "left-arrow",
+                "next": "right-arrow",
+                "speed": 700
+            });
+
+            //全屏
+            $("#FullScreen").click(function () {
+                parent.window.location.href = '@Url.Action("FullPage", "Home")';
+            });
+        });
+    </script>
+
+    <!-- 动态显示当前时间 -->
+    <script type="text/javascript">
+        function initArray() {
+            this.length = initArray.arguments.length; //传递参数给当前函数的参数个数
+            for (var i = 0; i < this.length; i++)
+                this[i + 1] = initArray.arguments[i];
+        }
+        var d = new initArray("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+        function ShowTime() {
+            var today = new Date();
+            var years = today.getFullYear();
+            var month = today.getMonth() + 1;
+            var day = today.getDate()
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+            var seconds = today.getSeconds();
+            var week = d[today.getDay() + 1];
+            if (minutes <= 9)
+                minutes = "0" + minutes;
+            if (seconds <= 9)
+                seconds = "0" + seconds;
+            $("#time").html(hours + ":" + minutes + ":" + seconds);
+            $("#StrDate").html(years + "年" + month + "月" + day + "日&nbsp;&nbsp;" + week);
+            setTimeout("ShowTime()", 1000);
+        }
+        ShowTime();
+    </script>
+
+    <!--时时刷新实验室使用状态-->
+    <script type="text/javascript">
+        //获取实验室数据列表
+        function RefLaboratory() {
+            $.getJSON("/Home/GetLaboratoryDt?Rid" + Math.random(),
+            function (data) {
+                var LaboratoryHtml = "";
+                var datalist = $.parseJSON(data);
+                for (var i = 0; i < datalist.length; i++) {
+                    if ((i + 1) % 2 == 1) {
+                        LaboratoryHtml += '<tr>';
+                        LaboratoryHtml += '<td>' + (i + 1) + '</td>';
+                        LaboratoryHtml += '<td class="bg3">' + datalist[i].LaboratoryName + '</td>';
+                        LaboratoryHtml += '<td class="bg4">' + ((datalist[i].IsUse == '1') ? '使用中' : '空闲') + '</td>';
+                        LaboratoryHtml += '<td>' + datalist[i].ProjectName + '</td>';
+                        LaboratoryHtml += '<td class="bg4">' + datalist[i].MainPerson + '</td>';
+                        LaboratoryHtml += '<td>' + datalist[i].Tel + '</td>';
+                        LaboratoryHtml += '</tr>';
+                    }
+                    else {
+                        LaboratoryHtml += '<tr class="bg2">';
+                        LaboratoryHtml += '<td>' + (i + 1) + '</td>';
+                        LaboratoryHtml += '<td class="bg5">' + datalist[i].LaboratoryName + '</td>';
+                        LaboratoryHtml += '<td class="bg6">' + ((datalist[i].IsUse == '1') ? '使用中' : '空闲') + '</td>';
+                        LaboratoryHtml += '<td>' + datalist[i].ProjectName + '</td>';
+                        LaboratoryHtml += '<td class="bg6">' + datalist[i].MainPerson + '</td>';
+                        LaboratoryHtml += '<td>' + datalist[i].Tel + '</td>';
+                        LaboratoryHtml += '</tr>';
+                    }
+                }
+                $("#LaboratoryList").html(LaboratoryHtml);
+                setTimeout("RefLaboratory()", 10000);
+            });
+        }
+        RefLaboratory();
+    </script>
+
+    <!--时时刷新图片数据-->
+    <script type="text/javascript">
+        //大图列表
+        function RefMaxImg() {
+            $.getJSON("/Home/GetMaxImg?Rid" + Math.random(),
+            function (data) {
+                var datalist = $.parseJSON(data);
+                for (var i = 0; i < datalist.length; i++) {
+                    if ($(".img_content").length >= (i + 1)) {
+                        var item = $(".img_content")[i];
+                        $(item).find("a").attr("href", '/Magazine/MagazineView?FilePath=' + datalist[i].FilePath).attr("target", "_blank");
+                        $(item).find("img").attr("title", datalist[i].ImgName).attr('src', '/UpFile/' + datalist[i].ImgPath + '?Rid=' + Math.random());
+                    }
+                    else {
+                        var Html = "";
+                        Html += '<td>';
+                        Html += '<div class="img_content">';
+                        Html += '<a href="/Magazine/MagazineView?FilePath=' + datalist[i].FilePath + '" target="_blank">';
+                        Html += '<img title="' + datalist[i].ImgName + '"  src="/UpFile/' + datalist[i].ImgPath + '" width="704" height="360" />';
+                        Html += '</a>';
+                        Html += '</div>';
+                        Html += '</td>';
+                        $("#MaxImgList").append(Html);
+                    }
+                }
+                setTimeout("RefMaxImg()", 60000);
+            });
+        }
+        RefMaxImg();
+
+        //小图列表
+        function RefMinImg() {
+            $.getJSON("/Home/GetMinImg?Rid" + Math.random(),
+            function (data) {
+                var datalist = $.parseJSON(data);
+                for (var i = 0; i < datalist.length; i++) {
+                    if ($("#MinImgList li").length >= (i + 1)) {
+                        var item = $("#MinImgList li")[i];
+                        //$(item).find("a").attr("href", '/UpFile/' + datalist[i].FilePath);
+                        $(item).find("img").attr("title", datalist[i].ImgName).attr('src', '/UpFile/' + datalist[i].ImgPath + '?Rid=' + Math.random());
+                    }
+                    else {
+                        var Html = "";
+                        Html += '<li>';
+                        Html += '<a href="javascript:void(0);">';
+                        Html += '<img title="' + datalist[i].ImgName + '"  src="/UpFile/' + datalist[i].ImgPath + '" width="165" height="143" />';
+                        Html += '</a>';
+                        Html += '</li>';
+                        $("#MinImgList").append(Html);
+                    }
+                }
+                setTimeout("RefMinImg()", 60000);
+            });
+        }
+        RefMinImg();
+    </script>
+
+</head>
+<body>
+    <div class="layout_bg">
+        <div class="layout">
+            <div class="Title">
+                <a href="javascript:void(0);" id="FullScreen" isfull="false">
+                    <img src="~/Content/Images_ZHU/images_34.png" width="17" height="15" /></a>&nbsp;
+            </div>
+            <div class="main">
+                <div class="main_left">
+                    <div class="left_top">
+                        <div id="content_main" style="position: relative; overflow: hidden; width: 704px; height: 365px; margin: 0px auto;">
+                            <table border="0" cellpadding="0" cellspacing="0" id="SliderContent" style="position: absolute;">
+                                <tr id="MaxImgList">
+                                    <td>
+                                        <div class="table_content" style="height: 360px; overflow: hidden;">
+                                            <ul>
+                                                <li class="th_1">序号</li>
+                                                <li class="th_2">实&nbsp;验&nbsp;室</li>
+                                                <li class="th_3">使用状态</li>
+                                                <li class="th_4">检测项目</li>
+                                                <li class="th_5">负&nbsp;责&nbsp;人</li>
+                                                <li class="th_6">联系电话</li>
+                                            </ul>
+                                            <table border="0" cellpadding="0" cellspacing="1" class="table_tbody">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 62px;"></th>
+                                                        <th style="width: 128px;"></th>
+                                                        <th style="width: 129px;"></th>
+                                                        <th style="width: 128px;"></th>
+                                                        <th style="width: 128px;"></th>
+                                                        <th style="width: 128px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="LaboratoryList">
+                                                    @{
+                                                        for (int i = 0; i < (ViewData["LaboratoryDt"] as DataTable).Rows.Count; i++)
+                                                        {
+                                                            if ((i + 1) % 2 == 1)
+                                                            { 
+                                                        <tr>
+                                                            <td>@(i + 1)</td>
+                                                            <td class="bg3">@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["LaboratoryName"])</td>
+                                                            <td class="bg4">@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["IsUse"].ToString() == "1" ? "使用中" : "空闲")</td>
+                                                            <td>@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["ProjectName"])</td>
+                                                            <td class="bg4">@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["MainPerson"])</td>
+                                                            <td>@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["Tel"])</td>
+                                                        </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                        <tr class="bg2">
+                                                            <td>@(i + 1)</td>
+                                                            <td class="bg5">@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["LaboratoryName"])</td>
+                                                            <td class="bg6">@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["IsUse"].ToString() == "1" ? "使用中" : "空闲")</td>
+                                                            <td>@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["ProjectName"])</td>
+                                                            <td class="bg6">@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["MainPerson"])</td>
+                                                            <td>@((ViewData["LaboratoryDt"] as DataTable).Rows[i]["Tel"])</td>
+                                                        </tr>
+                                                            }
+                                                        } 
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                    @{
+                                        for (int i = 0; i < (ViewData["MaxImgDt"] as DataTable).Rows.Count; i++)
+                                        { 
+                                        <td>
+                                            <div class="img_content">
+                                                <a href="/Magazine/MagazineView?FilePath=@((ViewData["MaxImgDt"] as DataTable).Rows[i]["FilePath"])">
+                                                    <img title="@((ViewData["MaxImgDt"] as DataTable).Rows[i]["ImgName"])" src="/UpFile/@((ViewData["MaxImgDt"] as DataTable).Rows[i]["ImgPath"])" width="704" height="360" />
+                                                </a>
+                                            </div>
+                                        </td>
+                                        }  
+                                    }
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="content_page">
+                            <div class="startbutton">
+                                <a href="javascript:void(0);" onclick="ChangeRun()">
+                                    <img src="~/Content/Images_ZHU/images_23.jpg" width="32" height="31" isstart="false" /></a>
+                            </div>
+                            <div class="page">
+                                <ul id="idNum"></ul>
+                            </div>
+                        </div>
+                        @Html.HiddenFor(m => m.MaxImgCount, new { @id = "HidMaxImgCount" })
+                        <script type="text/javascript">
+                            //页面代码
+                            var forEach = function (array, callback, thisObject) {
+                                if (array.forEach) {
+                                    array.forEach(callback, thisObject);
+                                } else {
+                                    for (var i = 0, len = array.length; i < len; i++) { callback.call(thisObject, array[i], i, array); }
+                                }
+                            }
+                            var st = new SlideTrans("content_main", "SliderContent", parseInt($("#HidMaxImgCount").val()), { Vertical: false });
+
+                            var nums = [];
+                            //插入数字
+                            for (var i = 0, n = st._count - 1; i <= n;) {
+                                (nums[i] = $$("idNum").appendChild(document.createElement("li"))).innerHTML = ++i;
+                            }
+
+                            forEach(nums, function (o, i) {
+                                o.onmouseover = function () { o.className = "on"; st.Auto = false; st.Run(i); }
+                                o.onmouseout = function () { o.className = ""; if ($(".startbutton img").attr("IsStart") == "true") { st.Auto = true; st.Run(); } }
+                            })
+
+                            //设置按钮样式
+                            st.onStart = function () {
+                                forEach(nums, function (o, i) { o.className = st.Index == i ? "on" : ""; })
+                            }
+
+                            //控制开始与停止
+                            function ChangeRun() {
+                                if ($(".startbutton img").attr("IsStart") == "false") {
+                                    st.Auto = true;
+                                    st.Run();
+                                    $(".startbutton img").attr("src", '@Url.Content("~/Content/Images_ZHU/images_48.jpg")').attr("IsStart", "true");
+                                }
+                                else {
+                                    st.Auto = false;
+                                    $(".startbutton img").attr("src", '@Url.Content("~/Content/Images_ZHU/images_23.jpg")').attr("IsStart", "false");
+                                }
+                            }
+                        </script>
+                    </div>
+                    <div class="left_bottom">
+                        <div class="left-arrow">
+                            <a href="javascript:void(0);">
+                                <img src="~/Content/Images_ZHU/images_27.jpg" width="18" height="70" /></a>
+                        </div>
+                        <div class="fl-pic">
+                            <ul id="MinImgList">
+                                @{
+                                    for (int i = 0; i < (ViewData["MinImgDt"] as DataTable).Rows.Count; i++)
+                                    { 
+                                    <li>
+                                        <a href="javascript:void(0);">
+                                            <img title="@((ViewData["MinImgDt"] as DataTable).Rows[i]["ImgName"])"  src="/UpFile/@((ViewData["MinImgDt"] as DataTable).Rows[i]["ImgPath"])" width="165" height="143" />
+                                        </a>
+                                    </li>
+                                    }  
+                                }
+                            </ul>
+                        </div>
+                        <div class="right-arrow">
+                            <a href="javascript:void(0);">
+                                <img src="~/Content/Images_ZHU/images_28.jpg" width="18" height="70" /></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main_right">
+                    <div class="right_top">
+                        <ul>
+                            <li>
+                                <h2 id="time"></h2>
+                            </li>
+                            <li style="padding-top: 5px;" id="StrDate"></li>
+                            <li style="padding-left: 20px;">
+                                <iframe width="200" scrolling="no" height="60" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=12&icon=1&num=1"></iframe>
+                            </li>
+                        </ul>
+                    </div>
+                    <style>
+                        .right_content_img {
+                            width: 283px;
+                            height: 169px;
+                            background: url(/Content/Images_ZHU/images_36.png) no-repeat;
+                            margin-top: 10px;
+                            padding: 3px;
+                        }
+
+                            .right_content_img h2 {
+                                width: 283px;
+                                height: 35px;
+                                line-height: 45px;
+                                font-size: 14px;
+                                font-weight: 600;
+                                text-align: center;
+                                float: left;
+                            }
+
+                            .right_content_img .more {
+                                display: block;
+                                float: right;
+                                width: 36px;
+                                height: 12px;
+                                margin-top: 15px;
+                                margin-right: 10px;
+                            }
+
+                            .right_content_img h2 span {
+                                float: left;
+                                margin-left: 100px;
+                            }
+
+                            .right_content_img ul {
+                                width: 273px;
+                                padding: 0px 5px;
+                                height: 130px;
+                            }
+
+
+                        #slidecont {
+                            width: 280px;
+                            z-index: 0;
+                            float: left;
+                            height: 130px;
+                            position: relative;
+                        }
+
+                        #slideimg {
+                            width: 280px;
+                            margin: 0px auto;
+                            height: 150px;
+                            overflow: hidden;
+                            z-index: -1;
+                        }
+
+                        .hotpic {
+                            width: 280px;
+                            height: 130px;
+                            position: relative;
+                            overflow: hidden;
+                            padding: 0px;
+                            margin: 0px 0px 0px 0px;
+                        }
+
+                        .num {
+                            position: absolute;
+                            right: 6px;
+                            top: 90px;
+                            z-index: 10;
+                        }
+
+                            .num a {
+                                width: 20px;
+                                height: 20px;
+                                line-height: 20px;
+                                display: inline-block;
+                                text-align: center;
+                                margin: 0px 0px 0px 0px;
+                                cursor: pointer;
+                                text-decoration: none;
+                                color: #977037;
+                                font-weight: bold;
+                                border: 1px solid #fff;
+                                background: #fcf9f4;
+                                font-size: 14px;
+                            }
+
+                                .num a.cur {
+                                    background: #977037;
+                                    color: #fff;
+                                }
+                    </style>
+
+                    <div class="right_content_img">
+                        <h2><span>电子杂志</span><div class="more">
+                            <a href="/Magazine/MagazineShowList">
+                                <img src="~/Content/Images_ZHU/images_24.jpg" width="36" height="12" /></a>
+                        </div>
+                        </h2>
+                        <div id="slidecont">
+                            <div class="hotpic">
+                                <div class="num">
+                                    @{
+                                        for (int i = 0; i < (ViewData["MagazineDt"] as DataTable).Rows.Count; i++)
+                                        { 
+                                        <a class="@((i == 0) ? "cur" : "")">@(i + 1)</a>
+                                        } 
+                                    }
+                                </div>
+                                <ul>
+                                    @{
+                                        for (int i = 0; i < (ViewData["MagazineDt"] as DataTable).Rows.Count; i++)
+                                        { 
+                                        <li>
+                                            <a href="/Magazine/MagazineView?FilePath=@((ViewData["MagazineDt"] as DataTable).Rows[i]["FliePath"])" target="_blank">
+                                                <img src="/UpFile/@((ViewData["MagazineDt"] as DataTable).Rows[i]["ImgPath"])" width="280" height="130" style="float:left;" alt="@((ViewData["MagazineDt"] as DataTable).Rows[i]["MagazineName"])">
+                                            </a>
+                                        </li>
+                                        } 
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                            $(function () {
+                                var count = $(".num a").length;
+                                var sw = 0;
+                                $(".hotpic .num a").mouseover(function () {
+                                    sw = $(".num a").index(this);
+                                    myShow(sw);
+                                });
+                                function myShow(i) {
+                                    $(".hotpic .num a").eq(i).addClass("cur").siblings("a").removeClass("cur");
+                                    $(".hotpic ul li").eq(i).stop(true, true).fadeIn(600).siblings("li").fadeOut(600);
+                                }
+                                $(".hotpic").hover(function () {
+                                    if (myTime) {
+                                        clearInterval(myTime);
+                                    }
+                                }, function () {
+                                    myTime = setInterval(function () {
+                                        myShow(sw)
+                                        sw++;
+                                        if (sw == count) { sw = 0; }
+                                    }, 3000);
+                                });
+                                var myTime = setInterval(function () {
+                                    myShow(sw)
+                                    sw++;
+                                    if (sw == count) { sw = 0; }
+                                }, 3000);
+                            })
+                        </script>
+
+                        @*<ul>
+                            @{
+                                for (int i = 0; i < (ViewData["MagazineDt"] as DataTable).Rows.Count; i++)
+                                { 
+                                    <li>
+                                        <a href="/News/NewsInfo?InfoID=@((ViewData["MagazineDt"] as DataTable).Rows[i]["NewID"])">@((ViewData["MagazineDt"] as DataTable).Rows[i]["Title"])</a>
+                                        <span>@(Convert.ToDateTime((ViewData["MagazineDt"] as DataTable).Rows[i]["AddTime"]).ToShortDateString())</span>
+                                    </li>
+                                } 
+                                }
+                        </ul>*@
+                    </div>
+                    <div class="right_content">
+                        <h2><span>公告通知</span><div class="more">
+                            @*<a href="/News/NewsShowList?NewTypeID=2">*@
+                            <a href="/News/NewsShowList?NewTypeID=0">
+                                <img src="~/Content/Images_ZHU/images_24.jpg" width="36" height="12" /></a>
+                        </div>
+                        </h2>
+                        <ul>
+                            @{
+                                for (int i = 0; i < (ViewData["News2Dt"] as DataTable).Rows.Count; i++)
+                                { 
+                                <li>
+                                    <a href="/News/NewsInfo?InfoID=@((ViewData["News2Dt"] as DataTable).Rows[i]["NewID"])">@((ViewData["News2Dt"] as DataTable).Rows[i]["Title"])</a>
+                                    <span>@(Convert.ToDateTime((ViewData["News2Dt"] as DataTable).Rows[i]["UpdateTime"]).ToShortDateString())</span>
+                                </li>
+                                } 
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--浮动层提醒内容-->
+    <style type="text/css">
+        .tk {
+            display: block;
+            bottom: 0px;
+            right: 0px;
+            position: fixed;
+        }
+
+        .tk_center {
+            width: 331px;
+            height: 305px;
+            background: url(/Content/Images/images_tk_center.png) no-repeat;
+            padding-bottom: 20px;
+        }
+
+        .tk_btn {
+            width: 124px;
+            height: 25px;
+            position: absolute;
+            bottom: 0px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .tk_title {
+            width: 100%;
+            height: 17px;
+            padding-top: 3px;
+        }
+
+        .tk_link {
+            width: 80px;
+            height: 17px;
+            line-height: 17px;
+            float: left;
+            margin-left: 10px;
+            color: #000;
+        }
+
+        .tk_hid_img {
+            width: 32px;
+            height: 17px;
+            float: right;
+            margin-right: 5px;
+        }
+
+        .tk_nav {
+            width: 100%;
+            height: 25px;
+            margin: 0px;
+            padding: 5px 0px 0px 0px;
+        }
+
+            .tk_nav ul {
+                width: 100%;
+                height: 25px;
+                padding: 0px;
+                margin: 0px;
+            }
+
+            .tk_nav li {
+                width: 63px;
+                height: 25px;
+                line-height: 25px;
+                float: left;
+                margin-left: 10px;
+                text-align: center;
+                cursor: pointer;
+            }
+
+        .tk_li_over {
+            background: url(/Content/Images/images_tk_navbg.jpg) no-repeat;
+        }
+
+        .tk_center_list {
+            width: 327px;
+            padding-top: 5px;
+            height: 240px;
+            margin: 0px auto;
+            overflow: auto;
+        }
+
+            .tk_center_list ul {
+                padding: 0px;
+                color: red;
+            }
+
+            .tk_center_list li {
+                padding-left: 10px;
+                height: 25px;
+                line-height: 25px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .tk_center_list span.riqi {
+                text-align: left;
+                float: left;
+                display: inline-block;
+                width: 80px;
+            }
+
+            .tk_center_list span.nr {
+                text-align: left;
+                float: left;
+                display: inline-block;
+                width: 147px;
+            }
+
+            .tk_center_list span.banzu {
+                text-align: right;
+                float: left;
+                display: inline-block;
+                width: 70px;
+            }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".tk_nav li").mouseover(function () {
+                $(".tk_nav li").removeClass("tk_li_over");
+                $(this).addClass("tk_li_over");
+                $(".tk_center_list").css("display", "none");
+                $("#" + $(this).attr("cid")).css("display", "block");
+            });
+
+            $(".tk_hid_img").click(function () {
+                $("#tk_btn").attr("src", "/Content/Images/images_tk_btn_hid.png");
+                $(".tk_center").css("display", "none");
+            })
+
+            $("#tk_btn").click(function () {
+                $("#tk_btn").attr("src", "/Content/Images/images_tk_btn.png");
+                $(".tk_center").css("display", "block");
+            });
+            if ($("#marquee01 span").length < 16) {
+                $("#marquee01").attr("loop", "1");
+            }
+        });
+    </script>
+    <div class="tk">
+        <div style="position: relative;">
+            <div class="tk_center">
+                <div class="tk_title">
+                    <a href="javascript:void(0);" class="tk_hid_img">
+                        <img src="/Content/Images/images_tk_hid.jpg" width="32" height="17"></a>
+                </div>
+                <div class="tk_nav">
+                    <ul>
+                        <li class="tk_li_over" cid="tk_main_1">实验计划</li>
+                        <li cid="tk_main_2" class="">药品</li>
+                        <li cid="tk_main_3" class=" ">易耗品</li>
+                        <li cid="tk_main_4" class=" ">计量管理</li>
+                    </ul>
+                </div>
+                <div id="tk_main_1" class="tk_center_list" style="display: block;">
+                    <ul>
+                        @{DataSet expList = ViewData["_expList"] as DataSet;
+                            if (expList != null && expList.Tables != null && expList.Tables.Count > 0)
+                            {
+                                
+                                foreach (DataRow item in expList.Tables[0].Rows)
+                                {
+                            <li>
+                                <span class="riqi">@item["PersonnelName"]</span>
+                                <span class="nr">@item["unfinish"]</span>
+                                <span class="banzu">未完成</span>
+                            </li>
+                                }
+                            }
+                        }
+                        @*@{
+                            List<Model.ExpePlan.E_tb_ExpePlan> expList = ViewData["expList"] as List<Model.ExpePlan.E_tb_ExpePlan>;
+                            if (expList != null && expList.Count > 0)
+                            {
+                                foreach (Model.ExpePlan.E_tb_ExpePlan item in expList)
+                                {
+                            <li>
+                                <span class="riqi">@item.ProjectName</span>
+                                <span class="nr">@item.TaskNo</span>
+                                <span class="banzu">@item.InspectTime.Value.ToShortDateString()</span>
+                            </li>
+                                }
+                            }
+                        }*@
+                    </ul>
+                </div>
+                <div id="tk_main_2" class="tk_center_list" style="display: none;">
+                    <ul>
+                        @{
+                            List<Model.tb_DrugIN> druglist = ViewData["drugList"] as List<Model.tb_DrugIN>;
+                            if (druglist != null && druglist.Count > 0)
+                            {
+                                foreach (Model.tb_DrugIN item in druglist)
+                                {
+                                    string drugname = new BLL.tb_DrugBLL().GetModel(@item.drugId.Value).drugName;
+                            <li>
+                                <span class="riqi">@item.drugCode</span>
+                                <span class="nr">@drugname</span>
+                                <span class="banzu">@item.validDate.Value.ToShortDateString()</span>
+                            </li>
+                                }
+                            }
+                        }
+
+                    </ul>
+                </div>
+                <div id="tk_main_3" class="tk_center_list" style="display: none;">
+                    <ul>
+                        @{
+                            List<Model.tb_EasyConsumeIN> easyconsumelist = ViewData["easyConsumelist"] as List<Model.tb_EasyConsumeIN>;
+                            if (easyconsumelist != null && easyconsumelist.Count > 0)
+                            {
+                                foreach (Model.tb_EasyConsumeIN item in easyconsumelist)
+                                {
+                                    Model.tb_EasyConsume _easyConsume = new BLL.tb_EasyConsumeBLL().GetModel(@item.eId.Value);
+                            <li>
+                                <span class="riqi">@_easyConsume.name</span>
+                                <span class="nr">@_easyConsume.type</span>
+                                <span class="banzu">@item.validDate.Value.ToShortDateString()</span>
+                            </li>
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+                <div id="tk_main_4" class="tk_center_list" style="display: none;">
+                    <ul>
+                        @{
+                            List<Model.tb_BookBorrow> bookBorrowlist = ViewData["booklist"] as List<Model.tb_BookBorrow>;
+                            if (bookBorrowlist != null && bookBorrowlist.Count > 0)
+                            {
+                                foreach (Model.tb_BookBorrow item in bookBorrowlist)
+                                {
+                                    Model.tb_Book _book = new BLL.tb_BookBLL().GetModel(@item.bookId);
+                            <li>
+                                <span class="riqi">@_book.name</span>
+                                <span class="nr">@_book.author</span>
+                                <span class="banzu">@item.temp2</span>
+                            </li>
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="tk_btn">
+                <img src="/Content/Images/images_tk_btn.png" width="124" height="25" id="tk_btn" style="cursor: pointer;">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>实验室管理系统</title>
+</head>
+<frameset id="layoutframe" rows="140,*,27" cols="*" frameborder="NO" border="0" framespacing="0">
+    <frame src='@Url.Action("Top","Home")' name="topFrame" scrolling="no" noresize="noresize"></frame>
+    <frameset id="attachucp" cols="211,11,*" rows="*" framespacing="0" border="0" frameborder="no" name="attachucp" >
+        <frame src='@Url.Action("Left","Home")' name="leftFrame" frameborder="no" scrolling="auto" noresize="noresize"></frame>
+        <frame id="leftbar" scrolling="no" noresize="noresize" name="switchFrame" src='@Url.Action("Bar","Home")'></frame>
+        <frame noresize="noresize" border="0" name="mainFrame" id="mainFrame" src='@Url.Action("Default","Home")'></frame>
+    </frameset>
+    <frame src='@Url.Action("Bottom","Home")' name="bottomFrame" scrolling="no" noresize="noresize"></frame>
+</frameset>
+</html>

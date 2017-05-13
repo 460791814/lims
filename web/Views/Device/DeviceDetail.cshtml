@@ -1,0 +1,191 @@
+﻿@model Model.tb_DeviceDetail
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>仪器设备</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/Device/GetDeviceDetailList",
+                pagination: true,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                queryParams: { 'pageNumber': 1 },
+                columns: [[
+                    { field: '', title: '日期', width: 160,colspan:2,align:'center' },
+                    { field: '', title: '运行时间', width: 300, colspan: 4, align: 'center' },
+                    { field: '', title: '设备维护保养', width: 250, colspan: 5, align: 'center' },
+                    { field: 'remark', title: '备注', width: 200, rowspan: 3, align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', width: 40, align: 'center',rowspan: 3,
+                        formatter: function (value, row, index) {
+                            return "<a href='javascript:void(0)' onclick='click_Edit(" + row.id + ")' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', width: 40, align: 'center', rowspan: 3,
+                        formatter: function (value, row, index) {
+                            var linkstr = "<a href=\"javascript:void(0)\" onclick=\"click_Delete(" + row.id + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                            return linkstr;
+                        }
+                    }
+                ],
+                [
+                    { field: '', title: '年', width: 200, colspan: 2, align: 'center' },
+                    { field: '', title: '运行小时', width: 150, colspan: 2, align: 'center' },
+                    { field: 'AC', title: '使用期限异常情况', width: 100, rowspan: 2, align: 'center' },
+                    { field: 'user1', title: '通知何人', width: 100, rowspan: 2, align: 'center' },
+                    { field: 'bLevel', title: '保养等级', width: 100, rowspan: 2, align: 'center' },
+                    { field: 'bProject', title: '主要保养项目', width: 100, rowspan: 2, align: 'center' },
+                    { field: '', title: '实施保养', width: 100, colspan: 3, align: 'center' }
+                ],
+                [
+                    { field: 'mDate', title: '月', width: 80, align: 'center' },
+                    { field: 'mDate', title: '日', width: 80, align: 'center' },
+                    { field: 'tHour', title: '本期', width: 75, align: 'center' },
+                    { field: 'cHour', title: '累计', width: 75, align: 'center' },
+                    { field: 'bCompanyId', title: '保养单位', width: 100, align: 'center' },
+                    { field: 'user2', title: '保养人', width: 100, align: 'center' },
+                    { field: 'user3', title: '验收人', width: 100, align: 'center' },
+                ]]
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 10,//每页显示的记录条数，默认为10  
+                pageList: [8],//可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+            $('#dlg').dialog('close');
+        });
+
+        function click_Delete(_itemId) {
+            if (confirm("确定要删除数据吗？")) {
+                $.getJSON("/Device/Delete_DeviceDetail/" + _itemId, function (data) { alert(data); if (data == "删除成功！") { $('#dgtable').datagrid('reload'); } });
+            }
+        }
+        function click_Edit(_itemId) {
+            window.frames["doDevicefm"].location = '@Url.Action("doDeviceDetailInfo","Device")' + "?id=" + _itemId+"&did=@ViewBag.did";
+            $('#dlg').dialog('open');
+        }
+        function click_Search() {
+
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <!--新增、更新-->
+    <div id="dlg" class="easyui-dialog" title="设备管理" data-options="iconCls:'icon-save'" style="width: 620px; height: 390px; padding: 0px; position: absolute; z-index: 999; left: 5px;">
+        <iframe style="overflow-x: scroll; overflow-y: hidden; border: 0;height:350px;width:600px;" name="doDevicefm"></iframe>
+    </div>
+    <!--End 新增、更新-->
+
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：设备管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />设备管理 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    @ViewBag.deviceinfo
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td width="130px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">按：      
+                                    <select id="ddl_search">
+                                        <option value="年">年</option>
+                                        <option value="月">月</option>
+                                        <option value="保养单位">保养单位</option>
+                                        <option value="保养人">保养人</option>
+                                        <option value="验收人">验收人</option>
+                                    </select>
+                            </td>
+                            <td width="160px">
+                                <input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_Search" /></td>
+                            <td width="160px">
+                                <a href="javascript:void(0)" onclick="click_Search()">
+                                    <img height="20px" src='@Url.Content("~/Content/Images/chaxun.png")' /></a>
+                                <a href="javascript:void(0)" onclick="click_Edit(0)">
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' height="20px" /></a>
+                            </td>
+                            <td align="right">
+                                &nbsp;
+                                @*<a href="javascript:void(0)" onclick="click_Edit(0)">
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' height="20px" /></a>
+                                <a href="javascript:history.go(-1)" target="mainframe">
+                                    <img src="../../Content/Images/fanhui.png" height="20px" /></a>*@
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400px">
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>

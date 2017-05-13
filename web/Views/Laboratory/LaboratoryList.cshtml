@@ -1,0 +1,224 @@
+﻿@{
+    ViewBag.Title = "LaboratoryList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>实验室信息</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+    @*<script src="../../Scripts/jquery-1.8.2.js" type="text/javascript"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/Laboratory/GetList?pageNumber=1&pageSize=8",
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+//                    { field: 'LaboratoryID', title: '编号', align: 'center' },
+                    { field: 'LaboratoryName', title: '实验室名称', align: 'center' },
+                    { field: 'LaboratoryTypeName', title: '实验室类别', align: 'center' },
+                    { field: 'ProjectName', title: '最近检测项目', align: 'center' },
+                    { field: 'DetectTime', title: '最近实验日期', align: 'center' },
+                    { field: 'MainPerson', title: '负责人', align: 'center' },
+                    { field: 'Tel', title: '联系电话', align: 'center' },
+                    { field: 'Directions', title: '说明', align: 'center' },
+                    {
+                        field: 'IsUse', title: '使用状态', align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.IsUse == 1 ? "<span class='Use'>使用中</span>" : "<span class='Idle'>空闲</span>";
+                        }
+                    },
+                    {
+                        field: 'SetUse', title: '是否使用', align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.IsUse == 1 ? "<input type='button' value='空闲' class='btn_1' onclick='SetUse(0," + row.LaboratoryID + ")' />" : "<input type='button' value='使用' class='btn_1' onclick='SetUse(1," + row.LaboratoryID + ")' />";
+                        }
+                    },
+                    {
+                        field: 'DownLoad', title: '检测项目', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "<a href='/DetectProject/DetectProjectList?LaboratoryID=" + row.LaboratoryID + "'>检测项目</a>";
+                        }
+                    },
+                    {
+                        field: 'Edit', title: '编辑', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["dc5ee7ad"]))
+                            {<a href='javascript:void(0)' onclick='Edit(" + row.LaboratoryID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>}";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',
+                        formatter: function (value, row, index) {
+                            var linkstr = "@if (Convert.ToBoolean(ViewData["e3d54ad3"]))
+                            {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.LaboratoryID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                            return linkstr;
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 8, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    $('#dgtable').datagrid('options').url = "/Laboratory/GetList?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+
+            //添加文本框点击事件
+            $("#ddl_search").change(function () {
+                if ($(this).val() == "2") {
+                    $('#txt_Search').hide();
+                    $('#txt_Search_Data').show();
+                }
+                else {
+                    $('#txt_Search').show();
+                    $('#txt_Search_Data').val("").hide();
+                }
+            });
+        });
+
+
+        //删除实验室
+        function Delete(InfoID) {
+            if (confirm("确定要删除数据吗？")) {
+                $.getJSON("/Laboratory/Delete/" + InfoID,
+                function (data) {
+                    alert(data);
+                    if (data == "删除成功！") {
+                        $('#dgtable').datagrid('reload'); 
+                    } 
+                });
+            }
+        }
+
+        //设置使用状态
+        function SetUse(IsUse, InfoID) {
+            $.getJSON("/Laboratory/SetUse?InfoID=" + InfoID + "&IsUse=" + IsUse,
+                function (data) {
+                    alert(data);
+                    if (data == "设置成功！") {
+                        $('#dgtable').datagrid('reload');
+                    }
+                });
+        }
+
+        //查询
+        function click_Search() {
+            var ddls = $("#ddl_search").val();
+            var txts = $("#txt_Search").val();
+            if (ddls == "2") {
+                txts = $("#txt_Search_Data").val();
+            }
+            $('#dgtable').datagrid('options').url = "/Laboratory/GetList?pageNumber=1&pageSize=8&StrSearch=" + txts + "&Searchtype=" + ddls;
+            $("#dgtable").datagrid("reload");
+        }
+    </script>
+
+    <!--实验室编辑-->
+    <script type="text/javascript">
+        //添加实验室
+        function Add() {
+            $('#LaboratoryEdit').window({ href: '/Laboratory/LaboratoryEdit?EditType=Add'});
+            $('#LaboratoryEdit').window('refresh');
+            $('#LaboratoryEdit').window('open');
+        }
+
+        //弹出编辑页
+        function Edit(InfoID) {
+            $('#LaboratoryEdit').window({ href: '/Laboratory/LaboratoryEdit?EditType=Edit&InfoID=' + InfoID });
+            $('#LaboratoryEdit').window('refresh');
+            $('#LaboratoryEdit').window('open');
+        }
+
+        //关闭弹出层
+        function Close() {
+            $('#LaboratoryEdit').window('close');
+        }
+
+        //保存提示
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+                $('#LaboratoryEdit').window('close');
+                $('#dgtable').datagrid('reload');
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />实验室信息 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td width="130px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">按：      
+                        <select id="ddl_search">
+                            <option value="1">实验室名称</option>
+                            <option value="2">实验日期</option>
+                            <option value="3">检测项目</option>
+                            <option value="4">负责人</option>
+                        </select>
+                </td>
+                <td width="160px">
+                    <input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_Search" />
+                    <input style="border: 1px solid #3496d6; display:none;" width="150px" type="text" id="txt_Search_Data" onclick="WdatePicker()" />
+                </td>
+                <td width="67px"><a href="javascript:void(0)" onclick="click_Search()"><img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                <td align="left" width="67px">
+                @if (Convert.ToBoolean(ViewData["45df5c9a"]))
+                {<a href="javascript:void(0)" onclick="Add()"><img src="/Content/Images/xinzeng.png" height="20px" /></a>}</td>
+                <td align="right">&nbsp;&nbsp;</td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+
+        </table>
+    </div>
+
+   <!--编辑页-->
+   <div id="LaboratoryEdit" class="easyui-window" title="实验室信息" style="width:600px;height:360px;"  data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">  
+        
+   </div>
+
+</body>

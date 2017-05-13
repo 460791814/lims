@@ -1,0 +1,357 @@
+﻿@model Model.tb_Measure
+@{
+    ViewBag.Title = "doMeasureCheckInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>计量检定</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*页面控件验证*/
+            $("#drugCodeE").attr("datatype", "*");
+            $("#drugNameE").attr("datatype", "*");
+            $("#drugTypeE").attr("datatype", "d");
+            $("#unitE").attr("datatype", "d");
+            $("#riskLevelE").attr("datatype", "d");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            $('#span_deviceId').hide();
+            /*结束 页面控件验证*/
+            $('#nextVerification').click(function () { WdatePicker() });
+            $('#lastVerification').click(function () { WdatePicker() });
+            $('#buyDate').click(function () { WdatePicker() });
+            $('#useDate').click(function () { WdatePicker() });
+
+            $('#ddl_device').combogrid({
+                delay: 500,
+                panelWidth: 350,
+                mode: 'remote',
+                idField: 'id',
+                textField: 'name',
+                url: '/Measure/GetDeviceListForDropDownList',
+                onSelect: function (rowIndex, rowData) {
+                    $('#standard').val(rowData.type);
+                    $('#assetCode').val(rowData.pCode);
+                    $('#deviceCode').val(rowData.eCode);
+                    $('#buyDate').val(Todate(rowData.buyDate));
+                    $('#useDate').val(Todate(rowData.useDate));
+                    $('#deperciation').val(rowData.depercitionNum);
+                    $('#periodVerification').val(rowData.verificationNum);
+                    $('#lastVerification').val(Todate(rowData.lastVerificationDate));
+                    $('#verification').val(rowData.verificationResult);
+                    $('#nextVerification').val(Todate(rowData.nextVerificationDate));
+                    $('#technologyState').val(rowData.technologyStatus);
+                    $('#Device_Id').val(rowData.id);
+                    $('#deviceName').val(rowData.name);
+                },
+                columns: [[
+                    { field: 'eCode', title: '编号', width: 100 },
+                    { field: 'name', title: '名称', width: 250 }
+                ]]
+            });
+
+            $('#isDevice').change(function () {
+                var isDevice = $(this).val();
+                if (isDevice == "是") {
+                    $('#span_deviceName').hide('normal');
+                    $('#span_deviceId').show('normal');
+                } else if (isDevice == "否") {
+                    $('#span_deviceName').show('normal');
+                    $('#span_deviceId').hide('normal');
+                }
+            });
+        });
+
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+
+        function Todate(cellval) {
+            var str = "";
+            if (cellval != null && cellval != "") {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                str = date.getFullYear() + "-" + month + "-" + currentDate;
+            }
+            return str;
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：仪器设备<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />计量检定<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增\编辑 </td>
+            </tr>
+        </table>
+    </div>
+    <div class="divList">
+        @{
+            List<SelectListItem> listIsDevice = new List<SelectListItem>();
+            listIsDevice.Add(new SelectListItem() { Text = "是", Value = "是" });
+            listIsDevice.Add(new SelectListItem() { Text = "否", Value = "否", Selected = true });
+
+            List<SelectListItem> listmeasureType = new List<SelectListItem>();
+            listmeasureType.Add(new SelectListItem() { Text = "计量", Value = "计量" });
+            listmeasureType.Add(new SelectListItem() { Text = "送检", Value = "送检" });
+            listmeasureType.Add(new SelectListItem() { Text = "自校", Value = "自校" });
+            
+        }
+        @using (Ajax.BeginForm("doMeasureInfoCU", "Measure", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+        {
+            <table style="font-family: '宋体'; font-size: 12px">
+                <tr>
+                    <td align="right">是否设备：</td>
+                    <td align="left">
+                        @if (Model.id > 0)
+                        {
+                            @Html.DropDownListFor(m => m.isDevice, listIsDevice, new { @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.isDevice, listIsDevice)
+                        }
+                    </td>
+                    <td align="right">计量类型：</td>
+                    <td align="left">
+                        @if (Model.id > 0)
+                        {
+                            @Html.DropDownListFor(m => m.measureType, listmeasureType, new { @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.measureType, listmeasureType)
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">设备名称：</td>
+                    <td align="left" colspan="3" width="300">
+                        <span id="span_deviceName">
+                            @if (Model.id > 0)
+                            {
+                                @Html.TextBoxFor(m => m.deviceName, new { @style = "width:490px", @disabled = "disabled" })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.deviceName, new { @style = "width:490px" })
+                            }
+                        </span>
+                        <span id="span_deviceId">
+                            <select id="ddl_device" style="width: 490px"></select>
+                            @Html.HiddenFor(m => m.Device_Id)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="middle">规格型号：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.standard)
+                    </td>
+                    <td width="90px" align="right">资产编号：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.assetCode)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">设备编号：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.deviceCode)
+                    </td>
+                    <td width="90px" align="right">购置日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.buyDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="130" align="right">启用日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.useDate)
+                    </td>
+                    <td width="130" align="right">折旧年限：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.deperciation)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">检定周期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.periodVerification)
+                    </td>
+
+                    <td width="130" align="right">上次检定日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.lastVerification)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">检定结论：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.verification)
+                    </td>
+
+                    <td width="130" align="right">下次检定日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.nextVerification)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">技术状况：</td>
+                    <td width="80" align="left">
+                        @{
+                            List<SelectListItem> listSelectListItem = new List<SelectListItem>();
+                            listSelectListItem.Add(new SelectListItem() { Text = "WH", Value = "WH" });
+                            listSelectListItem.Add(new SelectListItem() { Text = "DB", Value = "DB" });
+                            listSelectListItem.Add(new SelectListItem() { Text = "ZX", Value = "ZX" });
+                            listSelectListItem.Add(new SelectListItem() { Text = "DF", Value = "DF" });
+                            listSelectListItem.Add(new SelectListItem() { Text = "XZ", Value = "XZ" });
+                            listSelectListItem.Add(new SelectListItem() { Text = "WS", Value = "WS" });
+                        }
+                        @Html.DropDownListFor(m => m.technologyState, listSelectListItem, new { @style = "width:150px" })
+                    </td>
+
+                    <td width="130" align="right">存在问题：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.problem)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right">使用单位：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.useCompany)
+                    </td>
+
+                    <td width="130" align="right">使用人：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.usePerson)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="130" align="right">检测单位：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.verificationCompany)
+                    </td>
+                    <td width="90px" align="right">联系号码：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.phoneNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="90px" align="right" style="vertical-align: top;">备注：</td>
+                    <td colspan="3" align="left">
+                        @Html.TextBoxFor(m => m.companyName, new { @style = "width:490px" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                            <img src="~/Content/Images/baocun.png" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" />
+                        </a></td>
+                </tr>
+            </table>
+            @Html.HiddenFor(m => m.id)
+            @Html.HiddenFor(m => m.createDate)
+            @Html.HiddenFor(m => m.createUser)
+            @Html.HiddenFor(m => m.temp2)
+            @Html.HiddenFor(m => m.temp1)
+            @Html.HiddenFor(m => m.updateDate)
+            @Html.HiddenFor(m => m.updateUser)
+            @Html.HiddenFor(m => m.measureType)
+        }
+    </div>
+</body>

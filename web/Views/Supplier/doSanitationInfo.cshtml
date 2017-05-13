@@ -1,0 +1,236 @@
+﻿@model Model.tb_attachment
+@{
+    ViewBag.Title = "doSanitationInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>卫生与票据</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#createDate').click(function () { WdatePicker({}) });
+            $('#tr_id_bh').hide();
+            $('#type2').val("车辆卫生");
+            $('#tId').val("@ViewBag._supplierId");
+            
+            $('#ddl_search').change(function () {
+                var type2 = $(this).val();
+                var _type = "";
+                $('#type2').val(type2);
+                switch (type2) {
+                    case "检疫证":
+                        _type = "jyz";
+                        $('#tr_id_bh').show("normal");
+                        break;
+                    case "检验报告":
+                        _type = "jybg";
+                        $('#tr_id_bh').show("normal");
+                        break;
+                    case "车辆卫生":
+                        _type = "clws";
+                        $('#tr_id_bh').hide("normal");
+                        break;
+                    case "消毒证明":
+                        _type = "xdzm";
+                        $('#tr_id_bh').hide("normal");
+                        break;
+                }
+            });
+
+            $("#uploadify1").uploadify({
+                'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                'script': '@Url.Action("Import", "Supplier")',
+                'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                'folder': 'UpFile',
+                'queueID': 'fileQueue',
+                'auto': false,
+                'multi': false,
+                'height': 20,
+                'width': 75,
+                'fileSizeLimit': '10240KB',
+                'fileTypeDesc': '文档类型',
+                'fileTypeExts': '*.doc;*.pdf;',
+                'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+                'onComplete': fun1,
+                'onSelect': function (e, queueId, fileObj) {
+                    $('#uploadify1').uploadifyUpload();
+                },
+                'onCancel': function (file) {
+
+                }
+            });
+            $('#temp1').click(function () { WdatePicker() });
+        });
+
+        function fun1(event, queueID, fileObj, response, data) {
+            if (response == "false") {
+                alert("文件上传出错！");
+            }
+            else {
+                $('#hiddenUrl1').val(response);
+                $('#txtName1').val(fileObj.name);
+                $('#hiddenSize1').val(fileObj.size);
+                alert("成功上传！");
+            }
+        }
+
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    @using (Ajax.BeginForm("SaveSanitationInfo", "Supplier", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+    {
+        @Html.HiddenFor(m => m.id)
+        @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+        @Html.HiddenFor(m => m.temp2, new { @id = "temp2E" })
+        @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+        @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+        @Html.HiddenFor(m => m.type1)
+        @Html.HiddenFor(m => m.type2)
+        @Html.HiddenFor(m => m.tId)
+        
+        <table align="left" height="300px" style="font-family: '宋体'; font-size: 12px;">
+            <tr>
+                <td width="90px" align="right">上传类型：</td>
+                <td align="left">
+                    <select id="ddl_search">
+                        <option value="车辆消毒证明">车辆消毒证明</option>
+                        <option value="销售清单">销售清单</option>
+                        <option value="每日检疫票据">每日检疫票据</option>
+                        <option value="大批检疫票据">大批检疫票据</option>
+                        <option value="检疫证">检疫证</option>
+                        <option value="检验报告">检验报告</option>
+                    </select>
+                </td>
+                <td width="90px" align="right">日期：</td>
+                <td align="left">@Html.TextBoxFor(m => m.createDate)</td>
+            </tr>
+            <tr id="tr_id_bh">
+                <td width="90px" align="right">编号：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.temp1)
+                </td>
+                <td width="90px" align="right"></td>
+                <td align="left">
+                </td>
+            </tr>
+            @if (Model != null && Model.id <= 0)
+            {
+                <tr>
+                    <td width="90px" align="right"></td>
+                    <td colspan="3" align="left">证件（附件上传）</td>
+                </tr>
+            }     
+            <tr>
+                <td>上传文件：</td>
+                <td align="left" colspan="3">
+                    @Html.HiddenFor(m => m.filePath, new { @id = "hiddenUrl1" })
+                    @Html.HiddenFor(m => m.fileSize, new { @id = "hiddenSize1" })
+                    @Html.TextBoxFor(m => m.fileName, new { @id = "txtName1", @style = "width: 320px;" })
+                    <input type="text" id="uploadify1" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" align="center">
+                    <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                        <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                    <a href="javascript:void(0)" onclick="history.go(-1)">
+                        <img src="~/Content/Images/quxiao.png" height="20px" />
+                    </a></td>
+            </tr>
+        </table>
+    }
+</body>

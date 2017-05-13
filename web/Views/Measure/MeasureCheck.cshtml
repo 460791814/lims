@@ -1,0 +1,267 @@
+﻿@model Model.tb_Measure
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>计量管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/Measure/GetMeasureList",
+                pagination: true,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                queryParams: { 'pageNumber': 1, 'pageSize': 12, '_search': "", '_searchtype': "", '_measureType': "全部" },
+                columns: [[
+                    { field: 'deviceName', title: '设备（器具）名称', width: 210, align: 'center' },
+                    { field: 'standard', title: '规格型号', width: 130, align: 'center' },
+                    { field: 'assetCode', title: '资产编号', width: 130, align: 'center' },
+                    { field: 'deviceCode', title: '设备编号', width: 50, align: 'center' },
+                    {
+                        field: 'buyDate', title: '购置日期', width: 100, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    {
+                        field: 'useDate', title: '启用日期', width: 80, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    { field: 'deperciation', title: '折旧年限', width: 80, align: 'center' },
+                    { field: 'periodVerification', title: '检定周期', width: 80, align: 'center' },
+                    {
+                        field: 'lastVerification', title: '上次检定日期', width: 80, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    { field: 'verification', title: '检定结论', width: 80, align: 'center' },
+                    {
+                        field: 'nextVerification', title: '下次检定日期', width: 80, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    { field: 'technologyState', title: '技术状况', width: 80, align: 'center' },
+                    { field: 'problem', title: '存在问题及部位', width: 80, align: 'center' },
+                    { field: 'useCompany', title: '使用单位', width: 80, align: 'center' },
+                    { field: 'usePerson', title: '使用人', width: 80, align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var url = '@Url.Action("doMeasureCheckInfo", "Measure")' + "?id=" + row.id;
+                            return "<a href='" + url + "' target='mainFrame' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>";
+                        }
+                    },
+                    {
+                        field: 'CheckSertificate', title: '查看证书', width: 60, align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.measureType == "计量" ? "<a href='javascript:void(0)' onclick=\"click_certificate(" + row.id + ")\"><img width='18px' height='18' alt='查看证书' src='../../Content/Images/xiazai.png' /></a>" : "";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var linkstr = "<a href=\"javascript:void(0)\" onclick=\"click_Delete(" + row.id + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                            return linkstr;
+                        }
+                    }
+                ]]
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 10,//每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20],//可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+
+            $('#dlg').dialog('close');
+
+        });
+                function handle(e) {
+                    if (e == "1") {
+                        $('#dgtable').datagrid('reload');
+                        alert("保存成功！");
+                    } else {
+                        alert("保存失败！");
+                    }
+                }
+                function failed(e) {
+                    alert("保存失败！");
+                }
+
+                function click_Delete(_itemId) {
+                    if (confirm("确定要删除数据吗？")) {
+                        var actionurl = '@Url.Action("Delete_Item", "Measure")'+"?id=" + _itemId;
+                        $.getJSON(actionurl, function (data) { alert(data); if (data == "删除成功！") { $('#dgtable').datagrid('reload'); } });
+                    }
+                }
+
+                function click_Search() {
+                    //var ddls = $("#ddl_search").val();
+                    var txts = $("#txt_Search").val();
+                    var ddl_measureType = $("#ddl_measureType").val();
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams._search = txts;
+                    //tablequeryParams._searchtype = ddls;
+                    tablequeryParams._measureType = ddl_measureType;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+
+                var _itemName = "";
+                function click_ViewOffice(_itemId, _itemdrugName) {
+                    _itemName = _itemdrugName;
+                    var url = '@Url.Action("GetFileURLForView", "Drug")' + "?wid=" + _itemId;
+                    $.getJSON(url, getjsonsucceed);
+                }
+                function getjsonsucceed(data) {
+                    window.parent.mainFrame.location.href = '@Url.Action("vpoffice", "Documents")' + "?filename=" + data + "&_pname=" + _itemName + "&_ptype=MSDS文档预览";
+        }
+
+        function click_certificate(_itemId) {
+            $('#dlg').window({ href: '@Url.Action("MeasureCertificate","Measure")' + "?id=" + _itemId });
+            $('#dlg').window('refresh');
+            $('#dlg').window('open');
+        }
+
+
+
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td style="font-family: '宋体'; font-size: 12px; color: #10607c; vertical-align: middle">当前位置：计量检定 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;width:480px">单位名称：
+                                @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                                {
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany" })
+                                }
+                                else
+                                { 
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany", @disabled = "disabled" })
+                                }
+                                <select id="ddl_measureType">
+                                    <option value="全部">全部</option>
+                                    <option value="计量">计量</option>
+                                    <option value="送检">送检</option>
+                                    <option value="自校">自校</option>
+                                </select>
+                                按名称：<input type="text" id="txt_Search" />                                
+                            </td>
+                            <td width="160px">
+                                <a href="javascript:void(0)" onclick="click_Search()">
+                                    <img src='@Url.Content("~/Content/Images/chaxun.png")' /></a>
+                            </td>
+                            <td align="right">
+                                <a href='@Url.Action("doMeasureCheckInfo", "Measure", new { @id = 0 })' target='mainFrame' >
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' /></a>
+                                <a href='javascrpt:void(0)' target='mainFrame'>
+                                    <img src='@Url.Content("~/Content/Images/导出Excel.png")' /></a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400px">
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!--新增-->
+    <div id="dlg" class="easyui-window" title="文件管理" data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false" style="width:600px;height:400px;">
+       
+    </div>
+    <!--End 新增-->
+</body>

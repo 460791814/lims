@@ -1,0 +1,138 @@
+﻿@model Model.tb_Measure
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <table width="100%">
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td width="90px" align="right">上传证书：</td>
+                        <td align="left" colspan="3">
+                            <input type="hidden" id="hiddenUrl1" />
+                            <input type="hidden" id="hiddenSize1" />
+                            <input type="text" id="txtName1" />
+                            <input type="text" id="uploadify" />
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" id="btn_submit" onclick="click_certificateSubmit()">
+                                <img src="~/Content/Images/baocun.png" /></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtableCertificate" height="400px">
+                </table>
+            </td>
+        </tr>
+    </table>
+
+
+    <script type="text/javascript">
+        $('#dgtableCertificate').datagrid({
+            url: '@Url.Action("GetMeasureCertificateList","Measure")',
+            pagination: true,//分页控件  
+            singleSelect: true,//是否单选
+            rownumbers: true,
+            queryParams: { '_measureId': '@Model.id' },
+            columns: [[
+                { field: 'fileName', title: '证书名称', width: 210, align: 'center' },
+                {
+                    field: 'Download', title: '下载', width: 210, align: 'center',
+                    formatter: function (value, row, index) {
+                        var _downloadURL = "<a href='@Url.Action("GetFileFromDisk","Measure")?id=" + row.id + "'><img width='18px' height='18' alt='下载' src='../../Content/Images/xiazai.png' /></a>";
+                        //var linkstr = "<a href=\"javascript:void(0)\" onclick=\"\" ><img width='18px' height='18' alt=\"下载\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                        return _downloadURL;
+                    }
+                },
+                {
+                    field: 'Delete', title: '删除', width: 40, align: 'center',
+                    formatter: function (value, row, index) {
+                        var linkstr = "<a href=\"javascript:void(0)\" onclick=\"click_ceriticateDelete(" + row.id + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                        return linkstr;
+                    }
+                }
+            ]]
+        });
+        /*上传文件控件*/
+        $("#uploadify").uploadify({
+            'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+            'script': '@Url.Action("Import", "Measure")',
+            'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+            'folder': 'UpFile',
+            'queueID': 'fileQueue',
+            'auto': false,
+            'multi': true,
+            'height': 20,
+            'width': 75,
+            'fileSizeLimit': '10240KB',
+            'fileTypeDesc': '文档类型',
+            'fileTypeExts': '*.doc;*.pdf;',
+            'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+            'onComplete': fun,
+            'onSelect': function (e, queueId, fileObj) {
+                $('#uploadify').uploadifyUpload();
+            },
+            'onCancel': function (file) {
+
+            }
+        });
+
+        function fun(event, queueID, fileObj, response, data) {
+            if (response == "false") {
+                alert("文件上传出错！");
+            }
+            else {
+                $('#hiddenUrl1').val($('#hiddenUrl1').val() + "," + response);
+                $('#txtName1').val($('#txtName1').val() + "," + fileObj.name);
+                $('#hiddenSize1').val($('#hiddenSize1').val() + "," + fileObj.size);
+                alert("成功上传！");
+            }
+        }
+
+        function click_ceriticateDelete(_itemId) {
+            if (confirm("确定要删除数据吗？")) {
+                $.getJSON("/Measure/Delete_certification/" + _itemId, function (data) { alert(data); if (data == "删除成功！") { $('#dgtableCertificate').datagrid('reload'); } });
+            }
+        }
+
+        function click_certificateSubmit() {
+            
+            var _urls = $('#hiddenUrl1').val();
+            
+            var _names = $('#txtName1').val();
+       
+            var _size = $('#hiddenSize1').val();
+      
+            var actionurl = '@Url.Action("doattachment", "Measure")';
+
+            $.ajax({
+                url: actionurl,      // 指定调用的URL，对应于Controller  
+                data: { _tid: '@Model.id', _urls: _urls,_names:_names ,_size:_size},
+                type: "GET",                           // 请求类型  
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (data) {              // 请求成功后的回调  
+                    if (data == "1") {
+                        alert("保存成功！");
+                        $('#dgtableCertificate').datagrid('reload');
+                    }
+                },
+                error: function (data) {                // 请求失败后的回调  
+                    alert(data.statusText);
+                }
+            });
+            //$.getJSON(actionurl, function (data) { if (data == "1") { alert("保存成功！"); $('#dgtableCertificate').datagrid('reload'); } });
+        }
+    </script>
+</body>

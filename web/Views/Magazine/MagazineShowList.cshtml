@@ -1,0 +1,68 @@
+﻿@using System.Data;
+@model Model.News.E_tb_ElectronicsMagazine
+@{
+    ViewBag.Title = "MagazineShowList";
+}
+
+<!DOCTYPE html>
+<head >
+    <meta name="viewport" content="width=device-width" />
+    <title>电子杂志列表</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+
+    <style type="text/css">
+        .MagazineList{ width:1180px; margin:0px auto;}
+        .MagazineList li{float:left;margin-left:10px; display:inline; margin-top:10px;}
+        .MagazineList img{ border:0px; padding-bottom:5px;}
+        .MagazineList li a{width:280px; height:155px; display:block; cursor:pointer; text-align:center; border:1px solid #fff;  text-decoration:none; color:#000;}
+        .MagazineList li a:hover{ border:1px solid #f90;}
+        .page{width:400px; margin:0px auto; clear:both; padding-top:10px;}
+        .page a{ float:left; display:block; width:100px; text-align:center; height:24px; line-height:25px;}
+    </style>
+
+</head>
+<body>
+        <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：电子杂志列表<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />杂志列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <div class="MagazineList">
+            <ul>
+                 @{
+                        DataTable listdt=(ViewData["MagazineDt"] as DataTable);
+                        for (int i = 0; i < listdt.Rows.Count; i++)
+                        { 
+                            <li><a href="/Magazine/MagazineView?FilePath=@listdt.Rows[i]["FliePath"].ToString()"><img src="/UpFile/@listdt.Rows[i]["ImgPath"].ToString()" width="280" height="130" />@listdt.Rows[i]["MagazineName"].ToString()</a></li>
+                        } 
+                }
+            </ul>
+            <div class="page">
+                @Html.Raw(Model.PageHtml.ToString())
+            </div>
+        </div>
+
+    </div>
+</body>

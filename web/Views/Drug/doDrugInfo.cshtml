@@ -1,0 +1,258 @@
+﻿@model Model.tb_Drug
+@{
+    ViewBag.Title = "doDrugInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>药品管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*页面控件验证*/
+            $("#drugCodeE").attr("datatype", "*");
+            $("#drugNameE").attr("datatype", "*");
+            $("#drugTypeE").attr("datatype", "d");
+            $("#unitE").attr("datatype", "d");
+            $("#riskLevelE").attr("datatype", "d");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+            $('#productDateE').click(function () { WdatePicker() });
+            $('#validDateE').click(function () { WdatePicker() });
+            $("#drugCodeE").change(function () {
+                $.getJSON("/Drug/IsDrugCodeHave?code=" + $("#drugCodeE").val(),
+                    function (data)
+                    {
+                        if (data != "") {
+                            alert(data);
+                            $("#drugCodeE").val("");
+                        }
+                    });
+            }); 
+
+            $("#isMSDS").change(function () {
+                var flag = $(this).val();
+                if (flag == "false") {
+                    $("#txtfileName").hide();
+                    $("#uploadifyUploader").hide();
+                } else {
+                    $("#uploadify").uploadify({
+                        'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                        'script': '@Url.Action("Import", "Drug")',
+                        'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                        'folder': 'UpFile',
+                        'queueID': 'fileQueue',
+                        'auto': false,
+                        'multi': false,
+                        'height': 20,
+                        'width': 75,
+                        'fileSizeLimit': '10240KB',
+                        'fileTypeDesc': '文档类型',
+                        'fileTypeExts': '*.doc;*.pdf;',
+                        'buttonImg': '@Url.Content("~/Content/Images/msds.png")',
+                        'onComplete': fun,
+                        'onSelect': function (e, queueId, fileObj) {
+                            $('#uploadify').uploadifyUpload();
+                        },
+                        'onCancel': function (file) {
+
+                        }
+                    });
+                    $("#txtfileName").show();
+                    $("#uploadifyUploader").show();
+                }
+            });
+            $("#txtfileName").hide();
+            $("#uploadifyUploader").hide();
+            $("#uploadify").hide();
+        });
+        function fun(event, queueID, fileObj, response, data) {
+            if (response == "false") {
+                alert("文件上传出错！");
+            }
+            else {
+                $('#hiddenfileUrl').val(response);
+                $('#txtfileName').val(fileObj.name);
+                alert("成功上传！");
+            }
+        }
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：药品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />药品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增/编辑 </td>
+            </tr>
+        </table>
+    </div>
+    <div class="divList">
+        @using (Ajax.BeginForm("doDrugInfoCU", "Drug", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+        {
+            <table style="font-family: '宋体'; font-size: 12px">
+                <tr>
+                    <td align="right">药品编码：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.drugCode, new { @id = "drugCodeE" })
+                    </td>
+                    <td align="right">药品名称：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.drugName, new { @id = "drugNameE" })
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="middle">药品类别：</td>
+                    <td align="left">
+                        @Html.DropDownListFor(m => m.drugType, ViewData["ddl_type"] as SelectList, new { @id = "drugTypeE" })
+                    </td>
+                    <td width="90px" align="right">单位：</td>
+                    <td align="left">
+                        @Html.DropDownListFor(m => m.unit, ViewData["ddl_unit"] as SelectList, new { @id = "unitE" })
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">危险性分类：</td>
+                    <td width="80" align="left">
+                        @Html.DropDownListFor(m => m.riskLevel, ViewData["ddl_riskLevel"] as SelectList, new { @id = "riskLevelE" })</td>
+                    <td width="90px" align="right">易制毒：</td>
+                    <td width="80" align="left">
+                        @{
+                            List<SelectListItem> list1 = new List<SelectListItem>();
+                            list1.Add(new SelectListItem() { Text = "是", Value = "是" });
+                            list1.Add(new SelectListItem() { Text = "否", Value = "否" });
+                        }
+                        @Html.DropDownListFor(m => m.temp1, list1)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="130" align="right">是否建立MSDS：</td>
+                    <td colspan="3">
+                        @{
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem() { Text = "是", Value = "true", Selected = false });
+            list.Add(new SelectListItem() { Text = "否", Value = "false", Selected = true });
+                        }
+                        @Html.DropDownListFor(m => m.isMSDS, list)
+                        <input type="hidden" name="fileUrl" id="hiddenfileUrl" />
+                        <input type="text" name="fileName" id="txtfileName" />
+                        <input type="text" id="uploadify" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="top">备注：</td>
+                    <td colspan="3" align="left" valign="top">
+                        @Html.TextAreaFor(m => m.remark, new { @style = "height:100px;width:430px", @id = "remarkE" })                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                            <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" height="20px" />
+                        </a></td>
+                </tr>
+            </table>
+            @Html.HiddenFor(m => m.id, new { @id = "idE" })
+            @Html.HiddenFor(m => m.createDate, new { @id = "createDateE" })
+            @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+            @Html.HiddenFor(m => m.temp2, new { @id = "temp2E" })
+            @Html.HiddenFor(m => m.amount, new { @id = "totalE" })
+            @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+            @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+        }
+    </div>
+</body>

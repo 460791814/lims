@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "ExpeStatisticsList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>实验统计</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/ExpeStatistics/GetListByReport?pageNumber=1&pageSize=20&ddl_selecttype=&txt_dept=&ddl_type=&txt_search=&txt_StartTime=&txt_EndTime=",
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                showFooter: true,
+                columns: [[
+                    { field: 'DetectTime', title: '检验时间', align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined) {
+                                return "";
+                            }
+                            var date = new Date(value);
+                            var year = date.getFullYear().toString();
+                            var month = (date.getMonth() + 1);
+                            var day = date.getDate().toString();
+                            if (month < 10) {
+                                month = "0" + month; 
+                            }
+                            if (day < 10) {
+                                day = "0" + day;
+                            }
+                            return year + "-" + month + "-" + day;
+                        }},
+                    { field: 'name', title: '样品名称', align: 'center' },
+                    { field: 'GHS', title: '检验单位', align: 'center' },
+                    { field: 'Department', title: '送/抽检单位', align: 'center' },
+                    { field: 'ProjectName', title: '检验项目', align: 'center' },
+                    { field: 'TestPersonnelName', title: '检验人', align: 'center' },
+                    { field: 'QualifiedLevel', title: '检验次数', align: 'center' },
+                    { field: 'QualifiedLevelA', title: '合格', align: 'center' },
+                    { field: 'QualifiedLevelB', title: '不合格', align: 'center' }
+                ]],
+                onLoadSuccess: function (data) {
+                    var ddl_selecttype = $("#ddl_selecttype").val();
+                    var txt_dept = $("#txt_dept").val();
+                    var ddl_type = $("#ddl_type").val();
+                    var txt_search = $("#txt_search").val();
+                    var txt_StartTime = $("#txt_StartTime").val();
+                    var txt_EndTime = $("#txt_EndTime").val();
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    var url = '@Url.Action("ExportReport", "ExpeStatistics")' + "?ddl_selecttype=" + ddl_selecttype + "&txt_dept=" + txt_dept + "&ddl_type=" + ddl_type + "&txt_search=" + txt_search + "&txt_StartTime=" + txt_StartTime + "&txt_EndTime=" + txt_EndTime;
+                    $("#exportExcel").attr("href", url);
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 20, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 20, 50], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+
+        //查询
+        function click_Search() {
+            var ddl_selecttype = $("#ddl_selecttype").val();
+            var txt_dept = $("#txt_dept").val();
+            var ddl_type = $("#ddl_type").val();
+            var txt_search = $("#txt_search").val();
+            var txt_StartTime = $("#txt_StartTime").val();
+            var txt_EndTime = $("#txt_EndTime").val();
+            var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+            tablequeryParams.ddl_selecttype = ddl_selecttype;
+            tablequeryParams.txt_dept = txt_dept;
+            tablequeryParams.ddl_type = ddl_type;
+            tablequeryParams.txt_search = txt_search;
+            tablequeryParams.txt_StartTime = txt_StartTime;
+            tablequeryParams.txt_EndTime = txt_EndTime;
+            tablequeryParams.pageNumber = 1;
+            $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+            $("#dgtable").datagrid("reload");
+        }
+    </script>
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />实验统计 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td align="right"style="width:80px;">送/抽检单位：</td>
+                <td align="left" style="width:60px;">
+                   <select id="ddl_selecttype">
+                       <option value="mhcx" selected="selected">模糊查询</option>
+                       <option value="qzpp">全字匹配</option>
+                   </select> 
+                </td>
+                <td align="left" style="width:130px;" ><input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_dept"/></td>
+                <td align="right"style="width:40px;">按：</td>
+                <td align="left" style="width:60px;">
+                   <select id="ddl_type">
+                       <option value="ypmc">样品名称</option>
+                       <option value="jyxm">检验项目</option>
+                       <option value="jyr">检验人</option>
+                   </select> 
+                </td>
+                <td align="left" style="width:120px;">
+                   <input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_search" />
+                </td>
+                <td align="right"style="width:70px;">检验日期：</td>
+                <td align="left" style="width:150px;" ><input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_StartTime" onclick="WdatePicker()" /></td>
+                <td align="right"style="width:30px;">至</td>
+                <td align="left" style="width:150px;" ><input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_EndTime" onclick="WdatePicker()" /></td>
+                <td width="67px"><a href="javascript:void(0)" onclick="click_Search()"><img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                <td align="right"><a href='javascrpt:void(0)' target='mainFrame' id="exportExcel"><img src='@Url.Content("~/Content/Images/导出Excel.png")' /></a></td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+
+        </table>
+    </div>
+
+   <!--编辑页-->
+   <div id="EditForms" class="easyui-window" title="公告信息" style="width:600px;height:450px;"  data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">  
+        
+   </div>
+</body>

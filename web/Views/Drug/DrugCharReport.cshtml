@@ -1,0 +1,289 @@
+﻿@{
+    ViewBag.Title = "";
+}
+<link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+<link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+<link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+<link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+<link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/ligerUI/skins/Aqua/css/ligerui-all.css")' />
+<link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/ligerUI/skins/Aqua/css/ligerui-tree.css")'  />
+<script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/ligerUI/js/core/base.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/ligerUI/js/plugins/ligerTree.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/ligerUI/js/plugins/ligerMenu.js")'></script>
+<script type="text/javascript" src='@Url.Content("~/Scripts/Highcharts/highcharts.js")'></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#txteDate_Char').attr("onfocus", "WdatePicker({dateFmt:'yyyy'})");
+        $("#ddl_date").change(function () {
+            var flag = $(this).val();
+            $('#txteDate_Char').attr("onfocus", '');
+            $('#txteDate_Char').removeAttr('onfocus');
+            if (flag == "nian") {
+                $('#txteDate_Char').attr("onfocus", "WdatePicker({dateFmt:'yyyy'})");
+            } else {
+                $('#txteDate_Char').attr("onfocus", "WdatePicker({dateFmt:'yyyy-MM'})");
+            }
+        });
+        BindTeeView();
+    });
+
+    function BindTeeView() {
+        $("#tree1").html("");
+        $("#tree1").ligerTree({
+            url: '@Url.Action("GetDirList", "Drug")',
+            idFieldName: 'Id',
+            textFieldName: 'Text',
+            parentIDFieldName: 'Pid',
+            slide: true,
+            checkbox: true,
+            onContextmenu: function (node, e) {
+            },
+            onSelect: function (node, e) {
+            }
+        });
+    }
+
+    function DateChar_Click() {
+        $('#txteDate_Char').attr("onfocus", "WdatePicker({dateFmt:'yyyy'})");
+    }
+
+    var cboList = new Array();
+    function cboChanged_Click(cbo) {
+        if (cbo.checked) {
+            cboList.push(cbo.value);
+        } else {
+            if (cboList.length > 0) {
+                for (var i = 0; i < cboList.length; i++) {
+                    if (cboList[i] == cbo.value) {
+                        cboList.splice(i, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    function click_Search() {
+        var manager = $("#tree1").ligerGetTreeManager();
+        var notes = manager.getChecked();
+        var durgIds = "";
+        if (notes != null && notes.length > 0) {
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].data.Pid == 0) {
+                    continue;
+                }
+                durgIds += notes[i].data.Id + ",";
+            }
+        } else {
+            alert("请选择药品！");
+            return;
+        }
+        var chart;
+        //define the options
+        var options = {
+            chart: {
+                renderTo: 'container',
+                //margin: [50, 200, 60, 170]
+                type: 'column'
+            },
+            title: {
+                text: '药品统计'
+            },
+            xAxis: {},
+            yAxis: {
+                min: 0,
+                title: {
+                    text: ''
+                },
+                stackLabels: {
+                    enabled: false,
+                    style: {
+                        fontWeight: 'bold',
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                enabled: false,
+                align: 'right',
+                x: -70,
+                verticalAlign: 'top',
+                y: 20,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.x + '</b><br/>' +
+                        this.series.name + ': ' + this.y + '<br/>';
+                }
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+            },
+            series: []
+        }
+        if ($('#txteDate_Char').val() == null || $('#txteDate_Char').val() == "") {
+            alert("请选择时间！");
+            return;
+        }
+        //if (cboList == null || cboList.length == 0) {
+        //    alert("请选择单位！");
+        //    return;
+        //}
+        var jsonURL = '@Url.Action("GetDrugINListForLineChar", "Drug")';
+        var jsonURL1 = '@Url.Action("GetDrugNameChar", "Drug")';
+        
+            var _cids = $('#ddl_cid').val();
+            if (_cids != null && _cids != "") {
+                jsonURL += "?_cids=" + _cids;
+                jsonURL1 += "?_cids=" + _cids;
+            }
+            jsonURL += "&_dateType=" + $('#ddl_date').val();
+            jsonURL1 += "&_dateType=" + $('#ddl_date').val();
+            jsonURL += "&_date=" + $('#txteDate_Char').val();
+            jsonURL1 += "&_date=" + $('#txteDate_Char').val();
+            jsonURL += "&_rid=" +  encodeURIComponent($("#ddl_rid").find("option:selected").text());
+            jsonURL1 += "&_rid=" +  encodeURIComponent($("#ddl_rid").find("option:selected").text());
+            jsonURL += "&_drugid=" + durgIds;
+            jsonURL1 += "&_drugid=" + durgIds;
+
+            $.getJSON(jsonURL1, null,
+                function (items) {
+                    var xAxis = { categories: [] }
+                    for (var i = 0; i < items.length; i++) {
+                        xAxis.categories.push(items[i]);
+                    }
+                    options.xAxis = xAxis;
+                });
+            //Calls the JSON
+            $.getJSON(jsonURL,
+                            null, function (items) {
+                                for (var i = 0; i < items.length; i++) {
+                                    var serie = {
+                                        name: items[i].Key,
+                                        data: []
+                                    };
+                                    var itemvalue = items[i].Value;
+                                    for (var ii = 0; ii < itemvalue.length; ii++) {
+                                        serie.data.push(itemvalue[ii]);
+                                        //options.series[i].data.push(itemvalue[ii]);
+                                    }
+                                    options.series.push(serie);
+                                }
+                                chart = new Highcharts.Chart(options);
+                                chart.render();
+                            });
+        }
+</script>
+<style type="text/css">
+    .divList {
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        z-index: 99;
+    }
+
+    .divTree {
+        position: absolute;
+        top: 50px;
+        left: 1px;
+        height: 425px;
+        width: 205px;
+        border:1px solid #ccc;
+        overflow:auto;
+    }
+
+    a {
+        text-decoration: none;
+        color: #000;
+    }
+
+        a img {
+            border: 0;
+        }
+
+    .biaoge {
+        width: 1040px;
+        font-family: '宋体';
+        font-size: 12px;
+        color: #10607c;
+    }
+
+        .biaoge td {
+            text-align: center;
+            height: 26px;
+            vertical-align: middle;
+            border: 1px solid #d4d3d3;
+        }
+</style>
+<div class="divList">
+    <table cellpadding="0" cellspacing="0" width="1040px">
+        <tr>
+            <td colspan="2">
+                <table cellpadding="0" cellspacing="0" width="1040px">
+                    <tr>
+                        <td colspan="2" style="font-family: '宋体'; font-size: 12px; color: #10607c;" id="checkboxList">单位名称：
+                            @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                            {
+                                @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddl_cid",@height="22" })
+                            }
+                            else
+                            { 
+                                @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddl_cid", @disabled = "disabled",@height="22" })
+                            }
+                        </td>
+                        <td style="font-family: '宋体'; font-size: 12px; color: #10607c;">按：      
+                                    <select id="ddl_date" height="22">
+                                        <option value="nian">年</option>
+                                        <option value="yue">月</option>
+                                    </select>
+                            <input type="text" id="txteDate_Char" onfocus="DateChar_Click()" height="22"/>
+                            危险性分类：      
+                                @Html.DropDownList("ddlrisklevel", ViewData["ddl_risklevel"] as SelectList, new { @id = "ddl_rid",@height="22" })
+                        </td>
+                        <td align="left">
+                            <a href="javascript:void(0)" onclick="click_Search()">
+                                <img src='@Url.Content("~/Content/Images/统计.png")' /></a>
+                            @*<a href="javascript:void(0)" onclick="click_Search()" style="text-align: center; display: block; font-family: SimSun; font-size: 12px; color: white; height: 20px; line-height: 20px; width: 75px; background: url(../../Content/Images/anniubeijing.png) no-repeat;">开始统计</a>*@
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td width="220">
+                <!--树节点列表-->
+                <div class="divTree">
+                    <ul id="tree1">
+                    </ul>
+                </div>
+                <!--End 树节点列表-->
+            </td>
+            <td id="container" width="820"></td>
+        </tr>
+    </table>
+</div>
+

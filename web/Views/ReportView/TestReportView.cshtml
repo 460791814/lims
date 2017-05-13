@@ -1,0 +1,302 @@
+﻿@model Model.TestReport.E_tb_TestReport
+@{
+    ViewBag.Title = "TestReportView";
+    Layout = null;
+}
+<style type="text/css">
+    * {
+        font-size: 14px;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    body {
+        width: 1000px;
+        margin: 0px auto;
+    }
+
+    .OriginalRecordSelect {
+        width: 100%;
+        padding-top: 10px;
+        margin: 0px auto;
+    }
+
+        .OriginalRecordSelect h2 {
+            width: 100%;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+    .MainTable {
+        width: 100%;
+        margin: 0px auto;
+    }
+
+        .MainTable thead th {
+            height: 45px;
+            line-height: 45px;
+        }
+
+        .MainTable tbody td {
+            height: 30px;
+            line-height: 30px;
+        }
+
+    .Cover {
+        width: 100%;
+    }
+
+        .Cover ul {
+            padding-top: 10px;
+            width: 100%;
+            padding-bottom: 160px;
+        }
+
+        .Cover li {
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            padding-top: 10px;
+            font-family: 微软雅黑;
+        }
+
+        .Cover table {
+            margin: 0px auto;
+            width: 60%;
+        }
+
+            .Cover table td {
+                height: 30px;
+                line-height: 30px;
+                font-size: 14px;
+            }
+
+    .Explain {
+        width: 100%;
+        padding-top: 10px;
+        
+    }
+
+    .TestReport {
+        width: 100%;
+        padding-top: 10px;
+        text-align:center;
+    }
+
+    h2 {
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        font-size: 32px;
+        text-align: center;
+        padding-bottom: 10px;
+    }
+
+    .TestReport table {
+        margin: 0px auto;
+        width: 100%;
+    }
+
+        .TestReport table td {
+            height: 35px;
+            line-height: 35px;
+        }
+
+    .table_jybg {
+        width: 100%;
+        font-size: 24px;
+        text-align:center;
+    }
+
+        .table_jybg tr {
+            text-align: center;
+            vertical-align: middle;
+            height: 100px;
+        }
+</style>
+<center>
+    <div title="封面" style="height:1550px">
+        <div class="Cover">
+            <ul style="text-align:center; padding-top:200px;">
+                <li style="font-size: 36px;">中海油能源发展股份有限公司配餐服务分公司</li>
+                <li style="font-size: 36px;">@ViewBag.AreaName</li>
+                <li style="font-size: 42px;padding-top:150px;">检&nbsp;&nbsp;&nbsp;&nbsp;验&nbsp;&nbsp;&nbsp;&nbsp;报&nbsp;&nbsp;&nbsp;&nbsp;告</li>
+            </ul>
+            
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="60%">
+                <tr>
+                    <td align="right" style="width: 200px;font-size: 28px;padding-top:200px;font-family:楷体">样品名称：</td>
+                    <td align="center" style="border-bottom: 1px solid #000;font-size: 28px;padding-top:200px;font-family:楷体">@Model.SampleName</td>
+                </tr>
+                <tr>
+                    <td align="right" style="width: 200px;font-size: 28px;">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right" style="font-size: 28px;font-family:楷体">送/抽样单位：</td>
+                    <td align="center" style="border-bottom: 1px solid #000;font-size: 28px;font-family:楷体">@ViewBag._scjdw</td>
+                </tr>
+                <tr>
+                    <td align="right" style="width: 200px;font-size: 28px;">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right" style="font-size: 28px;font-family:楷体">检验类别：</td>
+                    <td align="center" style="border-bottom: 1px solid #000;font-size: 28px;font-family:楷体">@Model.TestTypeName</td>
+                </tr>
+                <tr>
+                    <td align="right" style="width: 200px;font-size: 28px;">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right" style="font-size: 28px;font-family:楷体">签发日期：</td>
+                    <td align="center" style="border-bottom: 1px solid #000;font-size: 28px;font-family:楷体">@ViewBag._IssuedTime</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+     
+    <div title="说明" style="height:1350px;padding-top:10px;">
+        <div class="Explain">
+            
+            <h2 style="font-size:36px; font-family:楷体">说&nbsp;&nbsp;&nbsp;明</h2>
+            <table border="0" cellpadding="2" cellspacing="5" style="width: 95%;font-size:24px; line-height:140%;font-family:楷体">
+                <tr>
+                    <td style="height:15px">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="left" style="font-size:24px;">
+                        @Html.Raw(Model.Explain.ToString())
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div title="检验报告" style="height:1450px;padding-top:80px;padding-left:23px;width:100%;text-align:center;font-family:楷体">
+        <div class="TestReport">
+            <h2>检验报告</h2>
+
+            <table border="1" align="center" cellpadding="0" class="table_jybg" cellspacing="0">
+                <tr>
+                    <td align="center" width="110px" style="font-size:24px;font-weight: bold;">样品名称</td>
+                    <td align="center" style="font-size:24px;">@Model.SampleName</td>
+                    <td align="center" width="110px" style="font-size:24px;font-weight: bold;">规格型号</td>
+                    <td align="center" style="font-size:24px;">@Model.Specifications</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">生产日期</td>
+                    <td align="center" style="font-size:24px;">@Model.ProductionTime.Value.ToString("yyyy/MM/dd")</td>
+                    <td align="center" style="font-size:24px;font-weight: bold;">包装形式</td>
+                    <td align="center" style="font-size:24px;">@Model.Packing</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">产品批号</td>
+                    <td align="center" style="font-size:24px;">@Model.productNum</td>
+                    <td align="center" style="font-size:24px;font-weight: bold;">检验类别</td>
+                    <td align="center" style="font-size:24px;">@Model.TestTypeName</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">样品编号</td>
+                    <td align="center" style="font-size:24px;">@Model.SampleNum</td>
+                    <td align="center" style="font-size:24px;font-weight: bold;">来样方式</td>
+                    <td align="center" style="font-size:24px;">@Model.ToSampleMode</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">送检单位</td>
+                    <td align="center" style="font-size:24px;">@Model.Department</td>
+                    <td align="center" style="font-size:24px;font-weight: bold;">抽样地点</td>
+                    <td align="center" style="font-size:24px;">@Model.SamplingPlace</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">抽检单位</td>
+                    <td align="center" style="font-size:24px;">@Model.SamplingCompany</td>
+                    <td align="center" style="font-size:24px;font-weight: bold;">抽样人</td>
+                    <td align="center" style="font-size:24px;">@Model.SamplingPersonnel</td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">抽样日期</td>
+                    <td align="center" style="font-size:24px;">@Convert.ToDateTime(Model.SamplingTime).ToString("yyyy/MM/dd")</td>
+                    <td align="center" style="font-size:24px;font-weight: bold;">检验日期</td>
+                    <td align="center" style="font-size:24px;">@Convert.ToDateTime(Model.TestTime).ToString("yyyy/MM/dd")</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">检验依据</td>
+                    <td align="center" colspan="3" style="font-size:24px;">@Model.TestBasis</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;line-height: 300px;font-weight: bold;">检验结论</td>
+                    <td align="center" colspan="3" style="font-size:24px;line-height: 60px;">@Model.Conclusion</td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-size:24px;font-weight: bold;">备注</td>
+                    <td align="center" colspan="3" style="font-size:22px;">@Model.Remarks</td>
+                </tr>
+                
+            </table>
+            <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="right" style="font-size:24px;font-weight: bold;">批准：</td>
+                                <td align="left" style="font-size:24px;">@Model.ApprovalPersonnelName</td>
+                                <td align="right" style="font-size:24px;font-weight: bold;">审核：</td>
+                                <td align="left" style="font-size:24px;">@Model.examinePersonnelName</td>
+                                <td align="right" style="font-size:24px;font-weight: bold;">主检：</td>
+                                <td align="left" style="font-size:24px;">@Model.MainTestPersonnelName</td>
+                                <td>&nbsp;&nbsp;</td>
+                            </tr>
+                        </table>
+                </center>
+        </div>
+    </div>
+    
+    <div title="检验数据" style="overflow: auto; padding-top:70px;padding-left:23px;font-family:楷体;text-align:center;width:100%;">
+        <h2>检验报告</h2>
+        <center>
+        <table border="1" cellpadding="0" cellspacing="0" class="MainTable" style="width: 100%; margin-top: 10px;text-align:center;">
+            <thead>
+                <tr>
+                    <th align="center" style="font-size:24px;">检验名称/检验数据</th>
+                    <th align="center" style="font-size:24px;">检验标准</th>
+                    <th align="center" style="font-size:24px;">检验结果</th>
+                    <th align="center" style="font-size:24px;">合格/不合格</th>
+                    <th align="center" style="font-size:24px;">检验人</th>
+                </tr>
+            </thead>
+            <tbody id="ReportDataList">
+                @{
+                    if (ViewData["ReportDataList"] != null && (ViewData["ReportDataList"] as System.Data.DataTable).Rows.Count > 0)
+                    {
+
+                        for (int i = 0; i < (ViewData["ReportDataList"] as System.Data.DataTable).Rows.Count; i++)
+                        {
+                            System.Data.DataRow TempRow = (ViewData["ReportDataList"] as System.Data.DataTable).Rows[i];
+                    <tr>
+                        <td align="center" style="font-size:24px;">@TempRow["TestName"].ToString()</td>
+                        <td align="center" style="font-size:24px;">
+                            @*@TempRow["TestStandard"].ToString()*@
+                            @{
+                                        var originalrecodr = new BLL.OriginalRecord.T_tb_OriginalRecord().GetModel(Convert.ToInt32(TempRow["RecordID"]));
+                                    }
+                                    @originalrecodr.InsStand
+                        </td>
+                        <td align="center" style="font-size:24px;">@TempRow["TestResult"].ToString()</td>
+                        <td align="center" style="font-size:24px;">@TempRow["QualifiedLevel"].ToString()</td>
+                        <td align="center" style="font-size:24px;">@TempRow["TestPersonnelName"].ToString()</td>
+                    </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+            </center>
+    </div>
+    <font style="font-size:20px;position:absolute;right:1px;">以下空白</font>
+</center>

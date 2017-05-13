@@ -1,0 +1,228 @@
+﻿@model Model.tb_Drug
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>药品管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/Drug/GetDrugList",
+                pagination: true,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                queryParams: { 'pageNumber': 1, 'pageSize': 10, '_search': "", '_searchtype': "", '_yzd': "请选择",'_companyid':-1 },
+                columns: [[
+                    { field: 'drugName', title: '药品名称', width: 210, align: 'center' },
+                    { field: 'drugCode', title: '药品编码', width: 130, align: 'center' },
+                    { field: 'leibie', title: '药品类别', width: 130, align: 'center' },
+                    { field: 'danwei', title: '单位', width: 50, align: 'center' },
+                    { field: 'amount', title: '库存', width: 100, align: 'center' },
+                    { field: 'temp1', title: '易制毒', width: 80, align: 'center' },
+                    { field: 'dengjiren', title: '登记人', width: 80, align: 'center' },
+                    { field: 'weixiandengji', title: '危险性类别', width: 80, align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var url = '@Url.Action("doDrugInfo", "Drug")' + "?id=" + row.id;
+                            return "<a href='" + url + "' target='mainFrame' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>";
+                        }
+                    },
+                    {
+                        field: 'DownLoad', title: 'msds文档', width: 60, align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.isMSDS == "True" ? "<a href='javascript:void(0)' onclick=\"click_ViewOffice(" + row.id + ",'" + row.drugName + "')\"><img width='18px' height='18' alt='阅览' src='../../Content/Images/xiazai.png' /></a>" : "";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var linkstr = "<a href=\"javascript:void(0)\" onclick=\"click_Delete(" + row.id + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                            return linkstr;
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    var _search = tablequeryParams._search;
+                    var _searchtype = tablequeryParams._searchtype;
+                    var _yzd = tablequeryParams._yzd;
+                    var _companyid = tablequeryParams._companyid;
+                    var url = '@Url.Action("ExportDrug", "Drug")' + "?_search=" + _search + "&_searchtype=" + _searchtype + "&_yzd=" + _yzd + "&_companyid=" + _companyid;
+                    $("#exportExcel").attr("href", url);
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 10,//每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20],//可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+                function handle(e) {
+                    if (e == "1") {
+                        $('#dgtable').datagrid('reload');
+                        alert("保存成功！");
+                    } else {
+                        alert("保存失败！");
+                    }
+                }
+                function failed(e) {
+                    alert("保存失败！");
+                }
+                function click_Delete(_itemId) {
+                    if (confirm("确定要删除数据吗？")) {
+                        $.getJSON("/Drug/Delete_Item/" + _itemId, function (data) { alert(data); if (data == "删除成功！") { $('#dgtable').datagrid('reload'); } });
+                    }
+                }
+
+                function click_Search() {
+                    var ddls = $("#ddl_search").val();
+                    var txts = $("#txt_Search").val();
+                    var ddl_yzd = $("#ddl_yzd").val();
+                    var ddlcompany = $("#ddlcompany").val();
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams._search = txts;
+                    tablequeryParams._searchtype = ddls;
+                    tablequeryParams._yzd = ddl_yzd;
+                    tablequeryParams._companyid = ddlcompany;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+
+                var _itemName = "";
+                function click_ViewOffice(_itemId, _itemdrugName) {
+                    _itemName = _itemdrugName;
+                    var url = '@Url.Action("GetFileURLForView", "Drug")' + "?wid=" + _itemId;
+            $.getJSON(url, getjsonsucceed);
+        }
+        function getjsonsucceed(data) {
+            window.parent.mainFrame.location.href = '@Url.Action("vpoffice", "Documents")' + "?filename=" + data + "&_pname=" + _itemName + "&_ptype=MSDS文档预览";
+        }
+
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td style="font-family: '宋体'; font-size: 12px; color: #10607c; vertical-align: middle">当前位置：药品管理<img src='@Url.Content("~/Content/Images/位置.png")' />药品维护 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;">单位名称：
+                                @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                                {
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany" })
+                                }
+                                else
+                                { 
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany", @disabled = "disabled" })
+                                }
+                            </td>
+                            <td width="50px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">易制毒：
+                            </td>
+                            <td width="70px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">
+                                <select id="ddl_yzd">
+                                    <option value="请选择">请选择</option>
+                                    <option value="是">是</option>
+                                    <option value="否">否</option>
+                                </select>
+                            </td>
+                            <td width="90px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">
+                                <select id="ddl_search" style="height: 20px;">
+                                    <option value="ypmc">药品名称</option>
+                                    <option value="药品编码">药品编码</option>
+                                </select>
+                            </td>
+                            <td width="140px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">
+                                <input style="border: 1px solid #3496d6; width: 150px" type="text" id="txt_Search" />
+                            </td>
+                            <td align="left" style="font-family: '宋体'; font-size: 12px; color: #10607c;">
+                                <a href="javascript:void(0)" onclick="click_Search()">
+                                    <img src='@Url.Content("~/Content/Images/chaxun.png")' /></a>
+                            </td>
+                            <td align="right">
+                                <a href='@Url.Action("doDrugInfo", "Drug", new { @id = 0 })' target='mainFrame' >
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' /></a>
+                                <a href='javascrpt:void(0)' target='mainFrame' id="exportExcel">
+                                    <img src='@Url.Content("~/Content/Images/导出Excel.png")' /></a>
+
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400px">
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>

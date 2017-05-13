@@ -1,0 +1,573 @@
+﻿@model Model.tb_document
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/ligerUI/skins/Aqua/css/ligerui-tree.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/ligerUI/js/core/base.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/ligerUI/js/plugins/ligerTree.js")'></script>
+
+    <script type="text/javascript">
+        var _userid = '@((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).PersonnelID)';
+        var _lid = '@((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).AreaID)';
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/Documents/GetDocList",
+                pagination: true,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                fitColumns: true,
+                queryParams: { 'pageNumber': 1, 'pageSize': 10, '_type': "", '_text': "", 'cid': _lid },
+                columns: [[
+                    { field: 'doc_Name', title: '文件', width: 230, align: 'center' },
+                    {
+                        field: 'doc_Size', title: '大小', width: 80, align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.doc_Size + "KB";
+                        }
+                    },
+                    {
+                        field: 'doc_Status', title: '状态', width: 70, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (row.doc_Status == "1") {
+                                return "有效";
+                            }
+                            else {
+                                return "无效";
+                            }
+                        }
+                    },
+                    {
+                        field: 'doc_CreateDate', title: '实施日期', width: 150, align: 'center',
+                        formatter: function (value, row, index)
+                        {
+                            if (value == undefined) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length-8);
+                            return value;
+                        }
+                    },
+                    {
+                        field: 'doc_UpdateDate', title: '更新时间', width: 150, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    {
+                        field: 'zz', title: '作者', width: 90, align: 'center'
+                    },
+                    //{
+                    //    field: 'doc_Revo', title: '版本', width: 120, align: 'center',
+                    //    formatter: function (value, row, index) {
+                    //        var _revoRUL = row.doc_Revo + "<a href='../DocumentHistory/Index?id=" + row.id + "&doctype=txwj+' target='mainFrame' >更多</a>";
+                    //        _revoRUL = isLimitTrue(row.id, row.doc_CreateUser, "read", _revoRUL);
+                    //        return _revoRUL;
+                    //    }
+                    //},
+                    {
+                        field: 'Edit', title: '编辑', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var _editURL = "<a href='javascript:void(0)' onclick='click_Edit(" + row.id + ")' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>";
+                            _editURL = isLimitTrue(row.id, row.doc_CreateUser, "edit", _editURL);
+                            return _editURL;
+                        }
+                    },
+                    {
+                        field: 'Preview', title: '预览', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var _editURL = "javascript:void(0)";
+                            if (isLimitTrue(row.id, row.doc_CreateUser, "read", "有权限") == "有权限") {
+                                if (/\.(pdf)$/.test(row.doc_Name)) {
+                                    _editURL = '@Url.Action("SWFShow","Documents")' + "?filename=" + row.doc_URL;
+                        }
+                        else {
+                                    _editURL = '@Url.Action("vpoffice","Documents")' + "?filename=" + row.doc_URL + "&_pname=" + row.doc_Name + "&_ptype=文档预览";
+                                }
+                                var _editURL = "<a href='" + _editURL + "' target='mainFrame' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>";
+                                return _editURL;
+                            } else {
+                                return "";
+                            }
+                            
+                        }
+                    },
+                    {
+                        field: 'DownLoad', title: '下载', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var _downloadURL = "<a href='Documents/GetFileFromDisk?id=" + row.id + "'><img width='18px' height='18' alt='下载' src='../../Content/Images/xiazai.png' /></a>";
+                            _downloadURL = isLimitTrue(row.id, row.doc_CreateUser, "read", _downloadURL);
+                            return _downloadURL;
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', width: 40, align: 'center', fitColumns: true,
+                        formatter: function (value, row, index) {
+                            var linkstr = "<a href=\"javascript:void(0)\" onclick=\"click_Delete(" + row.id + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                            linkstr = isLimitTrue(row.id, row.doc_CreateUser, "delete", linkstr);
+                            return linkstr;
+                        }
+                    }
+                ]]
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 10,//每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20],//可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+            $('#dlg').dialog('close');
+
+            /*页面控件验证*/
+            $("#txtName").attr("datatype", "s1-50");
+            $("#doc_Code").attr("datatype", "*");
+            $("#doc_Status").attr("datatype", "d");
+            $("#txtSize").attr("datatype", "*");
+            $("#doc_CreateDate").attr("datatype", "*");
+            $("#doc_KeyWord").attr("datatype", "*");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+            $('#doc_CreateDate').click(function () { WdatePicker() });
+
+            $('#ddlcompany').change(function () {
+                var docid = $(this).val();
+                var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                tablequeryParams.cid = docid;
+                $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                $("#dgtable").datagrid("reload");
+            });
+        });
+    var rightSelectId;//未加入权限的ID
+    var rightSelectLimitType;//未加入权限的类型
+    var rightSelectFileId;//文件ID
+    var leftlimitId;//已加入权限的ID
+    function dataGrid_ClickRow(rowIndex, rowData) {
+        $("#lbl_code").html(rowData.doc_Code);
+        $("#lbl_name").html(rowData.doc_Name);
+        $("#lbl_url").html(rowData.doc_URL);
+        $("#lbl_status").html("有效");
+        //$("#lbl_creater").html(rowData.doc_CreateUser);
+        $("#lbl_creater").html("admin");
+        $("#lbl_updater").html(rowData.doc_UpdateDate + "   " + rowData.doc_UpdateUser);
+        $("#lbl_rev").html(rowData.doc_Revo);
+        $("#lbl_keys").html(rowData.doc_KeyWord);
+        rightSelectFileId = rowData.id;
+        if (isLimitTrue(rowData.id, rowData.doc_CreateUser, "read", "有权限") == "有权限") {
+            if (/\.(pdf)$/.test(rowData.doc_Name)) {
+                window.frames["officefrm"].location = "../Documents/SWFShow?filename=" + rowData.doc_URL;
+            }
+            else {
+                window.frames["officefrm"].location = "../Documents/vpoffice?filename=" + rowData.doc_URL;
+            }
+            if (_userid == rowData.doc_CreateUser) {
+                $("#table_3_tr").show();
+                GetUNFileLimit(rowData.id);//获取未加入权限列表
+                GetFileLimit(rowData.id);//获取已加入权限列表
+            }
+        } else {
+            $("#table_3_tr").hide();
+            window.frames["officefrm"].location = "javascript:void(0)";
+        }
+    }
+
+    //关闭弹出层
+    function Close() {
+        $('#dlg').window('close');
+    }
+    /***********************文件的操作*************************/
+    function handle(e) {
+        if (e == "1") {
+            $('#dgtable').datagrid('reload');
+            alert("保存成功！");
+            $('#dlg').dialog('close');
+        } else {
+            alert("保存失败！");
+        }
+    }
+    function failed(e) {
+        alert("保存失败！");
+    }
+    function click_Delete(_itemId) {
+        if (confirm("确定要删除数据吗？")) {
+            $.getJSON("/Documents/Delete_Item/" + _itemId, function (data) { alert(data); if (data == "删除成功！") { $('#dgtable').datagrid('reload'); } });
+        }
+    }
+    function click_Edit(_itemId) {
+        $('#dlg').window({ href: '@Url.Action("surfUpdateDoc","Documents")' + "?id=" + _itemId });
+        $('#dlg').window('refresh');
+        $('#dlg').window('open');
+    }
+
+    function displaytable(tableid, count) {
+        for (var i = 0; i < count; i++) {
+            $("#table_" + (i + 1)).hide();
+        }
+        $("#table_" + tableid).show();
+    }
+    function click_search() {
+        var _stype = $('#ddl_search').val();
+        var _stext = $('#txt_search').val();
+        var _cid = $('#ddlcompany').val();
+        var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+        tablequeryParams._type = _stype;
+        tablequeryParams._text = _stext;
+        if (_cid > 0) {
+            tablequeryParams.cid = _cid;
+        }
+        $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+        $("#dgtable").datagrid("reload");
+    }
+    /***********************文件的操作 结束*************************/
+
+    /*****************************文件权限操作************************************/
+    function GetUNFileLimit(_fileid) {
+        var actionurl = '@Url.Action("GetUNSelectList", "Documents")' + "?_fid= " + _fileid;
+        $("#tree_unselect").html("");
+        $("#tree_unselect").ligerTree({
+            url: actionurl,
+            checkbox: true,
+            async: false,
+            slide: true,
+            idFieldName: 'Id',
+            textFieldName: 'Text',
+            parentIDFieldName: 'Pid'
+        });
+    }
+
+    function GetFileLimit(_fileid) {
+        $("#table_selected").html("");
+        $("#table_selected").html("<tr style='height: 28px;'><td align='center'>组名（用户名）</td><td align='center'>读</td><td align='center'>写</td><td align='center'>删</td></tr>");
+        var actionurl = '@Url.Action("GetSelectedList", "Documents")' + "?_fid= " + _fileid;
+        var _length = 0;
+        $.ajax({
+            type: "POST",
+            url: actionurl,
+            async: false,
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var trHtml = "<tr id='table_selected_tr_" + i + "' style='height:28px;' onmousemove='tr_onmouseover(this)' onmouseout='tr_onmouseout(this)' onclick='selected_tr_onclick(this," + data.length + "," + data[i].id + ")' style='height:28px;'>";
+                    trHtml += "<td>" + data[i].limitType + "</td>";
+                    trHtml += "<td><input type='checkbox' id='cbo_read_" + data[i].id + "' " + (data[i].limitRead == true ? " checked='CHECKED'" : " ") + " onchange='RUD_OnChanged(this," + data[i].id + ",\"read\")'></td>";
+                    trHtml += "<td><input type='checkbox' id='cbo_write_" + data[i].id + "' " + (data[i].limitWrite == true ? " checked='CHECKED'" : " ") + " onchange='RUD_OnChanged(this," + data[i].id + ",\"write\")'></td>";
+                    trHtml += "<td><input type='checkbox' id='cbo_delete_" + data[i].id + "' " + (data[i].limitDelete == true ? " checked='CHECKED'" : " ") + " onchange='RUD_OnChanged(this," + data[i].id + ",\"delete\")'></td>";
+                    trHtml += "</tr>";
+                    addTr("table_selected", -1, trHtml);
+                }
+            }
+        });
+    }
+
+    /* 为table指定行添加一行
+   *
+   * tab 表id
+   * row 行数，如：0->第一行 1->第二行 -2->倒数第二行 -1->最后一行
+   * trHtml 添加行的html代码
+   */
+    function addTr(tab, row, trHtml) {
+        //获取table最后一行 $("#tab tr:last")
+        //获取table第一行 $("#tab tr").eq(0)
+        //获取table倒数第二行 $("#tab tr").eq(-2)
+        var $tr = $("#" + tab + " tr").eq(row);
+        if ($tr.size() == 0) {
+            alert("指定的table id或行数不存在！");
+            return;
+        }
+        $tr.after(trHtml);
+    }
+    function click_selectuserORgroup(_itemId, _fid) {
+        rightSelectId = _itemId;
+        rightSelectLimitType = _fid;
+    }
+    function click_addlimitToFile() {
+        var checks = $("#tree_unselect").ligerGetTreeManager().getChecked();
+        if (checks.length > 0 && rightSelectFileId != null) {
+            for (var i = 0; i < checks.length; i++) {
+                if (checks[i].data.Pid == "0") {
+                    continue;
+                }
+                var actionurl = '@Url.Action("addLimitToFile", "Documents")' + "?_fileid=" + rightSelectFileId + "&_limitid=" + checks[i].data.Id + "&_limittype=0";
+                $.ajax({
+                    type: "POST",
+                    url: actionurl,
+                    async: false,
+                    dataType: "json"
+                });
+            }
+            GetUNFileLimit(rightSelectFileId);
+            GetFileLimit(rightSelectFileId);
+        } else {
+            alert("请选项右侧列表项！");
+        }
+    }
+    function RUD_OnChanged(_cborud, _itemId, _cbotype) {
+        if (_cborud != null && _itemId != null && _cbotype != null) {
+            var actionurl = '@Url.Action("updateLimitToFile", "Documents")' + "?_limitid=" + _itemId + "&_limittype=" + _cbotype + "&_isCheck=" + _cborud.checked;
+                $.getJSON(actionurl,
+                    function (data) {
+                        alert(data);
+                    });
+            }
+        }
+
+        function click_deleteLimitToFile() {
+            if (leftlimitId == null || leftlimitId == "") {
+                alert("请先选择左侧列表项！");
+                return;
+            }
+            if (confirm("确认是否删除该权限？")) {
+                var actionurl = '@Url.Action("deleteLimitToFile", "Documents")' + "?_limitid=" + leftlimitId;//leftlimitId全局变量保存LIMITID
+                $.getJSON(actionurl,
+                    function (data) {
+                        if (data != null && data == "成功删除权限！") {
+                            $("#table_unselect").html("");
+                            $("#table_selected").html("");
+                            $("#table_selected").html("<tr style='height: 28px;'><td align='center'>组名（用户名）</td><td align='center'>读</td><td align='center'>写</td><td align='center'>删</td></tr>");
+                            GetUNFileLimit(rightSelectFileId);//获取未加入权限列表
+                            GetFileLimit(rightSelectFileId);//获取已加入权限列表
+                        } else {
+                            alert(data);
+                        }
+
+                    });
+            }
+
+        }
+        /*****************************文件权限操作 结束************************************/
+
+        /************************文件权限样式************************/
+        var table_unselect_tr;
+        var table_selected_tr;
+        function tr_onmouseout(_tr) {
+            if (table_unselect_tr == _tr || table_selected_tr == _tr) {
+                return;
+            }
+            _tr.style.backgroundColor = "#ffffff";
+        }
+
+        function tr_onmouseover(_tr) {
+            if (table_unselect_tr == _tr || table_selected_tr == _tr) {
+                return;
+            }
+            _tr.style.backgroundColor = "#eaf1ff";
+        }
+
+        function tr_onclick(_tr, count, _itemId, _fid) {
+            click_selectuserORgroup(_itemId, _fid);
+            for (var i = 0; i < count; i++) {
+                $("#table_unselect_tr_" + i).css("background", "#ffffff");
+            }
+            table_unselect_tr = _tr;
+            _tr.style.backgroundColor = "#fbec88";
+        }
+        function selected_tr_onclick(_tr, count, _itemId) {
+            leftlimitId = _itemId;
+            for (var i = 0; i < count; i++) {
+                $("#table_selected_tr_" + i).css("background", "#ffffff");
+            }
+            table_selected_tr = _tr;
+            _tr.style.backgroundColor = "#fbec88";
+        }
+
+        var _isLimitTrue_fid = 0;
+        var _isLimitTrue_data;
+        function isLimitTrue(_fid, _creater, _limittype, _strURL) {
+            var roleid = '@ViewBag.RoleId';
+            if (_userid != _creater && roleid != null && roleid == "3") {
+                if (_fid == _isLimitTrue_fid) {
+                    _strURL = isLimitTrueSwitch(_strURL, _limittype, _isLimitTrue_data);
+                }
+            }
+            return _strURL;
+        }
+
+        function isLimitTrueSwitch(_strURL, _limittype, data) {
+            if (data != null && data != "") {
+                switch (_limittype) {
+                    case "read":
+                        if (data.limitRead != true) {
+                            _strURL = "";
+                        }
+                        break;
+                    case "delete":
+                        if (data.limitDelete != true) {
+                            _strURL = "";
+                        }
+                        break;
+                    case "edit":
+                        if (data.limitWrite != true) {
+                            _strURL = "";
+                        }
+                        break;
+                }
+            } else {
+                _strURL = "";
+            }
+            return _strURL;
+        }
+        /************************文件权限样式  结束************************/
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            width: 480px;
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(../../Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 65px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <!--新增-->
+    <div id="dlg" class="easyui-window" title="文件管理" data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false" style="width:700px;height:230px;">
+       
+    </div>
+    <!--End 新增-->
+
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />@Session["doc_Type"] </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;width:480px">单位：
+                                @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                                {
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany",@style="height:22px" })
+                                }
+                                else
+                                { 
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany",@disabled = "disabled",@style="height:22px" })
+                                }
+                            按：      
+                                    <select id="ddl_search" style="height:22px">
+                                        <option value="文件名称">文件名称</option>
+                                        <option value="实施日期">实施日期</option>
+                                        <option value="更新日期">更新日期</option>
+                                        <option value="作者">作者</option>
+                                        <option value="关键字">关键字</option>
+                                    </select>
+                                <input style="border: 1px solid #3496d6;height:19px" width="150px" type="text" id="txt_search" />
+                            </td>
+                            <td style="width:80px">
+                                <a href="javascript:void(0)" onclick="click_search()"><img src='@Url.Content("~/Content/Images/chaxun.png")' /></a>
+                            </td>
+                            <td align="right">
+                                <a href="javascript:void(0)" onclick="click_Edit(0)">
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' /></a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400px">
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

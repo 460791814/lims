@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "MagazineView";
+}
+
+<script src="/FlexPaper/js/jquery.js" type="text/javascript"></script>
+<script src="/FlexPaper/js/flexpaper_flash_debug.js" type="text/javascript"></script>
+<script src="/FlexPaper/js/flexpaper_flash.js" type="text/javascript"></script>
+<script src="/FlexPaper/js/scoll.js" type="text/javascript"></script>
+
+ <div class="info" id="viewerPlaceHolder">
+
+</div>
+<script type="text/javascript">
+    function showSwfFile() {
+        @Html.Raw(ViewData["fileURL"].ToString())
+        var fp = new FlexPaperViewer(
+            '/FlexPaper/FlexPaperViewer',
+            'viewerPlaceHolder',
+            {
+                config: {
+                    SwfFile: encodeURI(fileURL.toString()),
+                    Scale: 0.6,
+                    ZoomTransition: 'easeOut',
+                    ZoomTime: 0.5,
+                    ZoomInterval: 0.2,
+                    FitPageOnLoad: false,
+                    FitWidthOnLoad: true,
+                    PrintEnabled: true,
+                    FullScreenAsMaxWindow: false,
+                    ProgressiveLoading: false,
+                    MinZoomSize: 0.1,
+                    MaxZoomSize: 5,
+                    SearchMatchAll: false,
+                    InitViewMode: 'Portrait',
+                    ViewModeToolsVisible: true,
+                    ZoomToolsVisible: true,
+                    NavToolsVisible: true,
+                    CursorToolsVisible: true,
+                    SearchToolsVisible: true,
+                    localeChain: 'en_US',
+                    ShowPageSize: 1,
+                    IsGratis: false,
+                    imgPath: "images/1.jpg"
+                }
+            }
+        );
+    }
+
+    $(document).ready(function(){
+        showSwfFile();
+    });
+
+</script>
+
+

@@ -1,0 +1,289 @@
+﻿@model Model.ExpePlan.E_tb_ExpePlan
+@{
+    ViewBag.Title = "ExpePlanEdit";
+}
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>计划内容</title>
+    @*<script src="../../Scripts/jquery-1.8.2.js" type="text/javascript"></script>*@
+</head>
+<body>
+        @using (Ajax.BeginForm("Save", "ExpePlan", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.PlanID, new { @id = "HidPlanID" })
+            @Html.HiddenFor(m => m.EditType, new { @id = "HidEditType" })
+            @Html.HiddenFor(m => m.Status, new { @id = "HidStatus" })
+            @Html.HiddenFor(m => m.TaskNo, new { @id = "HidTaskNo" })
+
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    <td width="70px" align="right">计划类别：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.PlanTypeID, ViewData["PlanTypeList"] as SelectList, new { @id = "drop_PlanTypeIDEdit",@style="width:120px;" })</td>
+                    <td width="70px" align="right">样品名称：</td>
+                    <td align="left">
+                        @Html.DropDownListFor(m => m.SampleID, ViewData["SampleList"] as SelectList, new { @id = "drop_Sample", @style = "width:120px;" })
+                    </td>
+                    <td width="70px" align="right">检验项目：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.ProjectID, ViewData["ProjectList"] as SelectList, new { @id = "drop_ProjectID",@style="width:120px;" })</td>
+                </tr>
+                <tr>
+                    <td align="right">检验日期：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.InspectTime, new { @style = "width:98%;", @id = "txt_InspectTime", @onclick = "WdatePicker()" })</td>
+                    <td align="right">检验地点：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.InspectPlace, new { @style = "width:98%;", @id = "txt_InspectPlace" })</td>
+                    <td align="right">负责人：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.HeadPersonnelID, ViewData["PersonnelList"] as SelectList, new { @id = "drop_PersonnelList",@disabled = "disabled", @style = "width:120px;" })</td>
+                </tr>
+                <tr>
+                    <td width="70px" align="right" class="txt_TaskNo_Title">任务单号：</td>
+                    <td align="left">
+                        <select id="Select_TaskNo" style="display:none;"></select>
+                        <input type="text" id="txt_TaskNo" disabled="disabled" style="width:100%" />
+                    </td>
+                    <td align="right">检验标准：</td>
+                    <td align="left" colspan="3">@Html.TextBoxFor(m => m.InspectMethod, new { @style = "width:99%;", @id = "txt_InspectMethod" })</td>
+                </tr>
+                <tr>
+                    <td align="right">备注：</td>
+                    <td align="left" colspan="5">
+                        @Html.TextAreaFor(m => m.Remark, new { @style = "height:120px;width:99%;", @id = "txt_Remark" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" align="center">
+                        <a href="javascript:void(0)" onclick="return IsV();"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="Close()"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+            <script type="text/javascript">
+                //提交验证
+                function IsV() {
+                    //判断是否为计划内
+                    var TaskNo=$("#txt_TaskNo").val();
+                    if ($("#drop_PlanTypeIDEdit").val() != "1") {
+                        TaskNo = $("#Select_TaskNo").val();
+                        if (TaskNo == ""||TaskNo==null) {
+                            alert("请选择任务单号！");
+                            return false;
+                        }
+                    }
+                    $("#HidTaskNo").val(TaskNo);
+                    $('#frmUpdate').submit();
+                }
+
+                $(document).ready(function () {
+                    $("#txt_InspectPlace").val('@ViewBag.AreaAddr');
+                    $("#drop_PersonnelList").val(@ViewBag.PersonnelID);
+
+
+                    //加载对应项目下的任务单号
+                    function LoadTaskNoList() {
+                        var ProjectID = $("#drop_ProjectID").val();
+                        var SampleID = $("#drop_Sample").val();
+                        $.ajax({
+                            async: false,
+                            type: "get",
+                            url: "/ExpePlan/GetTaskNoList?ProjectID=" + ProjectID + "&SampleID=" + SampleID,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                var optionlist = eval(data);
+                                var OptionHtml = "";
+                                for (var i = 0; i < optionlist.length; i++) {
+                                    OptionHtml += "<option value=\"" + optionlist[i].TaskNo + "\">" + optionlist[i].TaskNo + "</option>"
+                                }
+                                $("#Select_TaskNo").html(OptionHtml);
+                            }
+                        });
+                    }
+
+                    //加载样品列表
+                    function LoadSampleList() {
+                        var PlanTypeID = $("#drop_PlanTypeIDEdit").val();
+                        $.ajax({
+                            async: false,
+                            type: "get",
+                            url: "/ExpePlan/GetSampleList?PlanTypeID=" + PlanTypeID,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                var optionlist = eval(data);
+                                var OptionHtml = "";
+                                for (var i = 0; i < optionlist.length; i++) {
+                                    OptionHtml += "<option value=\"" + optionlist[i].id + "\">" + optionlist[i].name + "</option>"
+                                }
+                                $("#drop_Sample").html(OptionHtml);
+                            }
+                        });
+                    }
+
+                    //加载项目列表
+                    function LoadProjectList() {
+                        var PlanTypeID = $("#drop_PlanTypeIDEdit").val();
+                        var SampleID = $("#drop_Sample").val();
+                        $.ajax({
+                            async: false,
+                            type: "get",
+                            url: "/ExpePlan/GetProjectList?PlanTypeID=" + PlanTypeID + "&SampleID=" + SampleID,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                var optionlist = eval(data);
+                                var OptionHtml = "";
+                                for (var i = 0; i < optionlist.length; i++) {
+                                    OptionHtml += "<option value=\"" + optionlist[i].ProjectID + "\">" + optionlist[i].ProjectName + "</option>"
+                                }
+                                $("#drop_ProjectID").html(OptionHtml);
+                            }
+                        });
+                    }
+
+                    //设置相关负责人
+                    function SetPersonnelValue()
+                    {
+                        var PlanTypeID = $("#drop_PlanTypeIDEdit").val();
+                        if(PlanTypeID=="2")
+                        {
+                            var SampleID = $("#drop_Sample").val();
+                            var ProjectID = $("#drop_ProjectID").val();
+                            $.ajax({
+                                async: false,
+                                type: "get",
+                                url: "/ExpePlan/GetEntrustTestingPersonnelID?ProjectID=" + ProjectID + "&SampleID=" + SampleID,
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (data) {
+                                    $("#drop_PersonnelList").val(data);
+                                }
+                            });
+                            
+                        }
+                        
+                    }
+
+                    //更新计划内任务单号
+                    function UpdateTxtTaskNo() {
+
+                        if ($("#drop_PlanTypeIDEdit").val() != "1") { //判断是否为计划内
+                            return;
+                        }
+                        var ProjectID = $("#drop_ProjectID").val();
+                        var SampleID = $("#drop_Sample").val();
+                        $.ajax({
+                            async: false,
+                            type: "get",
+                            url: "/ExpePlan/CreateTaskNoList?ProjectID=" + ProjectID + "&SampleID=" + SampleID,
+                            success: function (data) {
+                                $("#txt_TaskNo").val(data);
+                            }
+                        });
+                    }
+
+                    //更新检验标准
+                    function UpdateExpeMethod() {
+                        var ProjectID = $("#drop_ProjectID").val();
+                        $.ajax({
+                            async: false,
+                            type: "get",
+                            url: "/ExpePlan/GetExpeMethod?ProjectID=" + ProjectID,
+                            success: function (data) {
+                                $("#txt_InspectMethod").val(data);
+                            }
+                        });
+                    }
+
+                    //*************************************************  绑定事件 Start  **************************************************
+
+                    //绑定类型选择事件
+                    $("#drop_PlanTypeIDEdit").change(function () {
+                        if ($(this).val() == "1") {  //计划内 
+                            $("#Select_TaskNo").hide();
+                            $("#txt_TaskNo").show();
+                            $("#drop_PersonnelList").removeAttr("disabled");
+                            
+                        }
+                        else { //计划外
+                            LoadTaskNoList();
+                            $("#Select_TaskNo").show();
+                            $("#txt_TaskNo").hide();
+                            $("#drop_PersonnelList").attr("disabled",true);
+                        }
+
+                        LoadSampleList(); //动态加载样品列表
+                        LoadProjectList(); //动态加载项目列表
+                        SetPersonnelValue();//动态设置负责人
+                    });
+                    $("#drop_PersonnelList").change(function () {
+                        $.ajax({
+                            async: false,
+                            type: "get",
+                            url: "/ExpePlan/GetAreaNameByPersonnelID?PID=" + $("#drop_PersonnelList").val(),
+                            success: function (data) {
+                                $("#txt_InspectPlace").val(data);
+                            }
+                        });
+                    });
+                    //绑定样品选择事件
+                    $("#drop_Sample").change(function () {
+                        LoadProjectList(); //动态加载项目列表
+                        LoadTaskNoList();
+                        SetPersonnelValue();//动态设置负责人
+                        UpdateTxtTaskNo();
+                    });
+
+                    //绑定项目选择事件
+                    $("#drop_ProjectID").change(function () {
+                        UpdateExpeMethod();
+                        LoadTaskNoList();
+                        SetPersonnelValue();//动态设置负责人
+                        UpdateTxtTaskNo();
+                    });
+
+                    //*************************************************  绑定事件 End  **************************************************
+
+                    //初始化页面显示
+                    if ($("#drop_PlanTypeIDEdit").val() == "1") {
+                        $("#Select_TaskNo").hide();
+                        $("#txt_TaskNo").show();
+                        $("#drop_PersonnelList").removeAttr("disabled");
+                        
+
+                    }
+                    else {
+                        LoadTaskNoList();
+                        $("#Select_TaskNo").show();
+                        $("#txt_TaskNo").hide();
+                        $("#drop_PersonnelList").attr("disabled",true);
+
+                    }
+                    
+
+                    if ($("#txt_TaskNo").val() == "") {
+                        UpdateTxtTaskNo();
+                    }
+                    if ($("#txt_InspectMethod").val() == "") {
+                        UpdateExpeMethod();
+                    }
+
+
+                    //初始化页面显示
+                    LoadSampleList();  //根据计划类别加载样品列表
+                    LoadProjectList(); //根据计划类别和样品id加载项目列表
+                    LoadTaskNoList();  //加载对应的任务单号
+
+                    if ($("#HidEditType").val() == "Edit") {
+                        var SampleID=@ViewBag.SampleID;
+                        var ProjectID=@ViewBag.ProjectID;
+                        $("#drop_Sample").val(SampleID);
+                        LoadProjectList();
+                        $("#drop_ProjectID").val(ProjectID);
+                    }
+                });
+
+
+            </script>
+        }
+</body>

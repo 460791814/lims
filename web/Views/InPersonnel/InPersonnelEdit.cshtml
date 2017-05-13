@@ -1,0 +1,72 @@
+﻿@model Model.PersonnelManage.E_tb_InPersonnel
+@{
+    ViewBag.Title = "InPersonnelEdit";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+        @using (Ajax.BeginForm("Save", "InPersonnel", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.PersonnelID, new { @id = "HidPersonnelID" })
+            @Html.HiddenFor(m => m.EditType, new { @id = "HidEditType" })
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    
+                    <td width="70px" align="right">用户名： </td>
+                    <td align="left" style="width:160px;">@Html.TextBoxFor(m => m.UserName, new { @style = "width:99%;", @id = "txt_UserName", @onblur = "CheckUserName()" })</td>
+                    <td width="70px" align="right">密码：</td>
+                    <td align="left" >
+                        @Html.PasswordFor(m => m.PassWord, new { @style = "width:99%;", @id = "txt_PassWord" })
+                        <script type="text/javascript">
+                            $("#txt_PassWord").val('@ViewBag.PassWord');
+                        </script>
+                    </td>
+                    <td width="70px" align="right">角色：</td>
+                    <td align="left" >@Html.DropDownListFor(m => m.RoleID, ViewData["RoleList"] as SelectList)</td>
+                </tr>
+                <tr>
+                    <td width="70px" align="right">姓名：</td>
+                    <td align="left" style="width:160px;">@Html.TextBoxFor(m => m.PersonnelName, new { @style = "width:99%;", @id = "txt_PersonnelName" })</td>
+                    <td width="70px" align="right">部门：</td>
+                    <td align="left" >@Html.TextBoxFor(m => m.Department, new { @style = "width:99%;", @id = "txt_Department" })</td>
+                    <td align="right">性别：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.Sex, ViewData["SexList"] as SelectList)</td>
+                </tr>
+                <tr>
+                    <td align="right">出生日期：</td>
+                    <td align="left" >@Html.TextBoxFor(m => m.Birthday, new { @style = "width:99%;", @onclick = "WdatePicker()", @id = "txt_Birthday" })</td>
+                    <td align="right">学历：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.Educational, new { @style = "width:99%;", @id = "txt_Educational" })</td>
+                    <td align="right">职称：</td>
+                    <td align="left" >@Html.TextBoxFor(m => m.Title, new { @style = "width:99%;", @id = "txt_Title" })</td>
+                </tr>
+                <tr>
+                    <td align="right">岗位：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.Post, new { @style = "width:99%;", @id = "txt_Post" })</td>
+                    <td align="right">工作时间：</td>
+                    <td align="left" >@Html.TextBoxFor(m => m.WorkingTime, new { @style = "width:99%;", @id = "txt_WorkingTime" })</td>
+                    <td align="right">联系电话：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.Tel, new { @style = "width:99%;", @id = "txt_Tel" })</td>
+                </tr>
+                <tr>
+                    <td align="right">身份证：</td>
+                    <td align="left" >@Html.TextBoxFor(m => m.CID, new { @style = "width:99%;", @id = "txt_CID" })</td>
+                    <td align="right">区域：</td>
+                    <td align="left" >@Html.DropDownListFor(m => m.AreaID, ViewData["AreaList"] as SelectList)</td>
+                    <td align="right">备注：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.Description, new { @style = "width:99%;", @id = "txt_Description" })</td>
+                </tr>
+                <tr>
+                    <td colspan="6" align="center">
+                        <a href="javascript:void(0)" onclick="$('#frmUpdate').submit()"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="Close()"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+        }
+    
+</body>

@@ -1,0 +1,124 @@
+﻿@model Model.ClientManage.E_tb_ClientManage
+@{
+    ViewBag.Title = "ClientManageEdit";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>公告信息</title>
+</head>
+<body>
+        @using (Ajax.BeginForm("Save", "ClientManage", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.ClientID, new { @id = "HidClientID" })
+            @Html.HiddenFor(m => m.EditType, new { @id = "HidEditType" })
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    <td width="70px" align="right">客户名称：</td>
+                    <td align="left" style="width:160px;">@Html.TextBoxFor(m => m.ClientName, new { @style = "width:99%;", @id = "txt_ClientName" })</td>
+                    <td width="70px" align="right">地址：</td>
+                    <td align="left" colspan="3">@Html.TextBoxFor(m => m.Address, new { @style = "width:99%;", @id = "txt_Address" })</td>
+                </tr>
+                <tr>
+                    <td align="right">联系人：</td><td align="left">@Html.TextBoxFor(m => m.Contact, new { @style = "width:99%;", @id = "txt_Contact" })</td>
+                    <td align="right">办公电话：</td><td align="left">@Html.TextBoxFor(m => m.Fixed, new { @style = "width:99%;", @id = "txt_Fixed" })</td>
+                    <td style="width:70px;" align="right">移动电话：</td><td align="left">@Html.TextBoxFor(m => m.Tel, new { @style = "width:99%;", @id = "txt_Tel" })</td>
+                </tr>
+                <tr>
+                    <td align="right">电子邮箱：</td><td align="left">@Html.TextBoxFor(m => m.Email, new { @style = "width:99%;", @id = "txt_Email" })</td>
+                    <td align="right">传真：</td><td align="left">@Html.TextBoxFor(m => m.Fax, new { @style = "width:99%;", @id = "txt_Fax" })</td>
+                    <td align="right">邮编：</td><td align="left">@Html.TextBoxFor(m => m.ZipCode, new { @style = "width:99%;", @id = "txt_ZipCode" })</td>
+                </tr>
+                <tr>
+                    <td align="right">法人代表：</td><td align="left">@Html.TextBoxFor(m => m.Deputy, new { @style = "width:99%;", @id = "txt_Deputy" })</td>
+                    <td align="right">客户等级：</td><td align="left">@Html.DropDownListFor(m => m.ClientLevel, ViewData["ClientLevelList"] as SelectList)</td>
+                    <td align="right">预付金额：</td><td align="left">@Html.TextBoxFor(m => m.PrepaidMoney, new { @style = "width:99%;", @id = "txt_PrepaidMoney" })</td>
+                </tr>
+                <tr>
+                    <td align="right">合同编号：</td><td align="left">@Html.TextBoxFor(m => m.ContractNo, new { @style = "width:99%;", @id = "txt_ContractNo" })</td>
+                    <td align="right">图标：</td>
+                    <td align="left" colspan="3">
+                        @*<select name="logo">
+                            <option value="1">/Content/Images/biaogefuzeren.png</option>
+                            <option value="2">/Content/Images/biaogefuzeren.png</option>
+                            <option value="3">/Content/Images/biaogefuzeren.png</option>
+                            <option value="4">/Content/Images/biaogefuzeren.png</option>
+                        </select>*@
+                        @Html.DropDownListFor(m => m.ContractImgID, ViewData["ContractImgList"] as SelectList)
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">扫描件：</td>
+                    <td align="left" colspan="5">
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tr><td> @Html.TextBoxFor(m => m.ContractPath, new { @style = "width:99%;", @id = "txt_ContractPath" })</td>
+                            <td>&nbsp;&nbsp;<input type="text" id="uploadify" /></td></tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">主营业务：</td><td align="left" colspan="5">@Html.TextAreaFor(m => m.MainBusiness, new { @style = "height:100px;width:99%;", @id = "txt_MainBusiness" })</td>
+                </tr>
+                <tr>
+                    <td align="right">年委托检验业务量：</td><td align="left" colspan="5">@Html.TextAreaFor(m => m.YearEntrust, new { @style = "height:100px;width:99%;", @id = "txt_YearEntrust" })</td>
+                </tr>
+                <tr>
+                    <td align="right">优惠措施：</td><td align="left" colspan="5">@Html.TextAreaFor(m => m.Incentives, new { @style = "height:100px;width:99%;", @id = "txt_Incentives" })</td>
+                </tr>
+                <tr>
+                    <td colspan="6" align="center">
+                        <a href="javascript:void(0)" onclick="$('#frmUpdate').submit()"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="Close()"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+        }
+
+        <!--文件上传-->
+<script type="text/javascript">
+    /*上传文件控件*/
+    $("#uploadify").uploadify({
+        'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+        'script': '@Url.Action("Import", "ShowImage")',
+        'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+        'folder': 'UpFile',
+        'queueID': 'fileQueue',
+        'auto': false,
+        'multi': false,
+        'height': 20,
+        'width': 75,
+        'fileSizeLimit': '10240KB',
+        'fileTypeDesc': '文档类型',
+        'fileTypeExts': '*.doc;*.pdf;*.jpg;*.png;*.gif;*.bmp;*.*;',
+        'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+        'onComplete': fun,
+        'onSelect': function (e, queueId, fileObj) {
+            $('#uploadify').uploadifyUpload();
+        },
+        'onCancel': function (file) {
+        }
+    });
+    /*结束 上传文件控件*/
+    function fun(event, queueID, fileObj, response, data) {
+        if (response == "false") {
+            alert("文件上传出错！");
+        }
+        else {
+            $('#txt_ContractPath').val(response);
+            alert("成功上传！");
+        }
+    }
+    </script>
+
+    <!--图片选择-->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('select[name=ContractImgID]').ImageSelect({ dropdownWidth: 425, onupdate: function () { } });
+        });
+
+        function getvalue() {
+            alert($('select[name=ContractImgID]').val());
+        }
+</script>
+</body>

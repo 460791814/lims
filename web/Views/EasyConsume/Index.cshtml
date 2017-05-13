@@ -1,0 +1,176 @@
+﻿@model Model.tb_EasyConsume
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>易耗品</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/EasyConsume/GetEasyConsumeList",
+                pagination: true,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                queryParams: { 'pageNumber': 1, 'pageSize': 8, '_cid': '@ViewBag._lid', '_searchtext': '', '_searchtype': '' },
+                columns: [[
+                    { field: 'name', title: '名称', width: 190, align: 'center' },
+                    { field: 'type', title: '规格型号', width: 160, align: 'center' },
+                    { field: 'danwei', title: '单位', width: 120, align: 'center' },
+                    { field: 'price', title: '单价', width: 120, align: 'center' },
+                    { field: 'amount', title: '库存', width: 120, align: 'center' },
+                    { field: 'djr', title: '登记人', width: 120, align: 'center' },
+                    { field: 'remark', title: '备注', width: 220, align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var url = '@Url.Action("doEasyConsumeInfo", "EasyConsume")' + "?id=" + row.id;
+                            return "<a href='" + url + "' target='mainFrame' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', width: 40, align: 'center',
+                        formatter: function (value, row, index) {
+                            var linkstr = "<a href=\"javascript:void(0)\" onclick=\"click_Delete(" + row.id + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"../../Content/Images/shanchu.png\" /></a>";
+                            return linkstr;
+                        }
+                    }
+                ]]
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 10,//每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20],//可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+
+                function click_Delete(_itemId) {
+                    if (confirm("确定要删除数据吗？")) {
+                        $.getJSON("/EasyConsume/Delete_EasyConsumeItem/" + _itemId, function (data) { alert(data); if (data == "删除成功！") { $('#dgtable').datagrid('reload'); } });
+                    }
+                }
+
+                function click_Search() {
+                    var _stype = $('#ddl_search').val();
+                    var _stext = $('#txt_Search').val();
+                    var _cid = $('#ddlcompany').val();
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams._searchtype = _stype;
+                    tablequeryParams._searchtext = _stext;
+                    if (_cid > 0) {
+                        tablequeryParams._cid = _cid;
+                    }
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：易耗品<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />易耗品管理 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;">单位名称：
+                                @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                                {
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany" })
+                                }
+                                else
+                                { 
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany", @disabled = "disabled" })
+                                }
+                            </td>
+                            <td width="120px" style="font-family: '宋体'; font-size: 12px; color: #10607c;">按：      
+                                    <select id="ddl_search">
+                                        <option value="名称">名称</option>
+                                        <option value="规格型号">规格型号</option>
+                                        <option value="单位">单位</option>
+                                    </select>
+                            </td>
+                            <td width="160px">
+                                <input style="border: 1px solid #3496d6;" width="150px" type="text" id="txt_Search" /></td>
+                            <td width="160px">
+                                <a href="javascript:void(0)" onclick="click_Search()">
+                                    <img height="20px" src='@Url.Content("~/Content/Images/chaxun.png")' /></a>
+                            </td>
+                            <td align="right">&nbsp;
+                                <a href='@Url.Action("doEasyConsumeInfo", "EasyConsume", new { @id = 0 })' target='mainFrame' >
+                                    <img src='@Url.Content("~/Content/Images/xinzeng.png")' height="20px" /></a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400px">
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>

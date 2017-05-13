@@ -1,0 +1,197 @@
+﻿@model Model.tb_Book
+@{
+    ViewBag.Title = "doBookInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>图书管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*页面控件验证*/
+            $("#codeE").attr("datatype", "*");
+            $("#nameE").attr("datatype", "*");
+            $("#type1E").attr("datatype", "d");
+            $("#type2E").attr("datatype", "d");
+            $("#authorE").attr("datatype", "*");
+            $("#priceE").attr("datatype", "*");
+            $("#numE").attr("datatype", "*");
+            $("#statusE").attr("datatype", "d");
+            $("#pressE").attr("datatype", "*");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+        });
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：图书资料管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />图书资料管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增 </td>
+            </tr>
+        </table>
+    </div>
+    <div class="divList">
+        @using (Ajax.BeginForm("doBookCU", "Book", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+        {
+            @Html.HiddenFor(m => m.id, new { @id = "idE" })
+            @Html.HiddenFor(m => m.createDate, new { @id = "createDateE" })
+            @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+            @Html.HiddenFor(m => m.temp1, new { @id = "temp1E" })
+            @Html.HiddenFor(m => m.temp2, new { @id = "temp2E" })
+            @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+            @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+            <table style="font-family: '宋体'; font-size: 12px;">
+                <tr>
+                    <td align="right">图书编码：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.code, new { @id = "codeE" })</td>
+                    <td align="right">图书名称：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.name, new { @id = "nameE" })
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" valign="middle">种属：</td>
+                    <td align="left">
+                        @Html.DropDownListFor(m => m.type1, ViewData["ddl_type1"] as SelectList, new { @id = "type1E" })
+                    </td>
+                    <td align="right">类别：</td>
+                    <td align="left">
+                        @Html.DropDownListFor(m => m.type2, ViewData["ddl_type2"] as SelectList, new { @id = "type2E" })
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">作者：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.author, new { @id = "authorE" })                    </td>
+                    <td align="right">价格（元）：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.price, new { @id = "priceE" })                    </td>
+                </tr>
+                <tr>
+                    <td align="right">数量：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.num, new { @id = "numE" })                    </td>
+                    <td align="right">状态：</td>
+                    <td width="80" align="left">
+                        @Html.DropDownListFor(m => m.status, ViewData["ddl_status"] as SelectList, new { @id = "statusE" })</td>
+                </tr>
+                <tr>
+                    <td align="right">出版社\出处：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.press, new { @id = "pressE" })                    </td>
+                    <td align="right">存放位置：</td>
+                    <td width="80" align="left">@Html.TextBoxFor(m => m.remark)</td>
+                </tr>
+                <tr>
+                    <td align="right" valign="top">备注：</td>
+                    <td colspan="3" align="left" valign="top">
+                        @Html.TextAreaFor(m => m.temp1, new { @style = "height:100px;width:430px", @id = "remarkE" })                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                            <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" height="20px" />
+                        </a></td>
+                </tr>
+            </table>
+        }
+    </div>
+</body>

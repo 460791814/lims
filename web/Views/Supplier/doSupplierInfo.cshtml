@@ -1,0 +1,400 @@
+﻿@model Model.tb_Supplier
+@{
+    ViewBag.Title = "doSupplierInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>供应商管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*页面控件验证*/
+            $("#name").attr("datatype", "*");
+            $("#address").attr("datatype", "*");
+            $("#linkMan").attr("datatype", "*");
+            $("#linkNum").attr("datatype", "*");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+            $("#uploadify1").uploadify({
+                'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                'script': '@Url.Action("Import", "Supplier")',
+                'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                'folder': 'UpFile',
+                'queueID': 'fileQueue',
+                'auto': false,
+                'multi': true,
+                'height': 20,
+                'width': 75,
+                'fileSizeLimit': '10240KB',
+                'fileTypeDesc': '文档类型',
+                'fileTypeExts': '*.doc;*.pdf;',
+                'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+                'onComplete': fun1,
+                'onSelect': function (e, queueId, fileObj) {
+                    $('#uploadify1').uploadifyUpload();
+                },
+                'onCancel': function (file) {
+
+                }
+            });
+            $('#temp1').click(function () { WdatePicker() });
+            
+            @*$("#uploadify2").uploadify({
+                'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                'script': '@Url.Action("Import", "Supplier")',
+                'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                'folder': 'UpFile',
+                'queueID': 'fileQueue',
+                'auto': false,
+                'multi': true,
+                'height': 20,
+                'width': 75,
+                'fileSizeLimit': '10240KB',
+                'fileTypeDesc': '文档类型',
+                'fileTypeExts': '*.doc;*.pdf;',
+                'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+                'onComplete': fun2,
+                'onSelect': function (e, queueId, fileObj) {
+                    $('#uploadify2').uploadifyUpload();
+                },
+                'onCancel': function (file) {
+
+                }
+            });
+
+            $("#uploadify3").uploadify({
+                'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                'script': '@Url.Action("Import", "Supplier")',
+                'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                'folder': 'UpFile',
+                'queueID': 'fileQueue',
+                'auto': false,
+                'multi': true,
+                'height': 20,
+                'width': 75,
+                'fileSizeLimit': '10240KB',
+                'fileTypeDesc': '文档类型',
+                'fileTypeExts': '*.doc;*.pdf;',
+                'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+                'onComplete': fun3,
+                'onSelect': function (e, queueId, fileObj) {
+                    $('#uploadify3').uploadifyUpload();
+                },
+                'onCancel': function (file) {
+
+                }
+            });
+
+            $("#uploadify4").uploadify({
+                'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                'script': '@Url.Action("Import", "Supplier")',
+                'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                'folder': 'UpFile',
+                'queueID': 'fileQueue',
+                'auto': false,
+                'multi': true,
+                'height': 20,
+                'width': 75,
+                'fileSizeLimit': '10240KB',
+                'fileTypeDesc': '文档类型',
+                'fileTypeExts': '*.doc;*.pdf;',
+                'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+                'onComplete': fun4,
+                'onSelect': function (e, queueId, fileObj) {
+                    $('#uploadify4').uploadifyUpload();
+                },
+                'onCancel': function (file) {
+
+                }
+            });
+
+            $("#uploadify5").uploadify({
+                'uploader': '@Url.Content("~/Scripts/uploader/uploadify.swf")',
+                'script': '@Url.Action("Import", "Supplier")',
+                'cancelImg': '@Url.Content("~/Scripts/uploader/cancel.png")',
+                'folder': 'UpFile',
+                'queueID': 'fileQueue',
+                'auto': false,
+                'multi': true,
+                'height': 20,
+                'width': 75,
+                'fileSizeLimit': '10240KB',
+                'fileTypeDesc': '文档类型',
+                'fileTypeExts': '*.doc;*.pdf;',
+                'buttonImg': '@Url.Content("~/Content/Images/daochuwenjian.png")',
+                'onComplete': fun5,
+                'onSelect': function (e, queueId, fileObj) {
+                    $('#uploadify5').uploadifyUpload();
+                },
+                'onCancel': function (file) {
+
+                }
+            });*@
+        });
+
+        function fun1(event, queueID, fileObj, response, data) {
+            if (response == "false") {
+                alert("文件上传出错！");
+            }
+            else {
+                $('#hiddenUrl1').val($('#hiddenUrl1').val() + "," + response);
+                $('#txtName1').val($('#txtName1').val() + "," + fileObj.name);
+                $('#hiddenSize1').val($('#hiddenSize1').val() + "," + fileObj.size);
+                alert("成功上传！");
+            }
+        }
+        //function fun2(event, queueID, fileObj, response, data) {
+        //    if (response == "false") {
+        //        alert("文件上传出错！");
+        //    }
+        //    else {
+        //        $('#hiddenUrl2').val($('#hiddenUrl2').val() + "," + response);
+        //        $('#txtName2').val($('#txtName2').val() + "," + fileObj.name);
+        //        $('#hiddenSize2').val($('#hiddenSize2').val() + "," + fileObj.size);
+        //        alert("成功上传！");
+        //    }
+        //}
+        //function fun3(event, queueID, fileObj, response, data) {
+        //    if (response == "false") {
+        //        alert("文件上传出错！");
+        //    }
+        //    else {
+        //        $('#hiddenUrl3').val($('#hiddenUrl3').val() + "," + response);
+        //        $('#txtName3').val($('#txtName3').val() + "," + fileObj.name);
+        //        $('#hiddenSize3').val($('#hiddenSize3').val() + "," + fileObj.size);
+        //        alert("成功上传！");
+        //    }
+        //}
+        //function fun4(event, queueID, fileObj, response, data) {
+        //    if (response == "false") {
+        //        alert("文件上传出错！");
+        //    }
+        //    else {
+        //        $('#hiddenUrl4').val($('#hiddenUrl4').val() + "," + response);
+        //        $('#txtName4').val($('#txtName4').val() + "," + fileObj.name);
+        //        $('#hiddenSize4').val($('#hiddenSize4').val() + "," + fileObj.size);
+        //        alert("成功上传！");
+        //    }
+        //}
+        //function fun5(event, queueID, fileObj, response, data) {
+        //    if (response == "false") {
+        //        alert("文件上传出错！");
+        //    }
+        //    else {
+        //        $('#hiddenUrl5').val($('#hiddenUrl5').val() + "," + response);
+        //        $('#txtName5').val($('#txtName5').val() + "," + fileObj.name);
+        //        $('#hiddenSize5').val($('#hiddenSize5').val() + "," + fileObj.size);
+        //        alert("成功上传！");
+        //    }
+        //}
+        function handle(e) {
+            if (e == "1") {
+                window.parent.$('#dgtable').datagrid("reload");
+                alert("保存成功！");
+                $('#dlg').dialog('close');
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    @using (Ajax.BeginForm("doSupplierCU", "Supplier", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+    {
+        @Html.HiddenFor(m => m.id)
+        @Html.HiddenFor(m => m.createDate, new { @id = "createDateE" })
+        @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+        @Html.HiddenFor(m => m.temp2, new { @id = "temp2E" })
+        @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+        @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+        <table align="left" height="300px" style="font-family: '宋体'; font-size: 12px;">
+            <tr>
+                <td width="90px" align="right">供应商名称：</td>
+                <td align="left">@Html.TextBoxFor(m => m.name)</td>
+                <td width="90px" align="right">地址：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.address)
+                </td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">送货地址：</td>
+                <td align="left" colspan="3">@Html.TextBoxFor(m => m.sendAddress, new { @style="width:410px"})</td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">联系人：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.linkMan)
+                </td>
+                <td width="90px" align="right">联系电话：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.linkNum)
+                </td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">传真：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.fax)
+                </td>
+                <td width="90px" align="right">移动电话：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.mobliephone)
+                </td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">业务范围：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.businessscope)
+                </td>
+                <td width="90px" align="right">过期日期：</td>
+                <td align="left">
+                    @Html.TextBoxFor(m => m.temp1)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" align="left">证件（附件上传）</td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">健康证：</td>
+                <td align="left" colspan="3">
+                    @Html.HiddenFor(m => m.Jkz.filePath, new { @id = "hiddenUrl1" })
+                    @Html.HiddenFor(m => m.Jkz.fileSize, new { @id = "hiddenSize1" })
+                    @Html.TextBoxFor(m => m.Jkz.fileName, new { @id = "txtName1", @style = "width: 320px;" })
+                    <input type="text" id="uploadify1" />
+                </td>
+            </tr>
+            @*<tr>
+                <td width="90px" align="right">车辆卫生：</td>
+                <td align="left" colspan="3">
+                    @Html.HiddenFor(m => m.Clws.filePath, new { @id = "hiddenUrl2" })
+                    @Html.HiddenFor(m => m.Clws.fileSize, new { @id = "hiddenSize2" })
+                    @Html.TextBoxFor(m => m.Clws.fileName, new { @id = "txtName2", @style = "width: 320px;" })
+                    <input type="text" id="uploadify2" />
+                </td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">检疫证：</td>
+                <td align="left" colspan="3">
+                    @Html.HiddenFor(m => m.Jyz.filePath, new { @id = "hiddenUrl3" })
+                    @Html.HiddenFor(m => m.Jyz.fileSize, new { @id = "hiddenSize3" })
+                    @Html.TextBoxFor(m => m.Jyz.fileName, new { @id = "txtName3", @style = "width: 320px;" })
+                    <input type="text" id="uploadify3" />
+                </td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">消毒证明：</td>
+                <td align="left" colspan="3">
+                    @Html.HiddenFor(m => m.Xdzm.filePath, new { @id = "hiddenUrl4" })
+                    @Html.HiddenFor(m => m.Xdzm.fileSize, new { @id = "hiddenSize4" })
+                    @Html.TextBoxFor(m => m.Xdzm.fileName, new { @id = "txtName4", @style = "width: 320px;" })
+                    <input type="text" id="uploadify4" />
+                </td>
+            </tr>
+            <tr>
+                <td width="90px" align="right">检验报告：</td>
+                <td align="left" colspan="3">
+                    @Html.HiddenFor(m => m.Jybg.filePath, new { @id = "hiddenUrl5" })
+                    @Html.HiddenFor(m => m.Jybg.fileSize, new { @id = "hiddenSize5" })
+                    @Html.TextBoxFor(m => m.Jybg.fileName, new { @id = "txtName5", @style = "width: 320px;" })
+                    <input type="text" id="uploadify5" />
+                </td>
+            </tr>*@
+            <tr>
+                <td colspan="4" align="center">
+                    <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                        <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                    <a href="javascript:void(0)" onclick="window.parent.$('#dlg').dialog('close')">
+                        <img src="~/Content/Images/quxiao.png" height="20px" />
+                    </a></td>
+            </tr>
+        </table>
+    }
+</body>

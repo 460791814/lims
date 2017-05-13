@@ -1,0 +1,309 @@
+﻿@model Model.tb_DrugOUT
+@{
+    ViewBag.Title = "doDrugInAdd";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>药品管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*页面控件验证*/
+            $("#drugCode").attr("datatype", "*");
+            $("#ddl_drugIN").attr("datatype", "d");
+            $("#putArea").attr("datatype", "*");
+            $("#productDate").attr("datatype", "*");
+            $("#validDate").attr("datatype", "*");
+            $("#manufacturers").attr("datatype", "*");
+            $("#recipients").attr("datatype", "*");
+            $("#amount").attr("datatype", "*");
+            $("#outDate").attr("datatype", "*");
+            
+            $("#frmNew").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+            $('#EnterDate').click(function () { WdatePicker() });
+
+            $('#outDate').click(function () { WdatePicker() });
+
+            $('#productDate').attr("readonly", "readonly");
+            $('#validDate').attr("readonly", "readonly");
+            $('#drugCode').attr("readonly", "readonly");
+            $('#putArea').attr("readonly", "readonly");
+
+            $('#ddl_drugN').combogrid({
+                delay: 500,
+                panelWidth: 350,
+                mode: 'remote',
+                idField: 'id',
+                textField: 'drugName',
+                url: '@Url.Action("GetDrugListForDropDownList", "Drug")',
+                onSelect: function (rowIndex, rowData) {
+                    $('#durg_amount').val(rowData.amount);
+                    $('#drugIdN').val(rowData.id);
+                    $('#drugCode').val(rowData.drugCode);
+                    $("#temp2").val();
+                    $("#drugIN_dwsl").html("");
+                    Bind_drugIN(rowData.id, rowData.drugCode);
+                    $.getJSON("/Drug/GetUNIT/" + rowData.id, function (data) { $("#unit").html("单位：" + data) });
+                },
+                columns: [[
+                    { field: 'drugCode', title: '编号', width: 100 },
+                    { field: 'drugName', title: '名称', width: 250 }
+                ]]
+            });
+
+            $("#amount").change(function () {
+                var _amount = $(this).val();
+                var _drugIN_dwsl = $("#drugIN_dwsl").html();
+                if (_amount != null && _amount != "" && _drugIN_dwsl != null && _drugIN_dwsl != "") {
+                    _amount = new Number(_amount);
+                    _drugIN_dwsl = new Number(_drugIN_dwsl);
+                    if (_amount > _drugIN_dwsl) {
+                        alert("出库数量不能大于入库数量");
+                        $("#amount").val("");
+                        return;
+                    }
+                }
+            });
+            $("#drugId").change(function () {
+                var _drugId = $(this).val();
+                $.getJSON("/Drug/GetUNIT/" + _drugId, function (data) { $("#unit").html("单位：" + data) });
+            });
+        });
+
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+
+        function Bind_drugIN(_drugId, _drugCode) {
+            $("#ddl_drugIN").empty();
+            $("#ddl_drugIN").append($("<option value='-1'>请选择</option>"));
+            $("#ddl_drugIN").change(function () {
+                var parentValue = $(this).val();
+                if (parentValue != "-1") {
+                    $.ajax({
+                        url: '@Url.Action("GetDrugINModel", "Drug")',
+                        type: "GET",
+                        async: false,
+                        data: { _id: parentValue },
+                        success: function (data) {
+                            var _productDate = eval('new ' + eval(data.productDate).source);
+                            _productDate = Todate(data.productDate);
+                            var _validDate = eval('new ' + eval(data.validDate).source);
+                            _validDate = Todate(data.validDate);
+                            $("#productDate").val(_productDate);
+                            $("#manufacturers").val(data.manufacturers);
+                            $("#validDate").val(_validDate);
+                            $("#drugIN_dwsl").html(data.temp2);
+                            $("#temp2").val(data.id);
+                            $('#putArea').val(data.putArea);
+                            $('#GPS').val(data.GPS);
+                            
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("GetDrugINForDrugOut", "Drug")',
+                type: "GET",
+                async: false,
+                data: { _drugId: _drugId, _drugCode: _drugCode },
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        $("#ddl_drugIN").append($("<option value='" + data[i].Value + "'>" + data[i].Text + "</option>"));
+                    }
+                }
+            });
+        }
+
+        function Todate(cellval) {
+            var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            return date.getFullYear() + "-" + month + "-" + currentDate;
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：药品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />药品出库<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        @using (Ajax.BeginForm("NewDrugOUT", "Drug", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmNew" }))
+        {
+            @Html.HiddenFor(m => m.temp2)
+            @Html.HiddenFor(m => m.GPS)
+            <table style="font-family: '宋体'; font-size: 12px" width="800">
+                <tr>
+                    <td width="110" align="right" valign="middle">药品名称：</td>
+                    <td align="left">
+                        <select id="ddl_drugN" style="width: 152px"></select>
+                        @Html.HiddenFor(m => m.drugId, new { @id = "drugIdN" })
+                    </td>
+                    <td width="90px" align="right">编号：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.drugCode)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="middle">选择批次：</td>
+                    <td align="left">
+                        <select id="ddl_drugIN" style="width: 152px"></select>
+                    </td>
+                    <td width="90px" align="right">库存数量：</td>
+                    <td align="left" id="drugIN_dwsl"></td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">库房名称：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.putArea)                    </td>
+                    <td width="90px" align="right">生产日期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.productDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">有效期：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.validDate)  
+                    </td>
+                    <td width="90px" align="right">生产厂家：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.manufacturers)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">领用人：</td>
+                    <td width="80" align="left">
+                        @Html.TextBoxFor(m => m.recipients)                    </td>
+                    <td width="90px" align="right">数量：</td>
+                    <td align="left">
+                        <input type="hidden" id="durg_amount" />
+                        @Html.TextBoxFor(m => m.amount, new { @style = "width:80px" })
+                        <a id="unit"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110" align="right">出库时间：</td>
+                    <td align="left">
+                        @Html.TextBoxFor(m => m.outDate)
+                    </td>
+                    <td width="110px" align="right"></td>
+                    <td align="left"></td>
+                </tr>
+                <tr>
+                    <td width="110" align="right" valign="top">备注：</td>
+                    <td colspan="3" align="left" valign="top">
+                        @Html.TextAreaFor(m => m.remark, new { @style = "height:100px;width:485px" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#frmNew').submit()">
+                            <img src="~/Content/Images/baocun.png" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" />
+                        </a></td>
+                </tr>
+            </table>
+        }
+    </div>
+</body>

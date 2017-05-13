@@ -1,0 +1,97 @@
+﻿@model Model.Laboratory.E_tb_DetectProject
+@{
+    ViewBag.Title = "DetectProjectEdit";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>实验室信息</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+</head>
+<body>
+        @using (Ajax.BeginForm("Save", "DetectProject", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.ProjectID, new { @id = "HidProjectID" })
+            @Html.HiddenFor(m => m.EditType, new { @id = "HidEditType" })
+            @Html.HiddenFor(m => m.LaboratoryID, new { @id = "HidLaboratoryID" })
+            @Html.HiddenFor(m => m.TaskNo, new { @id = "HidTaskNo" })
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    <td width="70px" align="right">检测项目：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.RelationProjectID, ViewData["ProjectList"] as SelectList, new { @id = "drop_ProjectID" })</td>
+                    <td width="70px" align="right">任务单号：</td>
+                    <td align="left"><select id="Select_TaskNo"></select></td>
+                </tr>
+                <tr>
+                    <td width="70px" align="right">实验日期：</td>
+                    <td align="left">@Html.TextBoxFor(m => m.DetectTime, new { @style = "width:100%;", @onclick = "WdatePicker()", @id = "txt_DetectTime" })</td>
+                    <td align="right">负责人：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.HeadPersonnelID, ViewData["PersonnelList"] as SelectList, new { @id = "drop_HeadPersonnelID" })</td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="return IsV();"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="Close()"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+        }
+        <script type="text/javascript">
+            //提交验证
+            function IsV() {
+                var TaskNo = $("#Select_TaskNo").val();
+                if (TaskNo == "" || TaskNo == null) {
+                    alert("请选择任务单号！");
+                    return false;
+                }
+                $("#HidTaskNo").val(TaskNo);
+                $('#frmUpdate').submit();
+            }
+
+            $(document).ready(function () {
+                //加载对应项目下的任务单号
+                function LoadTaskNoList() {
+                    var ProjectID = $("#drop_ProjectID").val();
+                    $.ajax({
+                        async: false,
+                        type: "get",
+                        url: "/DetectProject/GetTaskNoList?ProjectID=" + ProjectID,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            var optionlist = eval(data);
+                            var OptionHtml = "";
+                            for (var i = 0; i < optionlist.length; i++) {
+                                OptionHtml += "<option value=\"" + optionlist[i].TaskNo + "\">" + optionlist[i].TaskNo + "</option>"
+                            }
+                            $("#Select_TaskNo").html(OptionHtml);
+                        }
+                    });
+                }
+
+                //绑定项目选择事件
+                $("#drop_ProjectID").change(function () {
+                    LoadTaskNoList();
+                });
+
+                LoadTaskNoList();
+            });
+            </script>
+</body>

@@ -1,0 +1,149 @@
+﻿@model Model.tb_Directory
+@{
+    ViewBag.Title = "doDirInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>目录维护</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*页面控件验证*/
+            $("#dir_Name").attr("datatype", "*");
+            $("#dir_ParentId").attr("datatype", "d");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+        });
+        function handle(e) {
+            if (e == "1") {
+                window.parent.BindTeeView();
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    @using (Ajax.BeginForm("doDirCU", "DocManagerWithDir", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+    {
+        @Html.HiddenFor(m => m.id)
+        @Html.HiddenFor(m => m.createDate, new { @id = "createDateE" })
+        @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+        @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+        @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+        @Html.HiddenFor(m => m.isDelete)
+        @Html.HiddenFor(m => m.dir_Value1)
+        <table align="left" style="font-family: '宋体'; font-size: 12px;">
+            <tr>
+                <td height="30" align="right">文件夹名称：</td>
+                <td>
+                    @Html.TextBoxFor(m => m.dir_Name)
+                </td>
+            </tr>
+            <tr>
+                <td height="30" align="right">请选择父级文件夹：</td>
+                <td>
+                    @Html.DropDownListFor(m => m.dir_ParentId, ViewData["ddldir"] as SelectList)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" align="center">
+                    <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                        <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                    <a href="javascript:void(0)" onclick="window.parent.$('#dlg_Tree').dialog('close')">
+                        <img src="~/Content/Images/quxiao.png" height="20px" />
+                    </a></td>
+            </tr>
+        </table>
+    }
+</body>

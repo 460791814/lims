@@ -1,0 +1,30 @@
+﻿@model Model.RoleManage.E_tb_Role
+@{
+    ViewBag.Title = "RolePurview";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+        @using (Ajax.BeginForm("SaveRolePurview", "Role", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.RoleID, new { @id = "HidRoleID" })
+            @Html.HiddenFor(m => m.ActionIDS, new { @id = "HidActionIDS" })
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    <td align="left">
+                         <ul id="ActionTree" class="easyui-tree" url="/Role/InitTree?InfoID=@Model.RoleID" checkbox="true"></ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <a href="javascript:void(0)" onclick="SaveRolePurview()"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="$('#EditRolePurview').window('close');"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+        }
+</body>

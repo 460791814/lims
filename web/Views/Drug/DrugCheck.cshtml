@@ -1,0 +1,222 @@
+﻿@model Model.tb_DrugCheck
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>药品管理-盘点</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txt_Search').click(function () { WdatePicker() });
+            $('#txt_Search2').click(function () { WdatePicker() });
+
+            $('#btnCheck').attr("disabled", true);
+            $('#btnAudit').attr("disabled", true);
+        });
+
+        function click_Search() {
+            var ddls = $("#ddl_search").val();
+            var txts = $("#txt_Search").val();
+            var txts2 = $("#txt_Search2").val();
+            var ddlcompany = $("#ddlcompany").val();
+            var ddl_shenhezhuangtai = $("#ddl_shenhezhuangtai").val();
+            var txt_search2 = $("#txt_search2").val();
+
+            $('#btnCheck').attr("disabled", false);
+            $('#btnAudit').attr("disabled", false);
+
+            $('#dgtable').datagrid({
+                url: "/Drug/GetDrugCheckList",
+                pagination: false,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                queryParams: { '_cid': '@ViewBag._lid ', '_sdate': txts, '_edate': txts2, '_auditstatus': ddl_shenhezhuangtai, '_search2': txt_search2 },
+                columns: [[
+                    { field: 'drugCode', title: '编号', width: 100, align: 'center' },
+                    { field: 'drugName', title: '药品名称', width: 80, align: 'center' },
+                    { field: 'unit', title: '单位', width: 50, align: 'center' },
+                    { field: 'amountIN', title: '入库数量', width: 120, align: 'center' },
+                    { field: 'amountOUT', title: '出库数量', width: 120, align: 'center' },
+                    { field: 'amount', title: '库存结余', width: 120, align: 'center' },
+                    { field: 'riskLevel', title: '危险性等级', width: 120, align: 'center' },
+                    {
+                        field: 'checkDate', title: '盘点日期', width: 120, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    { field: 'checkUser', title: '盘点人', width: 120, align: 'center' },
+                    { field: 'auditstatus', title: '审核状态', width: 120, align: 'center' },
+                    { field: 'auditUser', title: '审核人', width: 120, align: 'center' },
+                    { field: 'remark', title: '备注', width: 120, align: 'center' },
+                    {
+                        field: 'Edit', title: '操作', width: 100, align: 'center',
+                        formatter: function (value, row, index) {
+                            var editurl = '@Url.Action("doDrugCheck","Drug")' + "?id=" + row.id;
+                            return "<a href='" + editurl + "' target='mainFrame' ><img width='18px' height='18' alt='修改' src='../../Content/Images/xiugai.png' /></a>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + "<a href='javascript:void(0)' target='mainFrame' ><img width='18px' height='18' alt='删除' src='../../Content/Images/shanchu.png' /></a>";
+                        }
+                    }
+                ]]
+            });
+        }
+
+        function click_Check()
+        {
+            if (confirm("确认是否盘点？")) {
+                var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                var txts = tablequeryParams._sdate;
+                var txts2 = tablequeryParams._edate;
+                var ddlcompany = $("#ddlcompany").val();
+                var ddl_shenhezhuangtai = tablequeryParams._auditstatus;
+                var cid='@ViewBag._lid ';
+                var actionurl = '@Url.Action("click_DrugCheck","Drug")';
+                $.ajax({
+                    type: "POST",
+                    url: actionurl,
+                    async: false,
+                    data:{_cid: '@ViewBag._lid ', _sdate: txts, _edate: txts2, _auditstatus: ddl_shenhezhuangtai},
+                    dataType: "json"
+                });
+                $("#dgtable").datagrid("reload");
+            }
+        }
+
+        function click_AllAudit()
+        {
+            if (confirm("确认是否批量审核？")) {
+                var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                var txts = tablequeryParams._sdate;
+                var txts2 = tablequeryParams._edate;
+                var ddlcompany = $("#ddlcompany").val();
+                
+                var ddl_shenhezhuangtai = tablequeryParams._auditstatus;
+                var cid = '@ViewBag._lid ';
+                var actionurl = '@Url.Action("click_DrugAudit","Drug")';
+                $.ajax({
+                    type: "POST",
+                    url: actionurl,
+                    async: false,
+                    data: { _cid: '@ViewBag._lid ', _sdate: txts, _edate: txts2, _auditstatus: ddl_shenhezhuangtai },
+                    dataType: "json"
+                });
+                $("#dgtable").datagrid("reload");
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: auto;">
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：药品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />药品盘点 </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="1040px">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                         <tr>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;">单位名称：
+                                @if ((Session["UserInfo"] as Model.PersonnelManage.E_tb_InPersonnel).DataRange == 1)
+                                {
+                                    @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany" })
+                                }
+                                else
+                                { 
+                                   @Html.DropDownList("ddl_company", ViewData["ddl_company"] as SelectList, new { @id = "ddlcompany",@disabled = "disabled" })
+                                }
+                            </td>
+                            <td width="380" style="font-family: '宋体'; font-size: 12px; color: #10607c;">
+                                日期：<input style="border: 1px solid #3496d6;width:80px" type="text" id="txt_Search" />
+                                至<input style="border: 1px solid #3496d6;width:80px" type="text" id="txt_Search2" />
+                                审核状态：      
+                                <select id="ddl_shenhezhuangtai">
+                                    <option value="未审核">未审核</option>
+                                    <option value="未通过">未通过</option>
+                                    <option value="通过">通过</option>
+                                </select>
+                            </td>
+                            <td style="font-family: '宋体'; font-size: 12px; color: #10607c;">名称：<input style="border: 1px solid #3496d6;width:120px" type="text" id="txt_search2" /></td>
+                            <td align="left" width="80">
+                                <a href="javascript:void(0)" onclick="click_Search()"><img src='@Url.Content("~/Content/Images/chaxun.png")' /></a>
+                            </td>
+                            <td align="left">
+                               
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right" colspan="5">
+                                <a href="javascript:void(0)" onclick="click_Check()"><img src='@Url.Content("~/Content/Images/盘点.png")' /></a>
+                                 <a href="javascript:void(0)" onclick="click_Check()"><img src='@Url.Content("~/Content/Images/盘点.png")' /></a>
+                                <a href="javascript:void(0)" onclick="click_AllAudit()"><img src='@Url.Content("~/Content/Images/批量审核.png")' /></a>
+                                <a href="javascript:void(0)" ><img src='@Url.Content("~/Content/Images/导出Excel.png")'/></a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400px">
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>

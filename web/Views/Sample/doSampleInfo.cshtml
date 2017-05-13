@@ -1,0 +1,359 @@
+﻿@model Model.tb_Sample
+@{
+    ViewBag.Title = "doSampleInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>样品登记</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#productDate').click(function () { WdatePicker() });
+            $('#detectionDate').click(function () { WdatePicker() });
+            $('#handleDate').click(function () { WdatePicker() });
+
+            //$("#ddl_clicnt").siblings(".combo").hide();
+            $("#detectionCompany").attr("disabled", "true");
+            $("#detectionAdress").attr("disabled", "true");
+            $("#detectionUser").attr("disabled", "true");
+
+            $('#isDetection').change(function () {
+                if ($(this).val() != "false") {
+                    //$("#ddl_clicnt").siblings(".combo").attr("disabled", "true");
+                    $("#ddl_clicnt").siblings(".combo").hide();
+                    $("#InspectAddress").attr("disabled", "true");
+                    $("#InspectCompany").attr("disabled", "true");
+
+                    $("#detectionCompany").removeAttr("disabled");
+                    $("#detectionAdress").removeAttr("disabled");
+                    $("#detectionUser").removeAttr("disabled");
+                } else {
+
+                    $("#detectionCompany").attr("disabled", "true");
+                    $("#detectionAdress").attr("disabled", "true");
+                    $("#detectionUser").attr("disabled", "true");
+
+                    $("#InspectAddress").removeAttr("disabled");
+                    $("#InspectCompany").removeAttr("disabled");
+                    $("#ddl_clicnt").siblings(".combo").show();
+                    //$("#ddl_clicnt").siblings(".combo").removeAttr("disabled");
+                }
+
+            });
+            /*页面控件验证*/
+            $("#name").attr("datatype", "*");
+            //$("#standard").attr("datatype", "*");
+            $("#batch").attr("datatype", "*");
+            $("#productDate").attr("datatype", "*");
+            //$("#modelType").attr("datatype", "*");
+            //$("#expirationDate").attr("datatype", "*");
+            $("#packaging").attr("datatype", "*");
+            $("#isDetection").attr("datatype", "*");
+            $("#detectionDate").attr("datatype", "*");
+            //$("#detectionUser").attr("datatype", "*");
+            $("#uploadfrm").Validform({
+                tiptype: 3
+            });
+            /*结束 页面控件验证*/
+            $('#ddl_project').combogrid({
+                delay: 500,
+                panelWidth: 350,
+                mode: 'remote',
+                idField: 'ProjectID',
+                textField: 'ProjectName',
+                url: '@Url.Action("GetProjectListForDropDownList", "Sample")',
+                onSelect: function (rowIndex, rowData) {
+                    $('#standard').val(rowData.ProjectID);
+                    $('#projectName').val(rowData.ProjectName);
+                    $('#testMethod').val(rowData.ExpeMethod);
+
+
+                },
+                columns: [[
+                    { field: 'ProjectName', title: '项目名称', width: 250 }
+                ]]
+            });
+
+            $("#InspectCompany").change(function () {
+                var inspectCompanyid = $(this).val();
+                if (inspectCompanyid != "-1") {
+                    $.ajax({
+                        url: '@Url.Action("GetInspectAddressById", "Sample")',
+                        type: "GET",
+                        data: { id: inspectCompanyid },
+                        success: function (data) {
+                            $('#InspectAddress').val(data);
+                        }
+                    });
+                }
+            });
+
+            $('#ddl_clicnt').combogrid({
+                delay: 500,
+                panelWidth: 350,
+                mode: 'remote',
+                idField: 'ClientID',
+                textField: 'ClientName',
+                url: '@Url.Action("GetClientListForDropDownList", "Sample")',
+                onSelect: function (rowIndex, rowData) {
+                    $('#InspectCompany').val(rowData.ClientID);
+                    $('#InspectAddress').val(rowData.Address);
+                },
+                columns: [[
+                    { field: 'ClientName', title: '客户名称', width: 250 }
+                ]]
+            });
+        });
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：样品管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />样品管理
+                    <img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />新增/编辑 </td>
+            </tr>
+        </table>
+    </div>
+    <div class="divList">
+        @using (Ajax.BeginForm("doSampleCU", "Sample", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "uploadfrm" }))
+        {
+            @Html.HiddenFor(m => m.id)
+            @Html.HiddenFor(m => m.createDate, new { @id = "createDateE" })
+            @Html.HiddenFor(m => m.createUser, new { @id = "createUserE" })
+            @Html.HiddenFor(m => m.updateDate, new { @id = "updateDateE" })
+            @Html.HiddenFor(m => m.updateUser, new { @id = "updateUserE" })
+            <table align="left" height="300px" style="font-family: '宋体'; font-size: 12px;">
+                <tr>
+                    <td rowspan="4">样品信息</td>
+                    <td>样品名称：@Html.TextBoxFor(m => m.name)</td>
+                    <td>生产日期：@Html.TextBoxFor(m => m.productDate)</td>
+                </tr>
+                <tr>
+                    <td>样品编号：@Html.TextBoxFor(m => m.sampleNum)</td>
+                    <td>产品批次：@Html.TextBoxFor(m => m.protNum)</td>
+                </tr>
+                <tr>
+                    <td>保 质 期：@Html.TextBoxFor(m => m.expirationDate)</td>
+                    <td>包装方式：@Html.TextBoxFor(m => m.packaging)</td>
+                </tr>
+                <tr>
+                    <td>规格型号：@Html.TextBoxFor(m => m.modelType)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td rowspan="5">抽样信息</td>
+                    <td>抽样形式：@{
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem() { Text = "送样", Value = "false" });
+            list.Add(new SelectListItem() { Text = "抽样", Value = "true" });
+                    }
+                        @Html.DropDownListFor(m => m.isDetection, list)</td>
+                    <td>送/抽样日期：@Html.TextBoxFor(m => m.detectionDate)</td>
+                </tr>
+                <tr style="display: none">
+                    <td>抽样依据：@Html.TextBoxFor(m => m.detectionGist)</td>
+                    <td>抽样方法：@Html.TextBoxFor(m => m.detectionMethod)</td>
+                </tr>
+                <tr>
+                    <td>抽样单位：@Html.TextBoxFor(m => m.detectionCompany)</td>
+                    <td>抽样地点：@Html.TextBoxFor(m => m.detectionAdress)</td>
+                </tr>
+                <tr>
+                    <td>抽 样 者：@Html.TextBoxFor(m => m.detectionUser)</td>
+                    <td>样品数量：@Html.TextBoxFor(m => m.batch)</td>
+                </tr>
+                <tr>
+                    @*@{
+                        if (Model != null && Model.id > 0)
+                        {
+                            String company = Model.InspectCompany;
+                            if (!String.IsNullOrEmpty(company))
+                            {
+                                company = new BLL.ClientManage.T_tb_ClientManage().GetModel(Convert.ToInt32(company)).ClientName;
+                                <td>送样单位：@company @Html.HiddenFor(m => m.InspectCompany)</td>
+                            }
+                            else
+                            {
+                                <td>送样单位：<select id="ddl_clicnt" style="width: 155px">@Html.HiddenFor(m => m.InspectCompany)</td> 
+                            }
+                        
+                        }
+                        else
+                        {
+                                    <td>送样单位：<select id="ddl_clicnt" style="width: 155px">@Html.HiddenFor(m => m.InspectCompany)</td> 
+                        }    
+                    }*@
+                    @{
+            List<SelectListItem> listClientManage = new List<SelectListItem>();
+            listClientManage.Add(new SelectListItem() { Text = "请选择", Value = "-1" });
+            foreach (var item in new BLL.ClientManage.T_tb_ClientManage().GetModelList(""))
+            {
+                listClientManage.Add(new SelectListItem() { Text = item.ClientName, Value = item.ClientID.ToString() });
+            } 
+                    }
+                    <td>送样单位：@Html.DropDownListFor(m => m.InspectCompany, listClientManage as List<SelectListItem>)</td>
+                    <td>送样地址：@Html.TextBoxFor(m => m.InspectAddress)</td>
+                </tr>
+                <tr style="display: none">
+                    <td>任务清单</td>
+                    @{
+            if (Model != null && Model.id > 0)
+            {
+                String projectName = Model.standard;
+                if (!String.IsNullOrEmpty(projectName))
+                {
+                    projectName = new BLL.Laboratory.T_tb_Project().GetModel(Convert.ToInt32(projectName)).ProjectName;
+                }
+                        <td>项目名称：@projectName
+                            @Html.HiddenFor(m => m.projectName)
+                            @Html.HiddenFor(m => m.standard)
+                        </td>
+            }
+            else
+            {
+                        <td>项目名称：<select id="ddl_project" style="width: 155px"></select>
+                            @Html.HiddenFor(m => m.projectName)
+                            @Html.HiddenFor(m => m.standard)
+                        </td>
+            }    
+                    }
+                    <td>检验方法：@Html.TextBoxFor(m => m.testMethod)</td>
+                </tr>
+                @{
+            if (Model != null && Model.id > 0 && (DateTime.Now - Model.createDate.Value).Days > 2)
+            {
+                    <tr>
+                        <td rowspan="2">样品保存及处理</td>
+                        <td>存放地点：@Html.TextBoxFor(m => m.putArea)</td>
+                        <td>销毁时间：@Model.handleDate</td>
+                    </tr>
+                    <tr>
+                        <td>销毁人：@Model.handleUser</td>
+                        <td>销毁方式：@Html.TextBoxFor(m => m.sampleHandle)</td>
+                    </tr>
+            }
+                }
+                <tr>
+                    <td colspan="3">样品管理员：
+                    @{
+            string PersonnelName = "";
+            if (Model != null && Model.id > 0)
+            {
+                PersonnelName = Model.sampleAdmin;
+            }
+            else
+            {
+                PersonnelName = ViewBag._PersonnelName;
+            }
+                    }
+                        @PersonnelName
+                        @Html.HiddenFor(m => m.sampleAdmin)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="center">
+                        <a href="javascript:void(0)" onclick="$('#uploadfrm').submit()">
+                            <img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/quxiao.png" height="20px" />
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+</body>

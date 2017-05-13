@@ -1,0 +1,155 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/FlexPaper/js/jquery.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/FlexPaper/js/flexpaper_handlers_debug.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/FlexPaper/js/flexpaper_flash.js")'></script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 60px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body style="background-color: transparent; overflow: hidden;">
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' /> @Session["doc_Type"] <img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />预览</td>
+                <a href="javascript:void(0)" onclick="history.go(-1)">
+                            <img src="~/Content/Images/fanhui.png" height="20px" />
+            </tr>
+        </table>
+    </div>
+    <div class="divList">
+        <div id="viewerPlaceHolder" style="height: 768px; overflow: hidden;">
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var swfurl = '@Url.Content("~/UpFile/" + ViewBag._SWFURL)';
+            swfurl = escape(swfurl);
+            var fp = new FlexPaperViewer(
+                                                ///FlexPaper组件的SWF框架路径
+                                                '@Url.Content("~/Scripts/FlexPaper/FlexPaperViewer")',
+
+                                            'viewerPlaceHolder',
+                                            {
+                                                config:
+                                                {
+                                                    ///需要显示的.swf
+                                                    SwfFile: swfurl,
+
+                                                    Scale: 0.6,
+
+                                                    ZoomTransition: 'easeOut',
+
+                                                    ZoomTime: 0.5,
+
+                                                    ZoomInterval: 0.2,
+
+                                                    FitPageOnLoad: false,
+
+                                                    FitWidthOnLoad: false,
+
+                                                    PrintEnabled: true,
+
+                                                    FullScreenAsMaxWindow: false,
+
+                                                    ProgressiveLoading: false,
+
+                                                    MinZoomSize: 0.2,
+
+                                                    MaxZoomSize: 5,
+
+                                                    SearchMatchAll: false,
+
+                                                    InitViewMode: 'Portrait',
+
+                                                    ViewModeToolsVisible: true,
+
+                                                    ZoomToolsVisible: true,
+
+                                                    NavToolsVisible: true,
+
+                                                    CursorToolsVisible: true,
+
+                                                    SearchToolsVisible: true,
+
+                                                    localeChain: 'zh_CN'
+
+                                                }
+
+                                            });
+        });
+    </script>
+</body>
+</html>

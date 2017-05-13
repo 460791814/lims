@@ -1,0 +1,525 @@
+﻿@model Model.tb_EasyConsumeLock
+@{
+    ViewBag.Title = "doEasyConsumeLockInfo";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>易耗品柜管理</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: "/EasyConsume/GetEasyConsumeRegionList",
+                pagination: true,//分页控件  
+                singleSelect: true,//是否单选
+                rownumbers: true,
+                queryParams: { 'pageNumber': 1, 'pageSize': 10, '_regionName': "", '_lockId': "@Model.id" },
+                columns: [[
+                    { field: 'regionName', title: '区域', width: 50, align: 'center' },
+                    { field: 'drugCode', title: '编码', width: 84, align: 'center' },
+                    { field: 'drugName', title: '易耗品名称', width: 180, align: 'center' },
+                    { field: 'danwei', title: '单位', width: 50, align: 'center' },
+                    {
+                        field: 'productDate', title: '生产日期', width: 130, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    {
+                        field: 'validDate', title: '有效期', width: 130, align: 'center',
+                        formatter: function (value, row, index) {
+                            if (value == undefined || value.length < 9) {
+                                return "";
+                            }
+                            value = value.substr(0, value.length - 8);
+                            return value;
+                        }
+                    },
+                    { field: 'temp2', title: '库存结余', width: 80, align: 'center' }
+                ]]
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 10,//每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20],//可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+        });
+
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+
+        function onclick_druglock() {
+            var txt_lockName = encodeURIComponent($("#txt_lockName").val());
+            var ddl_locktype = $("#ddl_locktype").val();
+            var cbo_wxp = $("#cbo_wxp").attr("checked");
+            var cbo_hxp = $("#cbo_hxp").attr("checked");
+            if (txt_lockName == null || txt_lockName == "") {
+                alert("易耗品柜名称不能为空！");
+                return;
+            }
+            if (ddl_locktype == "请选择") {
+                alert("请选择易耗品柜类型！");
+                return;
+            }
+            if (cbo_wxp == "checked") {
+                cbo_wxp = "true";
+            } else {
+                cbo_wxp = "false";
+            }
+            if (cbo_hxp == "checked") {
+                cbo_hxp = "true";
+            } else {
+                cbo_hxp = "false";
+            }
+            ddl_locktype = encodeURIComponent(ddl_locktype);
+            var actionurl = '@Url.Action("Update_EasyConsumeLock", "EasyConsume")' + "?id=" + "@Model.id" + "&_lockName=" + txt_lockName + "&_wxp=" + cbo_wxp + "&_hxp=" + cbo_hxp + "&_locktype=" + ddl_locktype;
+            $.getJSON(actionurl, function (data) { alert(data); });
+        }
+        var clicknum = 0;
+        var imgname = "";
+        function onclick_drugregion(regionName, num) {
+            var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+            tablequeryParams._regionName = regionName;
+            $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+            $("#dgtable").datagrid("reload");
+            clicknum = num;
+            if ("@Model.lockType" == "冷藏柜") {
+                onmouseover_img_for_lcg(num, 9);
+            } else {
+                onmouseover_img(num, 9);
+            }
+
+            $("#img_" + num).attr("src", "../../Content/Images/Lock/" + imgname + "+" + ".PNG");
+        }
+
+        function onmouseover_img(num, count) {
+            for (var i = 1; i <= count; i++) {
+                if (clicknum > 0 && clicknum == i) {
+                    continue;
+                }
+                imgname = switch_GetImgName(i);
+                $("#img_" + i).attr("src", "../../Content/Images/Lock/" + imgname + ".PNG");
+            }
+            imgname = switch_GetImgName(num);
+            $("#img_" + num).attr("src", "../../Content/Images/Lock/" + imgname + "+" + ".PNG");
+        }
+
+        function onmouseout_img(num) {
+            if (clicknum > 0 && clicknum == num) {
+                return;
+            }
+            imgname = switch_GetImgName(num);
+            $("#img_" + num).attr("src", "../../Content/Images/Lock/" + imgname + ".PNG");
+        }
+
+        function switch_GetImgName(num) {
+            switch (num) {
+                case 1:
+                    imgname = "A1";
+                    break;
+                case 2:
+                    imgname = "A2";
+                    break;
+                case 3:
+                    imgname = "A3";
+                    break;
+                case 4:
+                    imgname = "A4";
+                    break;
+                case 5:
+                    imgname = "B1";
+                    break;
+                case 6:
+                    imgname = "B2";
+                    break;
+                case 7:
+                    imgname = "B3";
+                    break;
+                case 8:
+                    imgname = "B4";
+                    break;
+                case 9:
+                    imgname = "C1";
+                    break;
+                case 10:
+                    imgname = "C2";
+                    break;
+                case 11:
+                    imgname = "C3";
+                    break;
+                case 12:
+                    imgname = "C4";
+                    break;
+            }
+            return imgname;
+        }
+
+
+        function onmouseover_img_for_lcg(num, count) {
+            for (var i = 1; i <= count; i++) {
+                if (clicknum > 0 && clicknum == i) {
+                    continue;
+                }
+                imgname = switch_GetImgName_for_lcg(i);
+                $("#img_" + i).attr("src", "../../Content/Images/Lock/" + imgname + ".PNG");
+            }
+            imgname = switch_GetImgName_for_lcg(num);
+            $("#img_" + num).attr("src", "../../Content/Images/Lock/" + imgname + "+" + ".PNG");
+        }
+
+        function onmouseout_img_for_lcg(num) {
+            if (clicknum > 0 && clicknum == num) {
+                return;
+            }
+            imgname = switch_GetImgName_for_lcg(num);
+            $("#img_" + num).attr("src", "../../Content/Images/Lock/" + imgname + ".PNG");
+        }
+
+        function switch_GetImgName_for_lcg(num) {
+            switch (num) {
+                case 1:
+                    imgname = "A";
+                    break;
+                case 2:
+                    imgname = "B";
+                    break;
+                case 3:
+                    imgname = "C";
+                    break;
+                case 4:
+                    imgname = "D";
+                    break;
+                case 5:
+                    imgname = "E";
+                    break;
+            }
+            return imgname;
+        }
+    </script>
+    <style type="text/css">
+        .divList {
+            position: absolute;
+            top: 40px;
+            left: 1px;
+            z-index: 99;
+            width: 1048px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+            a img {
+                border: 0;
+            }
+
+        .biaoge {
+            width: 1040px;
+            font-family: '宋体';
+            font-size: 12px;
+            color: #10607c;
+        }
+
+            .biaoge td {
+                text-align: center;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px solid #d4d3d3;
+            }
+
+        .data_tab02 {
+            height: 22px;
+            margin: 0px;
+            padding-left: 2px;
+            background: url(Content/Images/tab_bg02.gif) repeat-x;
+        }
+
+            .data_tab02 dd {
+                width: 100px;
+                height: 22px;
+                line-height: 22px;
+                float: left;
+                text-align: center;
+                cursor: pointer;
+                margin-right: 2px;
+            }
+
+                .data_tab02 dd a {
+                    display: block;
+                    clear: both;
+                    background: url(../../Content/Images/dlbeijing.png);
+                    width: 100px;
+                    height: 25px;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                }
+
+                    .data_tab02 dd a:hover {
+                        color: #ff9c00;
+                    }
+
+                    .data_tab02 dd a:focus {
+                        color: #ff9c00;
+                    }
+    </style>
+</head>
+<body>
+    <div style="background: #faf1e8; height: 30px; width: 100%; top: 1px; position: absolute; z-index: 99; left: 1px;">
+        <table align="left" width="100%" height="27px">
+            <tr>
+                <td width="1029" style="font-family: '宋体'; font-size: 12px; color: #10607c;">当前位置：易耗品管理<img style="text-align:center;vertical-align:middle" src='@Url.Content("~/Content/Images/位置.png")' />易耗品柜<img style="text-align:center;vertical-align:middle" src='@Url.Content("~/Content/Images/位置.png")' />易耗品柜详情</td>
+            </tr>
+        </table>
+    </div>
+    @{
+        List<SelectListItem> listlocktype = new List<SelectListItem>();
+        listlocktype.Add(new SelectListItem() { Text = "请选择", Value = "请选择" });
+        listlocktype.Add(new SelectListItem() { Text = "玻璃柜3*4", Value = "玻璃柜3_4" });
+        listlocktype.Add(new SelectListItem() { Text = "不透明柜2*4", Value = "不透明柜2_4" });
+        listlocktype.Add(new SelectListItem() { Text = "不透明柜3*4", Value = "不透明柜3_4" });
+        listlocktype.Add(new SelectListItem() { Text = "冷藏柜", Value = "冷藏柜" });
+        if (Model.id > 0)
+        {
+            if (Model.lockType.Equals("玻璃柜3_4"))
+            {
+                listlocktype[1].Selected = true;
+            }
+            if (Model.lockType.Equals("不透明柜2_4"))
+            {
+                listlocktype[2].Selected = true;
+            }
+            if (Model.lockType.Equals("不透明柜3_4"))
+            {
+                listlocktype[3].Selected = true;
+            }
+        }           
+    }
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" width="1040px">
+                        <tr>
+                            <td width="480" style="font-family: '宋体'; font-size: 12px; color: #10607c;">易耗品柜名称：
+                                <input style="border: 1px solid #3496d6; width: 150px" type="text" id="txt_lockName" value="@Model.lockName" />
+                                @Html.DropDownList("ddl_locktype", listlocktype)
+                                @{
+                                    string wxp = "危险品";
+                                    string hxp = "化学品";
+                                    bool b_wxp = false;
+                                    bool b_hxp = false;
+                                    if (Model != null && Model.id > 0)
+                                    {
+                                        if (Model.mark.Equals("都是"))
+                                        {
+                                            b_wxp = true;
+                                            b_hxp = true;
+                                        }
+                                        else if (Model.mark.Equals("都不是"))
+                                        {
+                                            b_wxp = false;
+                                            b_hxp = false;
+                                        }
+                                        else if (Model.mark.Equals("危险品"))
+                                        {
+                                            b_wxp = true;
+                                        }
+                                        else if (Model.mark.Equals("化学品"))
+                                        {
+                                            b_hxp = true;
+                                        }
+                                    }
+                                    
+                                    @Html.CheckBox("cbo_wxp", b_wxp)
+                                    @wxp
+                                    @Html.CheckBox("cbo_hxp", b_hxp)
+                                    @hxp
+                                }
+                            </td>
+                            <td align="right">
+                                <a href='javascript:void(0)' onclick="onclick_druglock()">
+                                    <img src='@Url.Content("~/Content/Images/baocun.png")' />
+                                </a>
+                                <a href='@Url.Action("EasyConsumeLock", "EasyConsume")' target="mainFrame">
+                                    <img src="~/Content/Images/fanhui.png" />
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td height="400">
+                                @{
+                                    string bgurl = "";
+                                    if (Model != null && Model.id > 0)
+                                    {
+                                        if (Model.lockType.Equals("冷藏柜"))
+                                        {
+                                            bgurl = "background: url(../../Content/Images/Lock/冷藏柜都是大.PNG); width: 380px; height: 500px";
+                                        }
+                                        else
+                                        {
+                                            bgurl = "background: url(../../Content/Images/Lock/guizi_bj.PNG); width: 382px; height: 382px";    
+                                        }
+                                    }
+                                }
+                                <table style="@bgurl">
+                                    <tr>
+                                        <td height="32" align="right" colspan="4" style="vertical-align: top">
+                                            <input style="top: 0px" type="button" onclick='onclick_drugregion("")' value="查看所有易耗品" />&nbsp;
+                                        </td>
+                                    </tr>
+                                    @{
+                                        if (Model != null && Model.id > 0)
+                                        {
+                                            if (Model.lockType.Equals("冷藏柜"))
+                                            {
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("A",1)' onmouseover="onmouseover_img_for_lcg(1,5)" onmouseout="onmouseout_img_for_lcg(1)">
+                                                    <img id="img_1" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("B",2)' onmouseover="onmouseover_img_for_lcg(2,5)" onmouseout="onmouseout_img_for_lcg(2)">
+                                                    <img id="img_2" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/B.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("C",3)' onmouseover="onmouseover_img_for_lcg(3,5)" onmouseout="onmouseout_img_for_lcg(3)">
+                                                    <img id="img_3" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/C.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("D",4)' onmouseover="onmouseover_img_for_lcg(4,5)" onmouseout="onmouseout_img_for_lcg(4)">
+                                                    <img id="img_4" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/D.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("E",5)' onmouseover="onmouseover_img_for_lcg(5,5)" onmouseout="onmouseout_img_for_lcg(5)">
+                                                    <img id="img_5" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/E.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                &nbsp;
+                                            </td>
+                                        </tr>
+                                            }
+                                            else
+                                            {
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("A1",1)' onmouseover="onmouseover_img(1,12)" onmouseout="onmouseout_img(1)">
+                                                    <img id="img_1" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A1.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("A2",2)' onmouseover="onmouseover_img(2,12)" onmouseout="onmouseout_img(2)">
+                                                    <img id="img_2" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A2.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("A3",3)' onmouseover="onmouseover_img(3,12)" onmouseout="onmouseout_img(3)">
+                                                    <img id="img_3" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A3.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("A4",4)' onmouseover="onmouseover_img(4,12)" onmouseout="onmouseout_img(4)">
+                                                    <img id="img_4" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A3.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("B1",5)' onmouseover="onmouseover_img(5,12)" onmouseout="onmouseout_img(5)">
+                                                    <img id="img_5" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/B1.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("B2",6)' onmouseover="onmouseover_img(6,12)" onmouseout="onmouseout_img(6)">
+                                                    <img id="img_6" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/B2.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("B3",7)' onmouseover="onmouseover_img(7,12)" onmouseout="onmouseout_img(7)">
+                                                    <img id="img_7" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/B3.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("B4",8)' onmouseover="onmouseover_img(8,12)" onmouseout="onmouseout_img(8)">
+                                                    <img id="img_8" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A3.png")'/></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("C1",9)' onmouseover="onmouseover_img(9,12)" onmouseout="onmouseout_img(9)">
+                                                    <img id="img_9" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/C1.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("C2",10)' onmouseover="onmouseover_img(10,12)" onmouseout="onmouseout_img(10)">
+                                                    <img id="img_10" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/C2.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("C3",11)' onmouseover="onmouseover_img(11,12)" onmouseout="onmouseout_img(11)">
+                                                    <img id="img_11" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/C3.png")'/></a>
+                                            </td>
+                                            <td align="center">
+                                                <a href="javascript:void(0)" onclick='onclick_drugregion("C4",12)' onmouseover="onmouseover_img(12,12)" onmouseout="onmouseout_img(12)">
+                                                    <img id="img_12" height="60" width="60" src='@Url.Content("~/Content/Images/Lock/A3.png")'/></a>
+                                            </td>
+                                        </tr>
+                                            }
+                                        }
+                                    }
+                                </table>
+                            </td>
+                            <td width="771" style="vertical-align: top" height="400">
+                                <br />
+                                <table cellpadding="0" cellspacing="0" class="biaoge" id="dgtable" height="400">
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>

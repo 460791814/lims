@@ -1,0 +1,48 @@
+﻿@model Model.PersonnelManage.E_tb_InPersonnel
+@{
+    ViewBag.Title = "Top";
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href='@Url.Content("~/Content/XINDECSS/MainStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/ColorStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/LayoutStyle.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/XINDECSS/TopStyle.css")' rel="stylesheet" type="text/css" />
+    <script src="/Scripts/jquery-1.8.2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function Close() {
+            $.get("/Login/Close",
+            function (data) {
+                if (data == "OK") {
+                    if (window.confirm('确定退出吗？')) {
+                        window.parent.parent.close();   // 关闭当前窗口 
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="Top">
+        <div class="main">
+            <div class="logo">
+                <img alt="" src="~/Content/Images_ZHU/images_06.png" width="217" height="74" />
+            </div>
+            <div class="Menu_Left">欢迎您！@Model.PersonnelName</div>
+            <div class="Menu">
+                <ul>
+                    <li style="background:url(/Content/Images_ZHU/Images_04.gif) no-repeat left center;"><a href="javascript:Close();">退出</a></li>
+                    <li style="background:url(/Content/Images_ZHU/Images_03.gif) no-repeat left center;"><a href="@Url.Content("~/Login/LoginOut")"  target="_parent">注销</a></li>
+                    <li style="background:url(/Content/Images_ZHU/Images_05.gif) no-repeat left center;"><a href="/Home/Default" target="mainFrame">桌面</a></li>
+                </ul>
+            </div>
+        </div>
+	</div>
+</body>
+</html>
+
+

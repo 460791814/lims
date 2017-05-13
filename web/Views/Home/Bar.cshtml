@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Bar";
+}
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <script type="text/javascript" language="javascript">
+         function switchSysBar() {
+             if (parent.document.getElementById('attachucp').cols == "211,11,*") {
+                 document.getElementById('leftbar').style.display = "";
+                 parent.document.getElementById('attachucp').cols = "0,11,*";
+             }
+             else {
+                 parent.document.getElementById('attachucp').cols = "211,11,*";
+                 document.getElementById('leftbar').style.display = "none"
+             }
+         }
+         function load() {
+             if (parent.document.getElementById('attachucp').cols == "0,11,*") {
+                 document.getElementById('leftbar').style.display = "";
+             }
+         }
+    </script>
+</head>
+<body style="margin: 0px; background-color: #C7DAEB; height:100%; min-height:725px;" onload="load();">
+    <table style="height:100%; width:12px;min-height:725px;" cellspacing="0" cellpadding="0">
+        <tr>
+            <td style="background-image: url(/Content/Images_ZHU/bg10.jpg); background-color: #009fef;width:1px;"></td>
+            <td style="background-image: url(/Content/Images_ZHU/bg11.jpg); background-repeat: repeat-y;display: none; background-color: #f5f4f4;" id="leftbar">
+                <a onclick="switchSysBar();" href="javascript:void(0);">
+                    <img height="179px" border="0" width="11px" alt="展开左侧菜单" src="/Content/Images_ZHU/swich.jpg" />
+                </a>
+            </td>
+            <td style="background-image: url(/Content/Images_ZHU/bg10.jpg); background-repeat: repeat-y; "id="rightbar" bgcolor="#f5f4f4">
+                <a onclick="switchSysBar();" href="javascript:void(0);">
+                    <img height="179px" border="0" width="11px" alt="隐藏左侧菜单" src="/Content/Images_ZHU/swich.jpg" />
+                </a>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+

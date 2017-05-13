@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Scripts/uploadify-v3.1/uploadify.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")" type="text/javascript"></script>
+@*<script src="../../Scripts/uploadify-v3.1/jquery.uploadify-3.1.min.js?ver=12123" type="text/javascript"></script>*@
+<script type="text/javascript" src="@Url.Content("~/Scripts/uploadify-v3.1/jquery.uploadify-3.1.min.js?ver=")@DateTime.Now.Ticks"></script>
+
+
+
+<script type="text/javascript">
+    $(function () {
+        $('#file_upload').uploadify({
+            'buttonText': '',
+            'width': '57px;',
+            'height':'23px;',
+            'swf': '@Url.Content("~/Scripts/uploadify-v3.1/uploadify.swf")',
+            'uploader': '/UploadFile/Upload',
+            "onUploadSuccess": function (file, data, response) {
+                alert($.parseJSON(data).SaveName);
+            },
+            "onUploadError": function (file, errorCode, errorMsg, errorString) {
+            }
+        });
+
+    });
+</script>
+<input type="file" id="file_upload" name="file_upload"/>

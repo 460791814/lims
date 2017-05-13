@@ -1,0 +1,37 @@
+﻿@model Model.News.E_tb_News
+@{
+    ViewBag.Title = "NewsEdit";
+}
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>公告信息</title>
+</head>
+<body>
+        @using (Ajax.BeginForm("Save", "News", new AjaxOptions { HttpMethod = "Post", OnSuccess = "handle", OnFailure = "failed" }, new { @id = "frmUpdate" }))
+        {
+            @Html.HiddenFor(m => m.NewID, new { @id = "HidNewID" })
+            @Html.HiddenFor(m => m.EditType, new { @id = "HidEditType" })
+            <table border="0" cellpadding="0" cellspacing="0" width="98%" class="DialogTable">
+                <tr>
+                    <td width="70px" align="right">公告标题：</td>
+                    <td align="left" style="width:160px;">@Html.TextBoxFor(m => m.Title, new { @style = "width:99%;", @id = "txt_Title" })</td>
+                    <td width="70px" align="right">公告类型：</td>
+                    <td align="left">@Html.DropDownListFor(m => m.NewTypeID, ViewData["NewsTypeList"] as SelectList)</td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right">内容：</td>
+                    <td colspan="3">
+                         @Html.TextAreaFor(m => m.Contents, new { @style = "height:300px;width:99%;", @id = "txt_Contents" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <a href="javascript:void(0)" onclick="$('#frmUpdate').submit()"><img src="~/Content/Images/baocun.png" height="20px" /></a>
+                        <a href="javascript:void(0)" onclick="Close()"><img src="~/Content/Images/quxiao.png" height="20px" /></a>
+                    </td>
+                </tr>
+            </table>
+        }
+</body>

@@ -1,0 +1,246 @@
+﻿@model Model.OriginalRecord.E_tb_OriginalRecord
+@{
+    ViewBag.Title = "OriginalRecordList";
+}
+
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>原始记录列表</title>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/default/easyui.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/themes/icon.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/jquery-easyui/demo.css")'/>
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/uploader/uploadify.css")' />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Scripts/Validform/style.css")'  />
+    <link rel="stylesheet" type="text/css" href='@Url.Content("~/Content/XINDECSS/MainStyle.css")'/>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-1.8.2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/jquery.easyui.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery-easyui/locale/easyui-lang-zh_CN.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/jquery.uploadify.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/uploader/swfobject.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/MicrosoftMvcAjax.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/Validform/Validform_v5.3.2_min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/My97DatePicker/WdatePicker.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")'></script>
+
+    @*<script src="../../Scripts/jquery-1.8.2.js" type="text/javascript"></script>*@
+    <script type="text/javascript">
+        
+        var SearchUrl="/OriginalRecord/GetList?pageNumber=1&pageSize=20&RecordID="+@Model.RecordID;
+
+        $(document).ready(function () {
+            $('#dgtable').datagrid({
+                url: SearchUrl,
+                pagination: true, //分页控件  
+                singleSelect: true, //是否单选
+                rownumbers: true,
+                columns: [[
+//                    { field: 'RecordID', title: '编号', align: 'center' },
+                    { field: 'ProjectName', title: '项目名称', align: 'center' },
+                    { field: 'SampleName', title: '样品名称', align: 'left' },
+                    { field: 'DetectTime', title: '检测日期', align: 'center' },
+                    { field: 'DetectPersonnelName', title: '检验人', align: 'center' },
+//                    { field: 'TaskNo', title: '任务单号', align: 'center' },
+                    { field: 'Contents', title: '备注', align: 'center' },
+                    {
+                        field: 'Edit', title: '编辑', align: 'center',
+                        formatter: function (value, row, index) {
+                            return "@if (Convert.ToBoolean(ViewData["5f2cf62b"]) && (ViewData["ApprovalPersonnelName"] == "" || ViewBag._userName.Equals("guhaining")))
+                                    {<a href='javascript:void(0)' onclick='Edit(" + row.RecordID + ")' ><img width='18px' height='18' alt='修改' src='/Content/Images/xiugai.png' /></a>}";
+                        }
+                    },
+                    {
+                        field: 'View', title: '记录详情', align: 'center',
+                        formatter: function (value, row, index) {
+                            return row.FilePath != "" ? "<a href='javascript:void(0)' onclick=\"click_ViewOffice(" + row.RecordID + ")\"><img width='18px' height='18' alt='阅览' src='/Content/Images/xiazai.png' /></a>" : "";
+                        }
+                    },
+                    {
+                        field: 'Delete', title: '删除', align: 'center',
+                        formatter: function (value, row, index) {
+                            var linkstr = "@if (Convert.ToBoolean(ViewData["3499aeb8"]) && (ViewData["ApprovalPersonnelName"] == "" || ViewBag._userName.Equals("guhaining")))
+                                           {<a href=\"javascript:void(0)\" onclick=\"Delete(" + row.RecordID + ")\" ><img width='18px' height='18' alt=\"删除\" src=\"/Content/Images/shanchu.png\" /></a>}";
+                            return linkstr;
+                        }
+                    }
+                ]],
+                onLoadSuccess: function (data) {
+                    if (!data.rows) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                }
+            });
+            var p = $('#dgtable').datagrid('getPager');
+            $(p).pagination({
+                pageSize: 20, //每页显示的记录条数，默认为10  
+                pageList: [8, 10, 15, 20], //可以设置每页记录条数的列表  
+                onSelectPage: function (pageNumber, pageSize) {
+                    var tablequeryParams = $('#dgtable').datagrid('options').queryParams;
+                    tablequeryParams.pageNumber = pageNumber;
+                    tablequeryParams.pageSize = pageSize;
+                    $('#dgtable').datagrid('options').queryParams = tablequeryParams;
+                    $("#dgtable").datagrid("reload");
+                }
+            });
+
+            $('#dlg_office').dialog('close');
+        });
+
+                //删除
+                function Delete(InfoID) {
+                    if (confirm("确定要删除数据吗？")) {
+                        $.getJSON("/OriginalRecord/Delete/" + InfoID,
+                        function (data) {
+                            alert(data);
+                            if (data == "删除成功！") {
+                                $('#dgtable').datagrid('reload');
+                            }
+                        });
+                    }
+                }
+
+                //查询
+                function click_Search() {
+                    var AreaID=$("#drop_AreaID").val();
+                    var ProjectID=$("#ProjectID").val();
+                    var StartTime=$("#txt_StartTime").val();
+                    var EndTime=$("#txt_EndTime").val();
+                    var TaskNo=$("#txt_TaskNo").val();
+
+                    $('#dgtable').datagrid('options').url = "/OriginalRecord/GetList?pageNumber=1&pageSize=20&AreaID=" + AreaID+"&ProjectID="+ProjectID+"&StartTime="+StartTime+"&EndTime="+EndTime+"&TaskNo="+TaskNo;
+                    $("#dgtable").datagrid("reload");
+                }
+
+                function click_ViewOffice(_itemId) {
+                    var url = '@Url.Action("GetFileURLForView", "OriginalRecord")' + "?wid=" + _itemId;
+                    $.getJSON(url, getjsonsucceed);
+                }
+                function getjsonsucceed(data) {
+                    //$('#dlg_office').dialog('open');
+                    //wndow.frames["officefrm"].location = '@Url.Action("vpoffice", "Documents")' + "?filename=" + data;
+
+            $('#dlg_office').window({ href: '/ReportView/FileView?' + data });
+            $('#dlg_office').window('open');
+        }
+
+    </script>
+
+    <!--编辑-->
+    <script type="text/javascript">
+        //添加
+        function Add() {
+            $('#EditForms').window({ href: '/OriginalRecord/OriginalRecordAdd?EditType=Add' });
+            //$('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        function AddRef(ProjectID, SampleID) {
+            $('#EditForms').window({ href: '/OriginalRecord/OriginalRecordAdd?EditType=Add&ProjectID=' + ProjectID + '&SampleID=' + SampleID });
+            //$('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //弹出编辑页
+        function Edit(InfoID) {
+            $('#EditForms').window({ href: '/OriginalRecord/OriginalRecordEdit?EditType=Edit&InfoID=' + InfoID });
+            //$('#EditForms').window('refresh');
+            $('#EditForms').window('open');
+        }
+
+        //关闭弹出层
+        function Close() {
+            $('#EditForms').window('close');
+        }
+
+        //保存提示
+        function handle(e) {
+            if (e == "1") {
+                alert("保存成功！");
+                $('#EditForms').window('close');
+                $('#dgtable').datagrid('reload');
+            } else {
+                alert("保存失败！");
+            }
+        }
+        function failed(e) {
+            alert("保存失败！");
+        }
+    </script>
+
+
+</head>
+<body>
+    <!--标题-->
+    <table cellpadding="0" cellspacing="0" width="100%" class="HeadTitle">
+        <tr>
+            <td>当前位置：实验室管理<img style="text-align:center;vertical-align:middle;height:10px" src='@Url.Content("~/Content/Images/位置.png")' />原始记录列表 </td>
+        </tr>
+    </table>
+
+    <!--数据列表-->
+    <div class="divList">
+        <table cellpadding="0" cellspacing="0" width="100%" class="WhereTable">
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td align="right" style="width: 70px;">单位名称：</td>
+                            <td width="100px" align="left">@Html.DropDownListFor(m => m.AreaID, ViewData["AreaList"] as SelectList, new { @id = "drop_AreaID" })</td>
+                            <td align="right" style="width: 70px;">项目名称：</td>
+                            <td align="left" style="width: 120px;">@Html.DropDownListFor(m => m.ProjectID, ViewData["ProjectList"] as SelectList)</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td align="right" style="width: 70px;">检验日期：</td>
+                            <td align="left" style="width: 80px;">
+                                <input type="text" id="txt_StartTime" value="" onclick="WdatePicker()" style="width: 80px;" /></td>
+                            <td align="center" style="width: 30px;">至</td>
+                            <td align="left" style="width: 80px;">
+                                <input type="text" id="txt_EndTime" value="" onclick="WdatePicker()" style="width: 80px;" /></td>
+                            <td align="right" style="width: 70px;">任务单号：</td>
+                            <td align="left" style="width: 160px;">
+                                <input style="border: 1px solid #3496d6;" width="100px" type="text" id="txt_TaskNo" /></td>
+                            <td width="60px"><a href="javascript:void(0)" onclick="click_Search()">
+                                <img height="20px" src="/Content/Images/chaxun.png" /></a></td>
+                            <td width="67px">
+                                @if (Convert.ToBoolean(ViewData["b6b93d28"])&& (ViewData["ApprovalPersonnelName"] == ""))
+                                {<a href="javascript:void(0)" onclick="Add()"><img src="/Content/Images/xinzeng.png" height="20px" /></a>}</td>
+                            <td width="67px"><a href="/DataReport/OriginalRecordReport">
+                                <img src="/Content/Images/统计.png" height="20px" /></a></td>
+                            <td align="right">&nbsp;&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" class="biaoge easyui-datagrid" id="dgtable" width="100%">
+        </table>
+    </div>
+
+    <!--编辑页-->
+    <div id="EditForms" class="easyui-window" title="记录信息" style="width: 780px; height: 500px;top:20px" data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false">
+    </div>
+
+    <!--阅览OFFICE-->
+    <div id="dlg_office" class="easyui-window" title="文档预览" data-options="iconCls:'icon-save',modal:true,closed:true,minimizable:false" style="width: 780px; height: 420px;">
+    </div>
+    <!--End 阅览OFFICE-->
+
+    <script type="text/javascript">
+        var IsDisabled='@ViewBag.IsDisabled';
+        if(IsDisabled.toString()=="true")
+        {
+            $("#drop_AreaID").attr("disabled","disabled");
+        }
+    </script>
+</body>
