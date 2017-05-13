@@ -1,0 +1,56 @@
+﻿@charset "utf-8";
+/* CSS Document */
+.divBG{
+	position: absolute;
+	top: 15px;
+	left: 10px;
+	height: 423px;
+	z-index: 99999;
+	width: 760px;
+	background: url(Images/biaogebeijing.png)
+}
+
+.biaoge
+{
+  border-collapse: collapse;
+  border: none;
+  top:10px;
+  height:400px;
+  width:680px;
+}
+.biaoge td
+{
+	border: solid 1px #ffffff;
+	text-align:center;
+	font-size:12px;
+	font-family:"宋体";
+}
+a{
+	background-color:#dedede;
+	color:#000;
+	text-decoration:none;
+}
+a img{
+	border:0;
+}
+
+.gsdt
+{
+	width:280px;
+	border:1px;
+    border-color:#FFFFFF;
+    bordercolor:#FFFFFF;
+    font-family:'宋体'; 
+	font-size:12px;
+}
+.gsdt tr
+{
+	background-color:#FFF;
+}
+.gsdt td
+{
+	border: solid 1px #ffffff;
+	text-align:center;
+	font-size:12px;
+	font-family:"宋体";
+}

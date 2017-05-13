@@ -1,0 +1,29 @@
+﻿.displaynone{ display:none; }
+.Main{border:1px solid #95B8E7; width:100%;}
+
+.Main_Title{ width:100%; clear:both; float:left;}
+.Main_Title ul{ width:100%;}
+.Main_Title ul li{ float:left; text-align:center; height:29px; line-height:29px;border-bottom:1px solid #ccc; border-right:1px solid #ccc; font-weight:600;}
+
+.Main_Title li {
+  background-color: #efefef;
+  background: -webkit-linear-gradient(top,#F9F9F9 0,#efefef 100%);
+  background: -moz-linear-gradient(top,#F9F9F9 0,#efefef 100%);
+  background: -o-linear-gradient(top,#F9F9F9 0,#efefef 100%);
+  background: linear-gradient(to bottom,#F9F9F9 0,#efefef 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#F9F9F9,endColorstr=#efefef,GradientType=0);
+}
+
+
+.Main_content{ width:100%;clear:both; float:left;}
+.Main_content ul{width:100%;}
+.Main_content ul li{ float:left; height:22px; line-height:22px;}
+.Main_content ul li a{height:22px; line-height:22px;}
+.Main_content img{ float:left;}
+.Main_content ul li a img{ margin-top:5px;}
+
+.WidthID{ width:40px; text-align:center;}
+.WidthName{width:300px;}
+.WidthOperate{ width:137px; text-align:center;}
+

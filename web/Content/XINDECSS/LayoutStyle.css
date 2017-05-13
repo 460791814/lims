@@ -1,0 +1,10 @@
+﻿.layout{width:100%;}
+
+/*登录页 Start*/
+.LoginMain{width:880px; height:768px; margin:0px auto;}
+.LoginMain ul{width:250px; padding-top:320px; margin:0px auto; color:#fff;}
+.LoginMain ul li{width:100%; float:left; clear:both; padding-bottom:10px; text-align:center;}
+.LoginMain ul li span{ font-size:16px; font-weight:600; color:#fff;  font-family:SimSun;display:-moz-inline-box; display:inline-block; height:34px; line-height:34px; float:left;}
+.txt_login{width:173px; height:24px; border:0px; background:url(/Content/Images_ZHU/images_50.jpg) no-repeat; line-height:34px; padding:5px 10px; color:#fff; float:left;}
+.btn_login{width:70px; height:32px; background:url(/Content/Images_ZHU/images_51.jpg) no-repeat; border:0px; cursor:pointer;}
+/*登录页 End*/

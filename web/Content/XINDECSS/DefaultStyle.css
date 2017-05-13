@@ -1,0 +1,56 @@
+﻿body{ background-color:#e7f2f9;}
+.layout_bg{ width:100%; min-height:500px; background:url(../Images_ZHU/images_40.jpg) repeat-x;}
+.layout{width:100%; background:url(../Images_ZHU/images_33.jpg) no-repeat right top;min-height:500px;}
+
+.Title{width:100%; height:15px; text-align:right; padding-top:5px;}
+.main{width:1050px;margin:0px auto;}
+.main_left{width:750px; float:left; margin-left:10px;}
+
+.left_top{width:733px; height:409px; background:url(../Images_ZHU/images_40.png) no-repeat; margin:0px auto;}
+.table_content{width:704px; padding-top:5px;}
+.table_content ul{width:704px;}
+.table_content ul li{height:53px;line-height:70px; text-align:center; color:#fff; font-weight:600; font-size:16px; float:left; font-family:"Arial", Gadget, sans-serif,"微软雅黑";}
+.table_content ul li.th_1{ width:62px; background:url(../Images_ZHU/images_42.jpg) no-repeat;}
+.table_content ul li.th_2{ width:128px; background:url(../Images_ZHU/images_43.jpg) no-repeat;}
+.table_content ul li.th_3{ width:129px; background:url(../Images_ZHU/images_44.jpg) no-repeat;}
+.table_content ul li.th_4{ width:128px; background:url(../Images_ZHU/images_45.jpg) no-repeat;}
+.table_content ul li.th_5{ width:128px; background:url(../Images_ZHU/images_46.jpg) no-repeat;}
+.table_content ul li.th_6{ width:128px; background:url(../Images_ZHU/images_47.jpg) no-repeat;}
+.table_tbody{ background-color:#fff; width:100%;}
+.table_tbody tr{ background-color:#e9e9e9;}
+.table_tbody td{ height:37px; line-height:37px; text-align:center;}
+.table_tbody .bg2{ background-color:#f4f4f4;}
+.table_tbody .bg3{ background-color:#03a6df; color:#fff;}
+.table_tbody .bg4{ background-color:#b5cee4;}
+.table_tbody .bg5{ background-color:#007aad;}
+.table_tbody .bg6{ background-color:#d9edf6;}
+.content_page{width:704px; margin:0px auto; padding-top:5px; text-align:center;}
+.content_page .startbutton{width:32px; height:31px; float:left; display:inline; margin-left:340px;}
+.content_page .page{ width:120px; float:right;padding-top:5px;}
+.content_page .page li{ float:left; cursor:pointer; width:18px; height:20px; margin-left:5px;display:block;background:url(../Images_ZHU/images_38.png) no-repeat; line-height:20px; text-align:center; color:#000; font-size:9px;}
+.content_page .page .on{background:url(../Images_ZHU/images_37.png) no-repeat;}
+.img_content{width:704px; padding-top:5px;}
+
+.left_bottom{ width:750px; height:147px; padding-top:10px;padding-left:5px;}
+.left-arrow{ float:left; height:109px; padding-top:38px;}
+.fl-pic{ float:left; width:696px; height:147px; overflow:hidden;}
+.fl-pic li{ float:left; margin-left:5px; background:url(../Images_ZHU/images_39.png) no-repeat; width:165px; height:143px; padding:2px;}
+.fl-pic li a{ display:block; width:165px; height:143px;}
+.right-arrow{ float:left; margin-left:5px; height:109px; padding-top:38px;}
+
+.main_right{width:289px;float:right; padding-top:20px;}
+.right_top{width:289px; height:172px; background:url(../Images_ZHU/images_35.png) no-repeat;}
+.right_top ul{width:100%; padding-top:20px;}
+.right_top li{width:100%; text-align:center; font-size:14px;}
+.right_top li h2{ font-size:30px;}
+
+.right_content{ width:283px; height:169px; background:url(../Images_ZHU/images_36.png) no-repeat; margin-top:10px; padding:3px;}
+.right_content h2{width:283px; height:35px; line-height:45px; font-size:14px; font-weight:600; text-align:center;}
+.right_content .more{ display:block; float:right; width:36px; height:12px; margin-top:15px; margin-right:10px;}
+.right_content h2 span{ float:left;margin-left:100px;}
+.right_content ul{ width:273px; padding:0px 5px;}
+.right_content ul li{width:100%; height:20px; line-height:20px; display:inline;}
+.right_content ul li a{ color:#000; width:200px; display:block; overflow:hidden; height:20px; float:left; background:url(../Images_ZHU/images_25.jpg) no-repeat; text-indent:2em;}
+.right_content ul li span{ float:right; display:block; height:20px; line-height:20px;}
+
+

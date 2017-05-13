@@ -1,0 +1,25 @@
+﻿*{ margin:0; padding:0;}
+body{ font-size:12px; font-family:SimSun-ExtB;/*font-family:"Arial", Gadget, sans-serif,"宋体";*/}
+ul,li,dl,dt,dd{ list-style:none}
+a{ text-decoration:none}
+img{ border:none;}
+.displaynone{display:none;}
+.displayblock{display:block;}
+.float_left{float:left;}
+.float_right{float:right;}
+
+.HeadTitle{width:100%; background-color:#faf1e8;}
+.HeadTitle td{color: #10607c;height: 30px; line-height:30px;}
+.divList {width: 100%; padding-top:10px;}
+.WhereTable td{padding-bottom:5px;}
+.biaoge {font-family: '宋体';font-size: 12px;color: #10607c;}
+.biaoge td {text-align: center;height: 26px;vertical-align: middle;border: 1px solid #d4d3d3;}
+
+/**弹出层样式**/
+.DialogTable {margin-top:10px;}
+.DialogTable tr td{padding:5px 0px;}
+
+.Idle{color:#0ce444;}
+.Use{color:red;}
+
+.btn_1{width:60px; height:20px; line-height:20px; cursor:pointer;}

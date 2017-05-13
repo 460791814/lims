@@ -1,0 +1,55 @@
+﻿body{ background-color:#f0efed;}
+.layout_bg{ width:100%; min-height:500px; background:url(../Images_ZHU/images_40.jpg) repeat-x;}
+.layout{width:100%; background:url(../Images_ZHU/images_33.jpg) no-repeat right top;min-height:500px;}
+
+.Title{width:100%; height:15px; text-align:right; padding-top:5px;}
+.main{width:1810px;margin:0px auto;}
+.main_left{width:1300px; float:left;}
+
+.left_top{width:1288px; height:719px; background:url(../FullImages/images_20.png) no-repeat; margin:0px auto;}
+.table_content{width:1237px; padding-top:5px;}
+.table_content ul{width:1237px;}
+.table_content ul li{height:93px;line-height:120px; text-align:center; color:#fff; font-weight:600; font-size:24px; float:left; font-family:"Arial", Gadget, sans-serif,"微软雅黑";}
+.table_content ul li.th_1{ width:108px; background:url(../FullImages/images_01.jpg) no-repeat;}
+.table_content ul li.th_2{ width:226px; background:url(../FullImages/images_02.jpg) no-repeat;}
+.table_content ul li.th_3{ width:225px; background:url(../FullImages/images_03.jpg) no-repeat;}
+.table_content ul li.th_4{ width:225px; background:url(../FullImages/images_04.jpg) no-repeat;}
+.table_content ul li.th_5{ width:224px; background:url(../FullImages/images_05.jpg) no-repeat;}
+.table_content ul li.th_6{ width:226px; background:url(../FullImages/images_06.jpg) no-repeat;}
+.table_tbody{ background-color:#fff; width:100%;}
+.table_tbody tr{ background-color:#e9e9e9;}
+.table_tbody td{ height:63px; line-height:63px; text-align:center; font-size:21px;}
+.table_tbody .bg2{ background-color:#f4f4f4;}
+.table_tbody .bg3{ background-color:#03a6df; color:#fff;}
+.table_tbody .bg4{ background-color:#b5cee4;}
+.table_tbody .bg5{ background-color:#007aad;}
+.table_tbody .bg6{ background-color:#d9edf6;}
+.content_page{width:1237px; margin:0px auto; padding-top:5px; text-align:center;}
+.content_page .startbutton{width:56px; height:54px; float:left; display:inline; margin-left:600px;}
+.content_page .page{ width:220px; float:right;padding-top:5px;}
+.content_page .page li{ float:left; cursor:pointer; width:34px; height:34px; margin-left:5px;display:block;background:url(../FullImages/images_10.jpg) no-repeat; line-height:34px; text-align:center; color:#000; font-size:12px;}
+.content_page .page .on{background:url(../FullImages/images_11.jpg) no-repeat;}
+.img_content{width:1237px; padding-top:5px;}
+
+.left_bottom{ width:1288px; height:256px; padding-top:10px;padding-left:5px;}
+.left-arrow{ float:left; height:123px; padding-top:58px;}
+.fl-pic{ float:left; width:1200px; height:256px; overflow:hidden;}
+.fl-pic li{ float:left; margin-left:5px; background:url(../FullImages/images_24.png) no-repeat; width:290px; height:252px; padding:2px;}
+.fl-pic li a{ display:block; width:290px; height:252px;}
+.right-arrow{ float:left; margin-left:5px; height:123px; padding-top:58px;}
+
+
+.main_right{width:503px;float:right; padding-top:30px;}
+.right_top{width:503px; height:294px; background:url(../FullImages/images_21.png) no-repeat;}
+.right_top ul{width:100%; padding-top:20px;}
+.right_top li{width:100%; text-align:center; font-size:34px;}
+.right_top li h2{ font-size:66px;}
+
+.right_content{ width:497px; height:300px; background:url(../FullImages/images_22.png) no-repeat; margin-top:10px; padding:3px;}
+.right_content h2{width:497px; height:55px; line-height:55px; font-size:24px; font-weight:600; text-align:center;}
+.right_content .more{ display:block; float:right; width:62px; height:20px; margin-top:15px; margin-right:10px;}
+.right_content ul{ width:457px; padding:0px 20px; padding-top:10px;}
+.right_content ul li{width:100%; height:35px; line-height:35px;}
+.right_content ul li a{ color:#000; width:330px; padding-left:10px; display:block; overflow:hidden; height:35px; float:left; background:url(../FullImages/images_08.jpg) no-repeat left center; text-indent:1em; font-size:21px;}
+.right_content ul li span{ float:right; display:block; height:30px; line-height:35px; font-size:21px;}
+.right_content .content2 li a{background:url(../FullImages/images_18.jpg) no-repeat left center;}
