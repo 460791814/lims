@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AA59B86A-ADEA-4C8C-9150-D3B1252648D1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BLL</RootNamespace>
+    <AssemblyName>BLL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClientManage\T_tb_ClientManage.cs" />
+    <Compile Include="ClientManage\T_tb_ContractImg.cs" />
+    <Compile Include="DictManage\T_tb_TypeDict.cs" />
+    <Compile Include="EntrustManage\T_tb_EntrustMeterage.cs" />
+    <Compile Include="EntrustManage\T_tb_EntrustTesting.cs" />
+    <Compile Include="EntrustManage\T_tb_OutsourcingTesting.cs" />
+    <Compile Include="EntrustManage\T_tb_TestingPlan.cs" />
+    <Compile Include="ExpePlan\T_tb_ExpePlan.cs" />
+    <Compile Include="FileList\T_tb_FileList.cs" />
+    <Compile Include="Laboratory\T_tb_DetectProject.cs" />
+    <Compile Include="Laboratory\T_tb_Laboratory.cs" />
+    <Compile Include="Laboratory\T_tb_Project.cs" />
+    <Compile Include="News\T_tb_ElectronicsMagazine.cs" />
+    <Compile Include="News\T_tb_News.cs" />
+    <Compile Include="OriginalRecord\T_tb_OriginalRecord.cs" />
+    <Compile Include="OriginalRecord\T_tb_RecordSample.cs" />
+    <Compile Include="PersonnelManage\T_tb_InPersonnel.cs" />
+    <Compile Include="PersonnelManage\T_tb_OutPersonnel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoleManage\T_tb_Action.cs" />
+    <Compile Include="RoleManage\T_tb_Area.cs" />
+    <Compile Include="RoleManage\T_tb_Role.cs" />
+    <Compile Include="RoleManage\T_tb_RoleAction.cs" />
+    <Compile Include="RoleManage\T_tb_UserRole.cs" />
+    <Compile Include="ShowImage\T_tb_ShowImages.cs" />
+    <Compile Include="tb_attachmentBLL.cs" />
+    <Compile Include="tb_BaseBLL.cs" />
+    <Compile Include="tb_BookBLL.cs" />
+    <Compile Include="tb_BookBorrowBLL.cs" />
+    <Compile Include="tb_DetectionBLL.cs" />
+    <Compile Include="tb_DeviceBLL.cs" />
+    <Compile Include="tb_DeviceDetailBLL.cs" />
+    <Compile Include="tb_DeviceINBLL.cs" />
+    <Compile Include="tb_DeviceOUTBLL.cs" />
+    <Compile Include="tb_DirectoryBLL.cs" />
+    <Compile Include="tb_documentBLL.cs" />
+    <Compile Include="tb_document_HistoryBLL.cs" />
+    <Compile Include="tb_DrugBLL.cs" />
+    <Compile Include="tb_DrugCheckBLL.cs" />
+    <Compile Include="tb_DrugINBLL.cs" />
+    <Compile Include="tb_DrugLockBLL.cs" />
+    <Compile Include="tb_DrugOUTBLL.cs" />
+    <Compile Include="tb_DrugRegionBLL.cs" />
+    <Compile Include="tb_EasyConsumeBLL.cs" />
+    <Compile Include="tb_EasyConsumeINBLL.cs" />
+    <Compile Include="tb_EasyConsumeOUTBLL.cs" />
+    <Compile Include="tb_LimitBLL.cs" />
+    <Compile Include="tb_MeasureBLL.cs" />
+    <Compile Include="tb_MSDSBLL.cs" />
+    <Compile Include="tb_DeviceLogBLL.cs" />
+    <Compile Include="PersonnelManage\T_tb_PersonAptitude.cs" />
+    <Compile Include="tb_SampleBLL.cs" />
+    <Compile Include="tb_SupplierBLL.cs" />
+    <Compile Include="tb_TestStandardBLL.cs" />
+    <Compile Include="TestReport\T_tb_TestReport.cs" />
+    <Compile Include="tb_EasyConsumeLockBLL.cs" />
+    <Compile Include="tb_EasyConsumeRegionBLL.cs" />
+    <Compile Include="TestReport\T_tb_TestReportData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{bc8e8254-2ad4-458c-a605-352aeb71a1ee}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
